@@ -19,6 +19,7 @@ namespace Azure
     {
         public static dynamic ToDynamicFromJson(this System.BinaryData utf8Json) { throw null; }
         public static dynamic ToDynamicFromJson(this System.BinaryData utf8Json, Azure.Core.Serialization.JsonPropertyNames propertyNameFormat, string dateTimeFormat = "o") { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public static System.Threading.Tasks.ValueTask<T?> ToObjectAsync<T>(this System.BinaryData data, Azure.Core.Serialization.ObjectSerializer serializer, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         public static object? ToObjectFromJson(this System.BinaryData data) { throw null; }
         public static T? ToObject<T>(this System.BinaryData data, Azure.Core.Serialization.ObjectSerializer serializer, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
@@ -144,8 +145,11 @@ namespace Azure
         public virtual Azure.Response WaitForCompletionResponse(Azure.Core.DelayStrategy delayStrategy, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         public virtual Azure.Response WaitForCompletionResponse(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         public virtual Azure.Response WaitForCompletionResponse(System.TimeSpan pollingInterval, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response> WaitForCompletionResponseAsync(Azure.Core.DelayStrategy delayStrategy, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response> WaitForCompletionResponseAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response> WaitForCompletionResponseAsync(System.TimeSpan pollingInterval, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
     }
     public abstract partial class Operation<T> : Azure.Operation where T : notnull
@@ -156,12 +160,17 @@ namespace Azure
         public virtual Azure.Response<T> WaitForCompletion(Azure.Core.DelayStrategy delayStrategy, System.Threading.CancellationToken cancellationToken) { throw null; }
         public virtual Azure.Response<T> WaitForCompletion(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         public virtual Azure.Response<T> WaitForCompletion(System.TimeSpan pollingInterval, System.Threading.CancellationToken cancellationToken) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response<T>> WaitForCompletionAsync(Azure.Core.DelayStrategy delayStrategy, System.Threading.CancellationToken cancellationToken) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response<T>> WaitForCompletionAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<Azure.Response<T>> WaitForCompletionAsync(System.TimeSpan pollingInterval, System.Threading.CancellationToken cancellationToken) { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask<Azure.Response> WaitForCompletionResponseAsync(System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask<Azure.Response> WaitForCompletionResponseAsync(System.TimeSpan pollingInterval, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
     }
     public abstract partial class PageableOperation<T> : Azure.Operation<Azure.AsyncPageable<T>> where T : notnull
@@ -512,9 +521,14 @@ namespace Azure.Core
         public int RetryNumber { get { throw null; } set { } }
         public System.DateTimeOffset StartTime { get { throw null; } }
     }
+    public static partial class MultipartFormDataExtensions
+    {
+        public static Azure.Core.RequestContent ToRequestContent(this System.ClientModel.MultipartFormData multipart) { throw null; }
+    }
     public static partial class MultipartResponse
     {
         public static Azure.Response[] Parse(Azure.Response response, bool expectCrLf, System.Threading.CancellationToken cancellationToken) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public static System.Threading.Tasks.Task<Azure.Response[]> ParseAsync(Azure.Response response, bool expectCrLf, System.Threading.CancellationToken cancellationToken) { throw null; }
     }
     public abstract partial class Request : System.ClientModel.Primitives.Pipeline.HttpPipelineRequest
@@ -543,6 +557,7 @@ namespace Azure.Core
         public static Azure.Core.RequestContent Create(object serializable, Azure.Core.Serialization.ObjectSerializer? serializer) { throw null; }
         public static Azure.Core.RequestContent Create(System.ReadOnlyMemory<byte> bytes) { throw null; }
         public static Azure.Core.RequestContent Create(string content) { throw null; }
+        public static Azure.Core.RequestContent Create<T>(System.ClientModel.Primitives.IPersistableModel<T> model, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
         public static implicit operator Azure.Core.RequestContent (Azure.Core.Serialization.DynamicData content) { throw null; }
         public static implicit operator Azure.Core.RequestContent (System.BinaryData content) { throw null; }
         public static implicit operator Azure.Core.RequestContent (string content) { throw null; }
@@ -933,6 +948,7 @@ namespace Azure.Core.Pipeline
         public BearerTokenAuthenticationPolicy(Azure.Core.TokenCredential credential, System.Collections.Generic.IEnumerable<string> scopes) { }
         public BearerTokenAuthenticationPolicy(Azure.Core.TokenCredential credential, string scope) { }
         protected void AuthenticateAndAuthorizeRequest(Azure.Core.HttpMessage message, Azure.Core.TokenRequestContext context) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         protected System.Threading.Tasks.ValueTask AuthenticateAndAuthorizeRequestAsync(Azure.Core.HttpMessage message, Azure.Core.TokenRequestContext context) { throw null; }
         protected virtual void AuthorizeRequest(Azure.Core.HttpMessage message) { }
         protected virtual System.Threading.Tasks.ValueTask AuthorizeRequestAsync(Azure.Core.HttpMessage message) { throw null; }
@@ -958,6 +974,7 @@ namespace Azure.Core.Pipeline
         protected override void OnReceivedResponse(System.ClientModel.Primitives.PipelineMessage message, System.Net.Http.HttpResponseMessage httpResponse, System.IO.Stream? contentStream) { }
         protected override void OnSendingRequest(System.ClientModel.Primitives.PipelineMessage message) { }
         public override void Process(Azure.Core.HttpMessage message) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask ProcessAsync(Azure.Core.HttpMessage message) { throw null; }
     }
     public partial class HttpPipeline : System.ClientModel.Primitives.Pipeline.Pipeline<Azure.Core.HttpMessage>
@@ -973,9 +990,11 @@ namespace Azure.Core.Pipeline
         public Azure.Core.Request CreateRequest() { throw null; }
         public override void Send(Azure.Core.HttpMessage message) { }
         public void Send(Azure.Core.HttpMessage message, System.Threading.CancellationToken cancellationToken) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask SendAsync(Azure.Core.HttpMessage message) { throw null; }
         public System.Threading.Tasks.ValueTask SendAsync(Azure.Core.HttpMessage message, System.Threading.CancellationToken cancellationToken) { throw null; }
         public Azure.Response SendRequest(Azure.Core.Request request, System.Threading.CancellationToken cancellationToken) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public System.Threading.Tasks.ValueTask<Azure.Response> SendRequestAsync(Azure.Core.Request request, System.Threading.CancellationToken cancellationToken) { throw null; }
     }
     public static partial class HttpPipelineBuilder
@@ -1017,6 +1036,7 @@ namespace Azure.Core.Pipeline
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public abstract Azure.Core.Request CreateRequest();
         public virtual void Process(Azure.Core.HttpMessage message) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask ProcessAsync(Azure.Core.HttpMessage message) { throw null; }
     }
     public partial class HttpPipelineTransportOptions
@@ -1099,6 +1119,7 @@ namespace Azure.Core.Serialization
         public override System.Threading.Tasks.ValueTask<object?> DeserializeAsync(System.IO.Stream stream, System.Type returnType, System.Threading.CancellationToken cancellationToken) { throw null; }
         public override void Serialize(System.IO.Stream stream, object? value, System.Type inputType, System.Threading.CancellationToken cancellationToken) { }
         public override System.BinaryData Serialize(object? value, System.Type? inputType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask SerializeAsync(System.IO.Stream stream, object? value, System.Type inputType, System.Threading.CancellationToken cancellationToken) { throw null; }
         public override System.Threading.Tasks.ValueTask<System.BinaryData> SerializeAsync(object? value, System.Type? inputType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
     }
@@ -1115,6 +1136,7 @@ namespace Azure.Core.Serialization
         public abstract void Serialize(System.IO.Stream stream, object? value, System.Type inputType, System.Threading.CancellationToken cancellationToken);
         public virtual System.BinaryData Serialize(object? value, System.Type? inputType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
         public abstract System.Threading.Tasks.ValueTask SerializeAsync(System.IO.Stream stream, object? value, System.Type inputType, System.Threading.CancellationToken cancellationToken);
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public virtual System.Threading.Tasks.ValueTask<System.BinaryData> SerializeAsync(object? value, System.Type? inputType = null, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
     }
 }

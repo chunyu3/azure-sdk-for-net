@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -15,7 +15,7 @@ namespace System.ClientModel
     /// <summary>
     /// A Content in multipart format.
     /// </summary>
-    public class Multipart : IDisposable
+    public class MultipartHelper : IDisposable
     {
         private const string CrLf = "\r\n";
         private const string ColonSP = ": ";
@@ -23,21 +23,21 @@ namespace System.ClientModel
         private protected static readonly int s_crlfLength = GetEncodedLength(CrLf);
         private protected static readonly int s_dashDashLength = GetEncodedLength("--");
         private protected static readonly int s_colonSpaceLength = GetEncodedLength(ColonSP);
-        private protected readonly List<MultipartContentPart> _nestedContent;
+        private protected readonly List<MultipartModelContentPart> _nestedContent;
         private protected readonly string _subtype;
         private protected readonly string _boundary;
         internal readonly Dictionary<string, string> _headers;
         private protected const string MultipartContentTypePrefix = "multipart/mixed; boundary=";
 
         /// <summary> The list of request content parts. </summary>
-        public List<MultipartContentPart> ContentParts => _nestedContent;
+        public List<MultipartModelContentPart> ContentParts => _nestedContent;
         public string Boundary => _boundary;
         public string Subtype => _subtype;
 
         /// <summary>
         ///  Initializes a new instance of the <see cref="Multipart"/> class.
         ///  </summary>
-        public Multipart()
+        public MultipartHelper()
             : this("mixed", GetDefaultBoundary(), null)
         { }
 
@@ -45,7 +45,7 @@ namespace System.ClientModel
         ///  Initializes a new instance of the <see cref="Multipart"/> class.
         /// </summary>
         /// <param name="subtype">The multipart sub type.</param>
-        public Multipart(string subtype)
+        public MultipartHelper(string subtype)
             : this(subtype, GetDefaultBoundary(), null)
         {
         }
@@ -54,7 +54,7 @@ namespace System.ClientModel
         /// </summary>
         /// <param name="subtype">The multipart sub type.</param>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
-        public Multipart(string subtype, string boundary): this(subtype, boundary, null)
+        public MultipartHelper(string subtype, string boundary) : this(subtype, boundary, null)
         {
         }
 
@@ -64,7 +64,7 @@ namespace System.ClientModel
         /// <param name="subtype">The multipart sub type.</param>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
         /// <param name="nestedContent">The list of content parts.</param>
-        public Multipart(string subtype, string boundary, IReadOnlyList<MultipartContentPart> nestedContent)
+        public MultipartHelper(string subtype, string boundary, IReadOnlyList<MultipartModelContentPart> nestedContent)
         {
             ValidateBoundary(boundary);
             _subtype = subtype;
@@ -78,10 +78,11 @@ namespace System.ClientModel
 
             if (nestedContent != null)
             {
-                _nestedContent = nestedContent.ToList<MultipartContentPart>();
-            } else
+                _nestedContent = nestedContent.ToList<MultipartModelContentPart>();
+            }
+            else
             {
-                _nestedContent = new List<MultipartContentPart>();
+                _nestedContent = new List<MultipartModelContentPart>();
             }
         }
 
@@ -141,7 +142,7 @@ namespace System.ClientModel
         ///  get serialized to multipart/form-data MIME type.
         /// </summary>
         /// <param name="content">The content to add to the collection.</param>
-        public virtual void Add(BinaryData content)
+        public virtual void Add(object content)
         {
             AddInternal(content, null);
         }
@@ -152,7 +153,7 @@ namespace System.ClientModel
         /// </summary>
         /// <param name="content">The content to add to the collection.</param>
         /// <param name="headers">The headers to add to the collection.</param>
-        public virtual void Add(BinaryData content, Dictionary<string, string> headers)
+        public virtual void Add(object content, Dictionary<string, string> headers)
         {
             AddInternal(content, headers);
         }
@@ -179,10 +180,11 @@ namespace System.ClientModel
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    BinaryData content = _nestedContent[contentIndex].Content;
+                    //BinaryData content = _nestedContent[contentIndex].Content;
                     Dictionary<string, string> headers = _nestedContent[contentIndex].Headers;
                     EncodeStringToStream(stream, SerializeHeadersToString(output, contentIndex, headers));
-                    byte[] buffer = content.ToArray();
+                    //byte[] buffer = content.ToArray();
+                    byte[] buffer = Encoding.UTF8.GetBytes(_nestedContent[contentIndex].Content.ToString());
                     stream.Write(buffer, 0, buffer.Length);
                 }
 
@@ -234,10 +236,10 @@ namespace System.ClientModel
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    BinaryData content = _nestedContent[contentIndex].Content;
+                    //BinaryData content = _nestedContent[contentIndex].Content;
                     Dictionary<string, string> headers = _nestedContent[contentIndex].Headers;
                     EncodeStringToStream(stream, SerializeHeadersToString(output, contentIndex, headers));
-                    byte[] buffer = content.ToArray();
+                    byte[] buffer = Encoding.UTF8.GetBytes(_nestedContent[contentIndex].Content.ToString());
                     stream.Write(buffer, 0, buffer.Length);
                 }
 
@@ -288,11 +290,11 @@ namespace System.ClientModel
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    BinaryData content = _nestedContent[contentIndex].Content;
+                    //BinaryData content = _nestedContent[contentIndex].Content;
                     Dictionary<string, string> headers = _nestedContent[contentIndex].Headers;
                     EncodeStringToBytes(data, ref offset, SerializeHeadersToString(output, contentIndex, headers));
-                    byte[] buffer = content.ToArray();
-                    EncodeStringToBytes(data, ref offset, content.ToArray());
+                    byte[] buffer = Encoding.UTF8.GetBytes(_nestedContent[contentIndex].Content.ToString());
+                    EncodeStringToBytes(data, ref offset, buffer);
                 }
 
                 // Write footer boundary.
@@ -318,10 +320,27 @@ namespace System.ClientModel
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    BinaryData content = _nestedContent[contentIndex].Content;
+                    //BinaryData content = _nestedContent[contentIndex].Content;
                     Dictionary<string, string> headers = _nestedContent[contentIndex].Headers;
                     EncodeStringToStream(stream, SerializeHeadersToString(output, contentIndex, headers));
-                    byte[] buffer = content.ToArray();
+                    //byte[] buffer = Encoding.UTF8.GetBytes(_nestedContent[contentIndex].Content.ToString());
+                    byte[] buffer;
+                    switch (_nestedContent[contentIndex].Content) {
+                        case BinaryData binaryData:
+                            buffer = binaryData.ToArray();
+                            break;
+                        case string str:
+                            buffer = Encoding.UTF8.GetBytes(str);
+                            break;
+                        case byte[] bytes:
+                            buffer = bytes;
+                            break;
+                        case Int32 int32Data:
+                            buffer = BitConverter.GetBytes(int32Data);
+                            break;
+                        default:
+                            throw new InvalidOperationException("Unsupported content type");
+                    }
                     stream.Write(buffer, 0, buffer.Length);
                 }
 
@@ -339,7 +358,7 @@ namespace System.ClientModel
         ///  Read the content from BinaryData and parse it.
         ///  each part of BinaryData separted by boundary will be parsed as one MultipartContentPart.
         /// </summary>
-        public static async Task<Multipart> ReadAsync(BinaryData data, string subType = "mixed", string boundary = null)
+        public static async Task<MultipartHelper> ReadAsync(BinaryData data, string subType = "mixed", string boundary = null)
         {
             if (data == null)
             {
@@ -367,7 +386,7 @@ namespace System.ClientModel
                 }
             }
             // Read the content into a stream.
-            Multipart multipartContent = new Multipart(subType, boundary);
+            MultipartHelper multipartContent = new MultipartHelper(subType, boundary);
             Stream content = data.ToStream();
             CancellationToken cancellationToken = new CancellationToken();
             bool expectBoundariesWithCRLF = false;
@@ -392,21 +411,21 @@ namespace System.ClientModel
                         headers.Add(header.Key, string.Join(";", header.Value));
                     }
                 }
-                multipartContent.ContentParts.Add(new MultipartContentPart(BinaryData.FromStream(section.Body), headers));
+                multipartContent.ContentParts.Add(new MultipartModelContentPart(BinaryData.FromStream(section.Body), headers));
             }
             return multipartContent;
         }
 
-        public static Multipart Read(BinaryData data, string subType = "mixed", string boundary = null)
+        public static MultipartHelper Read(BinaryData data, string subType = "mixed", string boundary = null)
         {
 #pragma warning disable AZC0102 // Do not use GetAwaiter().GetResult().
             return ReadAsync(data, subType, boundary).GetAwaiter().GetResult();
 #pragma warning restore AZC0102 // Do not use GetAwaiter().GetResult().
         }
 
-        private void AddInternal(BinaryData content, Dictionary<string, string> headers)
+        private void AddInternal(object content, Dictionary<string, string> headers)
         {
-            var part = new MultipartContentPart(content, headers);
+            var part = new MultipartModelContentPart(content, headers);
             _nestedContent.Add(part);
         }
         private string SerializeHeadersToString(StringBuilder scratch, int contentIndex, Dictionary<string, string> headers)
@@ -445,7 +464,7 @@ namespace System.ClientModel
         }
         private static void EncodeStringToBytes(byte[] buffer, ref int offset, byte[] input)
         {
-            for (int i = 0; i< input.Length; i++)
+            for (int i = 0; i < input.Length; i++)
             {
                 buffer[offset++] = input[i];
             }
@@ -481,7 +500,7 @@ namespace System.ClientModel
             currentLength += s_dashDashLength + boundaryLength + s_crlfLength;
 
             bool first = true;
-            foreach (MultipartContentPart content in _nestedContent)
+            foreach (MultipartModelContentPart content in _nestedContent)
             {
                 if (first)
                 {
@@ -511,7 +530,7 @@ namespace System.ClientModel
                     return false;
                 }
                 */
-                currentLength += content.Content.Length;
+                currentLength += Encoding.UTF8.GetBytes(content.ToString()).Length;
             }
 
             // Terminating boundary.

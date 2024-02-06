@@ -28,7 +28,7 @@ namespace System.ClientModel.Tests.Multipart
         [Test]
         public void TestToContent()
         {
-            MultipartContent content = new MultipartContent();
+            ClientModel.Multipart content = new ClientModel.Multipart();
             content.Add(new BinaryData("part1"));
             content.Add(new BinaryData("part2"));
             BinaryData binaryData = content.ToContent();
@@ -38,7 +38,7 @@ namespace System.ClientModel.Tests.Multipart
         [Test]
         public void TestToContentForFormData()
         {
-            MultipartFormDataContent content = new MultipartFormDataContent();
+            MultipartFormData content = new MultipartFormData();
             content.Add(new BinaryData("part1", "text/plainText"), "part1");
             content.Add(new BinaryData("part2"), "part2");
             content.Add(BinaryData.FromObjectAsJson(new TestModel("model1", 10)), "model");
@@ -49,7 +49,7 @@ namespace System.ClientModel.Tests.Multipart
             string raw = binaryData.ToString();
             int len = raw.Length;
             Console.WriteLine(binaryData.ToString());
-            MultipartFormDataContent content2 = MultipartFormDataContent.Create(binaryData);
+            MultipartFormData content2 = MultipartFormData.Create(binaryData);
             BinaryData binaryData2 = content2.ToContent();
             byte[] data2 = binaryData2.ToArray();
             int length2 = data2.Length;
@@ -65,6 +65,73 @@ namespace System.ClientModel.Tests.Multipart
             {
                 Console.WriteLine("Exception caught in process: {0}", ex);
             }
+        }
+        [Test]
+        public void TestToStreamForFormData()
+        {
+            MultipartFormData content = new MultipartFormData();
+            content.Add(new BinaryData("part1", "text/plainText"), "part1");
+            content.Add(new BinaryData("part2"), "part2");
+            content.Add(BinaryData.FromObjectAsJson(new TestModel("model1", 10)), "model");
+            content.Add(BinaryData.FromStream(File.Open("D:\\materials\\test.png", FileMode.Open)), "file", "file.wav", null);
+            Stream stream = new MemoryStream();
+            string? contentType = null;
+            content.WriteToStream(stream, ref contentType);
+            byte[] data = ((MemoryStream)stream).ToArray();
+            int len1 = data.Length;
+            Console.WriteLine($"{contentType} {len1}");
+            stream.Position = 0;
+            string? raw = BinaryData.FromStream(stream).ToString();
+            Console.WriteLine("ead");
+        }
+        [Test]
+        public void TestToContentFromBytesForFormData()
+        {
+            MultipartFormData content = new MultipartFormData();
+            content.Add(new BinaryData("part1", "text/plainText"), "part1");
+            content.Add(new BinaryData("part2"), "part2");
+            content.Add(BinaryData.FromObjectAsJson(new TestModel("model1", 10)), "model");
+            content.Add(BinaryData.FromStream(File.Open("D:\\materials\\test.png", FileMode.Open)), "file", "file.wav", null);
+            BinaryData binaryData = content.ToContentBytes();
+            byte[] data = binaryData.ToArray();
+            int len1 = data.Length;
+            string raw = binaryData.ToString();
+            int len = raw.Length;
+            Console.WriteLine(binaryData.ToString());
+            MultipartFormData content2 = MultipartFormData.Create(binaryData);
+            BinaryData binaryData2 = content2.ToContent();
+            byte[] data2 = binaryData2.ToArray();
+            int length2 = data2.Length;
+            try
+            {
+                byte[] data3 = content2.ContentParts[3].Content.ToArray();
+                using (var fs = new FileStream("D:\\materials\\testreturn.png", FileMode.Create, FileAccess.Write))
+                {
+                    fs.Write(data3, 0, data3.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception caught in process: {0}", ex);
+            }
+        }
+        [Test]
+        public void TestToStreamForFormDataHelper()
+        {
+            MultipartFormDataHelper content = new MultipartFormDataHelper();
+            content.Add("part1", "part1");
+            content.Add("part2", "part2");
+            content.Add(BinaryData.FromObjectAsJson(new TestModel("model1", 10)), "model");
+            content.Add(File.ReadAllBytes("D:\\materials\\test.png"), "file", "file.wav", null);
+            Stream stream = new MemoryStream();
+            string? contentType = null;
+            content.WriteToStream(stream, ref contentType);
+            byte[] data = ((MemoryStream)stream).ToArray();
+            int len1 = data.Length;
+            Console.WriteLine($"{contentType} {len1}");
+            stream.Position = 0;
+            string? raw = BinaryData.FromStream(stream).ToString();
+            Console.WriteLine("ead");
         }
     }
 }

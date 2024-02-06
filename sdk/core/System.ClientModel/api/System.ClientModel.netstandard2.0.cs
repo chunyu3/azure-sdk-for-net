@@ -6,6 +6,14 @@ namespace System.ClientModel
         Default = 0,
         NoThrow = 1,
     }
+    public partial class FormDataItem
+    {
+        public FormDataItem() { }
+        public System.BinaryData Content { get { throw null; } set { } }
+        public string ContentType { get { throw null; } set { } }
+        public string FileName { get { throw null; } set { } }
+        public string Name { get { throw null; } set { } }
+    }
     public partial class KeyCredential
     {
         public KeyCredential(string key) { }
@@ -18,6 +26,46 @@ namespace System.ClientModel
         protected MessageFailedException(System.ClientModel.Primitives.PipelineResponse response, string message, System.Exception? innerException) { }
         protected MessageFailedException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) { }
         public int Status { get { throw null; } }
+    }
+    public partial class Multipart : System.IDisposable
+    {
+        protected const string MultipartContentTypePrefix = "multipart/mixed; boundary=";
+        protected readonly string _boundary;
+        protected readonly string _subtype;
+        public Multipart() { }
+        public Multipart(string subtype) { }
+        public Multipart(string subtype, string boundary) { }
+        public Multipart(string subtype, string boundary, System.Collections.Generic.IReadOnlyList<System.ClientModel.MultipartContentPart> nestedContent) { }
+        public string Boundary { get { throw null; } }
+        public System.Collections.Generic.List<System.ClientModel.MultipartContentPart> ContentParts { get { throw null; } }
+        public string Subtype { get { throw null; } }
+        public virtual void Add(System.BinaryData content) { }
+        public virtual void Add(System.BinaryData content, System.Collections.Generic.Dictionary<string, string> headers) { }
+        public void Dispose() { }
+        public static System.ClientModel.Multipart Read(System.BinaryData data, string subType = "mixed", string boundary = null) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
+        public static System.Threading.Tasks.Task<System.ClientModel.Multipart> ReadAsync(System.BinaryData data, string subType = "mixed", string boundary = null) { throw null; }
+        public virtual System.BinaryData ToContent() { throw null; }
+        public virtual void WriteToStream(System.IO.Stream stream, ref string contentType) { }
+    }
+    public partial class MultipartContentPart
+    {
+        public readonly System.BinaryData Content;
+        public System.Collections.Generic.Dictionary<string, string> Headers;
+        public MultipartContentPart(System.BinaryData content, System.Collections.Generic.Dictionary<string, string> headers) { }
+    }
+    public partial class MultipartFormData : System.ClientModel.Multipart
+    {
+        public MultipartFormData() { }
+        public MultipartFormData(System.BinaryData data) { }
+        public MultipartFormData(string boundary) { }
+        public MultipartFormData(string boundary, System.Collections.Generic.IReadOnlyList<System.ClientModel.MultipartContentPart> nestedContent) { }
+        public void Add(System.BinaryData content, string name) { }
+        public void Add(System.BinaryData content, string name, System.Collections.Generic.Dictionary<string, string> headers) { }
+        public void Add(System.BinaryData content, string name, string fileName, System.Collections.Generic.Dictionary<string, string> headers) { }
+        public static System.ClientModel.MultipartFormData Create(System.BinaryData data, string boundary = null) { throw null; }
+        public System.Collections.Generic.IReadOnlyList<System.ClientModel.FormDataItem> ParseToFormData() { throw null; }
+        public System.ClientModel.Primitives.RequestBody ToRequestBody() { throw null; }
     }
     public partial class NullableResult<T> : System.ClientModel.Result
     {
@@ -157,6 +205,7 @@ namespace System.ClientModel.Internal
     [System.Runtime.InteropServices.StructLayoutAttribute(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public readonly partial struct OptionalProperty<T>
     {
+        [System.Diagnostics.DebuggerBrowsableAttribute(System.Diagnostics.DebuggerBrowsableState.Never)]
         private readonly T _Value_k__BackingField;
         private readonly int _dummyPrimitive;
         public OptionalProperty(T value) { throw null; }
@@ -168,8 +217,10 @@ namespace System.ClientModel.Internal
     public static partial class PipelineProtocolExtensions
     {
         public static System.ClientModel.NullableResult<bool> ProcessHeadAsBoolMessage(this System.ClientModel.Primitives.Pipeline.Pipeline<System.ClientModel.Primitives.PipelineMessage> pipeline, System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.TelemetrySource clientDiagnostics, System.ClientModel.RequestOptions? requestContext) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public static System.Threading.Tasks.ValueTask<System.ClientModel.NullableResult<bool>> ProcessHeadAsBoolMessageAsync(this System.ClientModel.Primitives.Pipeline.Pipeline<System.ClientModel.Primitives.PipelineMessage> pipeline, System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.TelemetrySource clientDiagnostics, System.ClientModel.RequestOptions? requestContext) { throw null; }
         public static System.ClientModel.Primitives.PipelineResponse ProcessMessage(this System.ClientModel.Primitives.Pipeline.Pipeline<System.ClientModel.Primitives.PipelineMessage> pipeline, System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.RequestOptions? requestContext, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public static System.Threading.Tasks.ValueTask<System.ClientModel.Primitives.PipelineResponse> ProcessMessageAsync(this System.ClientModel.Primitives.Pipeline.Pipeline<System.ClientModel.Primitives.PipelineMessage> pipeline, System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.RequestOptions? requestContext, System.Threading.CancellationToken cancellationToken = default(System.Threading.CancellationToken)) { throw null; }
     }
     public partial class RequestUri
@@ -225,6 +276,7 @@ namespace System.ClientModel.Internal
         protected virtual void Dispose(bool disposing) { }
         public override bool TryComputeLength(out long length) { throw null; }
         public override void WriteTo(System.IO.Stream stream, System.Threading.CancellationToken cancellation) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.Task WriteToAsync(System.IO.Stream stream, System.Threading.CancellationToken cancellation) { throw null; }
     }
 }
@@ -260,8 +312,11 @@ namespace System.ClientModel.Primitives
     public partial class ModelReaderWriterOptions
     {
         public ModelReaderWriterOptions(string format) { }
+        public ModelReaderWriterOptions(string format, bool isWire) { }
         public string Format { get { throw null; } }
+        public bool IsWire { get { throw null; } }
         public static System.ClientModel.Primitives.ModelReaderWriterOptions Json { get { throw null; } }
+        public static System.ClientModel.Primitives.ModelReaderWriterOptions MultipartFormData { get { throw null; } }
         public static System.ClientModel.Primitives.ModelReaderWriterOptions Xml { get { throw null; } }
     }
     [System.AttributeUsageAttribute(System.AttributeTargets.Class)]
@@ -312,6 +367,8 @@ namespace System.ClientModel.Primitives
     public abstract partial class RequestBody : System.IDisposable
     {
         protected RequestBody() { }
+        public string ContentType { get { throw null; } set { } }
+        public static System.ClientModel.Primitives.RequestBody CreateFromModel<T>(System.ClientModel.Primitives.IPersistableModel<T> model, System.ClientModel.Primitives.ModelReaderWriterOptions options) { throw null; }
         public static System.ClientModel.Primitives.RequestBody CreateFromStream(System.IO.Stream stream) { throw null; }
         public abstract void Dispose();
         public abstract bool TryComputeLength(out long length);
@@ -355,6 +412,7 @@ namespace System.ClientModel.Primitives.Pipeline
         protected virtual void OnReceivedResponse(System.ClientModel.Primitives.PipelineMessage message, System.Net.Http.HttpResponseMessage httpResponse, System.IO.Stream? contentStream) { }
         protected virtual void OnSendingRequest(System.ClientModel.Primitives.PipelineMessage message) { }
         public override void Process(System.ClientModel.Primitives.PipelineMessage message) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask ProcessAsync(System.ClientModel.Primitives.PipelineMessage message) { throw null; }
     }
     public partial class HttpPipelineRequest : System.ClientModel.Primitives.PipelineRequest, System.IDisposable
@@ -404,6 +462,7 @@ namespace System.ClientModel.Primitives.Pipeline
     {
         public KeyCredentialPolicy(System.ClientModel.KeyCredential credential, string name, string? prefix = null) { }
         public void Process(System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public System.Threading.Tasks.ValueTask ProcessAsync(System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { throw null; }
     }
     public partial class MessagePipeline : System.ClientModel.Primitives.Pipeline.Pipeline<System.ClientModel.Primitives.PipelineMessage>
@@ -413,6 +472,7 @@ namespace System.ClientModel.Primitives.Pipeline
         public static System.ClientModel.Primitives.Pipeline.MessagePipeline Create(System.ClientModel.RequestOptions options, System.ReadOnlySpan<System.ClientModel.Primitives.Pipeline.IPipelinePolicy<System.ClientModel.Primitives.PipelineMessage>> perCallPolicies, System.ReadOnlySpan<System.ClientModel.Primitives.Pipeline.IPipelinePolicy<System.ClientModel.Primitives.PipelineMessage>> perTryPolicies) { throw null; }
         public override System.ClientModel.Primitives.PipelineMessage CreateMessage(System.ClientModel.RequestOptions options, System.ClientModel.Primitives.ResponseErrorClassifier classifier) { throw null; }
         public override void Send(System.ClientModel.Primitives.PipelineMessage message) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public override System.Threading.Tasks.ValueTask SendAsync(System.ClientModel.Primitives.PipelineMessage message) { throw null; }
     }
     public abstract partial class PipelineTransport<TMessage> : System.ClientModel.Primitives.Pipeline.IPipelinePolicy<TMessage>
@@ -422,6 +482,7 @@ namespace System.ClientModel.Primitives.Pipeline
         public abstract void Process(TMessage message);
         public void Process(TMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { }
         public abstract System.Threading.Tasks.ValueTask ProcessAsync(TMessage message);
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public System.Threading.Tasks.ValueTask ProcessAsync(TMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { throw null; }
     }
     public abstract partial class Pipeline<TMessage>
@@ -436,6 +497,7 @@ namespace System.ClientModel.Primitives.Pipeline
         public ResponseBufferingPolicy(System.TimeSpan networkTimeout, bool bufferResponse) { }
         protected virtual bool BufferResponse(System.ClientModel.Primitives.PipelineMessage message) { throw null; }
         public void Process(System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { }
+        [System.Diagnostics.DebuggerStepThroughAttribute]
         public System.Threading.Tasks.ValueTask ProcessAsync(System.ClientModel.Primitives.PipelineMessage message, System.ClientModel.Primitives.Pipeline.IPipelineEnumerator pipeline) { throw null; }
         protected virtual void SetReadTimeoutStream(System.ClientModel.Primitives.PipelineMessage message, System.IO.Stream responseContentStream, System.TimeSpan networkTimeout) { }
         protected virtual bool TryGetNetworkTimeoutOverride(System.ClientModel.Primitives.PipelineMessage message, out System.TimeSpan timeout) { throw null; }

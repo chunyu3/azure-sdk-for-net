@@ -10,10 +10,10 @@ namespace System.ClientModel
     /// <summary>
     /// A content part of multipart content.
     /// </summary>
-    public class MultipartContentPart
+    public class MultipartModelContentPart
     {
         /// <summary> The request content of this part. </summary>
-        public readonly BinaryData Content;
+        public readonly object Content;
         /// <summary> The headers of this content part. </summary>
         public Dictionary<string, string> Headers;
 
@@ -22,7 +22,7 @@ namespace System.ClientModel
         ///  </summary>
         ///  <param name="content">The request content.</param>
         /// <param name="headers">The headers of this content part.</param>
-        public MultipartContentPart(BinaryData content, Dictionary<string, string> headers)
+        public MultipartModelContentPart(object content, Dictionary<string, string> headers)
         {
             Content = content;
             Headers = headers;
