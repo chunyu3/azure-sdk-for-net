@@ -3,6 +3,7 @@
 
 using System;
 using System.Buffers;
+using System.ClientModel.Primitives;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
@@ -19,6 +20,10 @@ namespace Azure.Core
     /// </summary>
     public abstract class RequestContent : IDisposable
     {
+        /// <summary>
+        /// The content type of the content.
+        /// </summary>
+        public string ContentType { get; set; } = "application/octet-stream";
         internal const string SerializationRequiresUnreferencedCode = "This method uses reflection-based serialization which is incompatible with trimming. Try using one of the 'Create' overloads that doesn't wrap a serialized version of an object.";
         private static readonly Encoding s_UTF8NoBomEncoding = new UTF8Encoding(false);
 
@@ -119,6 +124,16 @@ namespace Azure.Core
             JsonSerializerOptions serializerOptions = DynamicDataOptions.ToSerializerOptions(options);
             ObjectSerializer serializer = new JsonObjectSerializer(serializerOptions);
             return Create(serializer.Serialize(serializable));
+        }
+        /// <summary>
+        /// Creates an instance of <see cref="RequestContent"/> that wraps a serialized version of an object.
+        /// </summary>
+        /// <param name="model">The model to serialize.</param>
+        /// <param name="options">The format to use for property names in the serialized content.</param>
+        /// <returns>An instance of <see cref="RequestContent"/> that wraps a serialized version of the model.</returns>
+        public static RequestContent Create<T>(IPersistableModel<T> model, ModelReaderWriterOptions options)
+        {
+            return new ModelReadWriteRequestContent<T>(model, options);
         }
 
         /// <summary>
@@ -345,6 +360,45 @@ namespace Azure.Core
                 _data.WriteTo(stream);
                 return Task.CompletedTask;
             }
+        }
+        private sealed class ModelReadWriteRequestContent<T> : RequestContent
+        {
+            private BinaryData? _data;
+            public BinaryData Data => _data ??= GetData();
+
+            private IPersistableModel<T> _model;
+            private ModelReaderWriterOptions _options;
+
+            public ModelReadWriteRequestContent(IPersistableModel<T> model, ModelReaderWriterOptions options)
+            {
+                _model = model;
+                _options = options;
+                ContentType = Data.MediaType ?? "application/json";
+            }
+            private BinaryData GetData()
+            {
+                BinaryData data = ModelReaderWriter.Write(_model, _options); // will call the write function in serialization file
+                ContentType = data.MediaType ?? "application/json";
+                return data;
+            }
+
+            public override void WriteTo(Stream stream, CancellationToken cancellation)
+            {
+                byte[] buffer = Data.ToArray();
+                stream.Write(buffer, 0, buffer.Length);
+            }
+
+            public override bool TryComputeLength(out long length)
+            {
+                length = Data.ToArray().Length;
+                return true;
+            }
+
+            public override async Task WriteToAsync(Stream stream, CancellationToken cancellation)
+            {
+                await stream.WriteAsync(Data.ToMemory(), cancellation).ConfigureAwait(false);
+            }
+            public override void Dispose() { }
         }
     }
 }
