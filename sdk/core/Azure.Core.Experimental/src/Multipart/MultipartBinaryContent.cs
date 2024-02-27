@@ -13,7 +13,7 @@ namespace System.ClientModel.Primitives
     /// <summary>
     /// A body piece of multipart content.
     /// </summary>
-    public class MutlipartBinaryContent: BinaryContent
+    public class MultipartBinaryContent: BinaryContent
     {
         private const string CrLf = "\r\n";
         private const int BufferSize = 1024;
@@ -25,11 +25,11 @@ namespace System.ClientModel.Primitives
         public string ContentType { get; set; } = "application/json";
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="MutlipartBinaryContent"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartBinaryContent"/> class.
         ///  </summary>
         ///  <param name="content">The content of the body part.</param>
         /// <param name="headers">The headers of this body part.</param>
-        public MutlipartBinaryContent(BinaryContent content, IDictionary<string, string>? headers = null)
+        public MultipartBinaryContent(BinaryContent content, IDictionary<string, string>? headers = null)
         {
             Content = content;
             Headers = headers ?? new Dictionary<string, string>();
@@ -40,10 +40,14 @@ namespace System.ClientModel.Primitives
         /// </summary>
         /// <param name="stream">The stream to write to.</param>
         /// <param name="cancellationToken">To cancellation token to use.</param>
-        public override async Task WriteToAsync(Stream stream, CancellationToken cancellationToken)
+        public override async Task WriteToAsync(Stream stream, CancellationToken cancellationToken = default)
         {
             await WriteHeadersToStreamAsync(stream, cancellationToken).ConfigureAwait(false);
             await Content.WriteToAsync(stream, cancellationToken).ConfigureAwait(false);
+            /*
+            byte[] crlf = Encoding.UTF8.GetBytes(CrLf);
+            await stream.WriteAsync(crlf, 0, crlf.Length, cancellationToken).ConfigureAwait(false);
+            */
         }
 
         /// <summary>
@@ -51,10 +55,14 @@ namespace System.ClientModel.Primitives
         /// </summary>
         /// <param name="stream">The stream to write to.</param>
         /// <param name="cancellationToken">To cancellation token to use.</param>
-        public override void WriteTo(Stream stream, CancellationToken cancellationToken)
+        public override void WriteTo(Stream stream, CancellationToken cancellationToken = default)
         {
             WriteHeadersToStream(stream);
             Content.WriteTo(stream, cancellationToken);
+            /*
+            byte[] crlf = Encoding.UTF8.GetBytes(CrLf);
+            stream.Write(crlf, 0, crlf.Length);
+            */
         }
         /// <summary>
         /// Attempts to compute the length of the underlying body content, if available.

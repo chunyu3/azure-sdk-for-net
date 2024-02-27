@@ -40,20 +40,20 @@ namespace System.ClientModel.Primitives
         /// </summary>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
         /// <param name="nestedContent">The list of content parts.</param>
-        public MultipartFormData(string boundary, IReadOnlyList<MutlipartBinaryContent> nestedContent) : base(FormData, boundary, nestedContent)
+        public MultipartFormData(string boundary, IReadOnlyList<MultipartBinaryContent> nestedContent) : base(FormData, boundary, nestedContent)
         { }
         #endregion Construction
         /// <summary>
         ///  Add a content part.
         /// </summary>
         /// <param name="part">The Request content to add to the collection.</param>
-        public override void Add(MutlipartBinaryContent part) => AddInternal(part, null, null);
+        public override void Add(MultipartBinaryContent part) => AddInternal(part, null, null);
         /// <summary>
         ///  Add a content part.
         /// </summary>
         /// <param name="part">The Request content to add to the collection.</param>
         /// <param name="name">The name for the request content to add.</param>
-        public void Add(MutlipartBinaryContent part, string name) => AddInternal(part, name, null);
+        public void Add(MultipartBinaryContent part, string name) => AddInternal(part, name, null);
 
         /// <summary>
         ///  Add a content part.
@@ -61,7 +61,7 @@ namespace System.ClientModel.Primitives
         /// <param name="part">The Request content to add to the collection.</param>
         /// <param name="name">The name for the request content to add.</param>
         /// <param name="fileName">The file name for the request content to add to the collection.</param>
-        public void Add(MutlipartBinaryContent part, string name, string fileName)
+        public void Add(MultipartBinaryContent part, string name, string fileName)
         {
             AddInternal(part, name, fileName);
         }
@@ -140,7 +140,7 @@ namespace System.ClientModel.Primitives
             }
             return new MultipartFormData(boundary, Read(data, FormData, boundary));
         }
-        private void AddInternal(MutlipartBinaryContent part, string name, string fileName)
+        private void AddInternal(MultipartBinaryContent part, string name, string fileName)
         {
             if (!part.Headers.ContainsKey("Content-Disposition"))
             {
