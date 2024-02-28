@@ -1,9 +1,10 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
+using System.ClientModel;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -12,62 +13,61 @@ using System.Threading;
 using System.Threading.Tasks;
 
 #nullable disable
-namespace System.ClientModel.Primitives
+namespace Azure.Core
 {
     /// <summary>
-    /// A Content in multipart format.
+    ///  Provides a container for content encoded using multipart/form-data MIME type.
     /// </summary>
-    public abstract class Multipart : BinaryContent, IDisposable
+    public class MultipartRequestContent: RequestContent
     {
         private const string CrLf = "\r\n";
         private const string ColonSP = ": ";
-        private const int BufferSize = 1024;
 
         private protected static readonly int s_crlfLength = GetEncodedLength(CrLf);
         private protected static readonly int s_dashDashLength = GetEncodedLength("--");
         private protected static readonly int s_colonSpaceLength = GetEncodedLength(ColonSP);
-        private protected readonly List<MultipartBinaryContent> _nestedContent;
+        private protected readonly List<MultipartContent> _nestedContent;
         private protected readonly string _subtype;
         private protected readonly string _boundary;
         internal readonly Dictionary<string, string> _headers;
-        /// <summary> Gets the MIME type of this data. </summary>
+        /// <summary> Gets the MIME type of this content. </summary>
         public readonly string ContentType;
 
         /// <summary> The list of request content parts. </summary>
-        public List<MultipartBinaryContent> ContentParts => _nestedContent;
+        public List<MultipartContent> ContentParts => _nestedContent;
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="Multipart"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartBinaryContent"/> class.
         ///  </summary>
-        public Multipart()
+        public MultipartRequestContent()
             : this("mixed", GetDefaultBoundary())
         {
         }
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="Multipart"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartBinaryContent"/> class.
         /// </summary>
         /// <param name="subtype">The multipart sub type.</param>
-        public Multipart(string subtype)
+        public MultipartRequestContent(string subtype)
             : this(subtype, GetDefaultBoundary())
         {
         }
         /// <summary>
-        ///  Initializes a new instance of the <see cref="Multipart"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartContent"/> class.
         /// </summary>
         /// <param name="subtype">The multipart sub type.</param>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
-        public Multipart(string subtype, string boundary) : this(subtype, boundary, new List<MultipartBinaryContent>())
+        public MultipartRequestContent(string subtype, string boundary) : this(subtype, boundary, new List<MultipartContent>())
         {
         }
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="Multipart"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartBinaryContent"/> class.
         /// </summary>
         /// <param name="subtype">The multipart sub type.</param>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
         /// <param name="nestedContent">The list of content parts.</param>
-        internal Multipart(string subtype, string boundary, IReadOnlyList<MultipartBinaryContent> nestedContent)
+        internal MultipartRequestContent(string subtype, string boundary, IReadOnlyList<MultipartContent> nestedContent)
         {
             ValidateBoundary(boundary);
             _subtype = subtype;
@@ -79,7 +79,7 @@ namespace System.ClientModel.Primitives
                 ["Content-Type"] = $"multipart/{_subtype}; boundary={_boundary}"
             };
             ContentType = $"multipart/{_subtype}; boundary={_boundary}";
-            _nestedContent = nestedContent.ToList<MultipartBinaryContent>();
+            _nestedContent = nestedContent.ToList<MultipartContent>();
         }
 
         private static string GetDefaultBoundary()
@@ -134,14 +134,46 @@ namespace System.ClientModel.Primitives
             }
         }
         /// <summary>
-        ///  Add a content part.
+        ///  Add HTTP content to a collection of RequestContent objects that
+        ///  get serialized to multipart/form-data MIME type.
         /// </summary>
-        /// <param name="part">The Request content to add to the collection.</param>
-        public virtual void Add(MultipartBinaryContent part)
+        /// <param name="content">The Request content to add to the collection.</param>
+        public virtual void Add(MultipartContent content)
         {
-            _nestedContent.Add(part);
+            _nestedContent.Add(content);
         }
 
+        /// <summary>
+        /// Writes contents of this object to an instance of <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to write to.</param>
+        /// <param name="cancellationToken">To cancellation token to use.</param>
+        public override async Task WriteToAsync(Stream stream, CancellationToken cancellationToken)
+        {
+            await WriteToStreamAsync(stream, cancellationToken).ConfigureAwait(false);
+        }
+        /// <summary>
+        /// Writes contents of this object to an instance of <see cref="Stream"/>.
+        /// </summary>
+        /// <param name="stream">The stream to write to.</param>
+        /// <param name="cancellationToken">To cancellation token to use.</param>
+        public override void WriteTo(Stream stream, CancellationToken cancellationToken)
+        {
+            WriteToStream(stream, cancellationToken);
+        }
+        /// <summary>
+        /// Attempts to compute the length of the underlying body content, if available.
+        /// </summary>
+        /// <param name="length">The length of the underlying data.</param>
+        public override bool TryComputeLength(out long length)
+        {
+            length = 0;
+            return false;
+        }
+        /// <inheritdoc/>
+        public override void Dispose()
+        {
+        }
         /// <summary>
         ///  Combine all the parts to BinaryData Content.
         /// </summary>
@@ -163,35 +195,9 @@ namespace System.ClientModel.Primitives
                 var output = new StringBuilder();
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
-                    if (contentIndex != 0) EncodeStringToStream(stream, CrLf + "--" + _boundary + CrLf);
+                    if (contentIndex != 0)
+                        EncodeStringToStream(stream, CrLf + "--" + _boundary + CrLf);
                     // Write divider, headers, and content.
-                    //object content = _nestedContent[contentIndex].Content;
-                    /*
-                    IDictionary<string, string> headers = _nestedContent[contentIndex].Headers;
-                    EncodeStringToStream(stream, SerializeHeadersToString(output, contentIndex, headers));
-                    byte[] buffer;
-                    switch (content)
-                    {
-                        case BinaryData b:
-                            buffer = b.ToArray();
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case string str:
-                            buffer = Encoding.UTF8.GetBytes(str);
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case byte[] bytes:
-                            buffer = bytes;
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case Int32 int32Data:
-                            buffer = BitConverter.GetBytes(int32Data);
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        default:
-                            throw new InvalidOperationException("Unsupported content type");
-                    }
-                    */
                     _nestedContent[contentIndex].WriteTo(stream);
                 }
 
@@ -227,52 +233,9 @@ namespace System.ClientModel.Primitives
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    //BinaryData content = _nestedContent[contentIndex].Content;
-                    IDictionary<string, string> headers = _nestedContent[contentIndex].Headers;
-                    //EncodeStringToStream(stream, SerializeHeadersToString(output, contentIndex, headers));
+                    if (contentIndex != 0)
+                        EncodeStringToStream(stream, CrLf + "--" + _boundary + CrLf);
                     _nestedContent[contentIndex].WriteTo(stream, cancellationToken);
-                    //(_nestedContent[contentIndex] as IPersistableStreamModel<MutlipartBinaryContent>).Write(stream, ModelReaderWriterOptions.MultipartFormData);
-                    /*
-                    byte[] buffer;
-                    switch (_nestedContent[contentIndex].Content)
-                    {
-                        case BinaryData binaryData:
-                            buffer = binaryData.ToArray();
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case string str:
-                            buffer = Encoding.UTF8.GetBytes(str);
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case byte[] bytes:
-                            buffer = bytes;
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case Int32 int32Data:
-                            buffer = BitConverter.GetBytes(int32Data);
-                            stream.Write(buffer, 0, buffer.Length);
-                            break;
-                        case Stream streamData:
-                            buffer = new byte[BufferSize];
-                            int numBytesToRead = BufferSize;
-                            long numBytesRemaining = streamData.Length;
-                            while (numBytesRemaining > 0)
-                            {
-                                // Read may return anything from 0 to numBytesToRead.
-                                int n = streamData.Read(buffer, 0, numBytesToRead);
-
-                                // Break when the end of the file is reached.
-                                if (n == 0)
-                                    break;
-
-                                numBytesRemaining -= n;
-                                stream.Write(buffer, 0, n);
-                            }
-                            break;
-                        default:
-                            throw new InvalidOperationException("Unsupported content type");
-                    }
-                    */
                 }
 
                 // Write footer boundary.
@@ -311,8 +274,8 @@ namespace System.ClientModel.Primitives
                 for (int contentIndex = 0; contentIndex < _nestedContent.Count; contentIndex++)
                 {
                     // Write divider, headers, and content.
-                    IDictionary<string, string> headers = _nestedContent[contentIndex].Headers;
-                    await EncodeStringToStreamAsync(stream, SerializeHeadersToString(output, contentIndex, headers), cancellationToken).ConfigureAwait(false);
+                    if (contentIndex != 0)
+                        await EncodeStringToStreamAsync(stream, CrLf + "--" + _boundary + CrLf, cancellationToken).ConfigureAwait(false);
                     await _nestedContent[contentIndex].WriteToAsync(stream, cancellationToken).ConfigureAwait(false);
                 }
 
@@ -324,7 +287,7 @@ namespace System.ClientModel.Primitives
                 throw;
             }
         }
-        private static async Task<IReadOnlyList<MultipartBinaryContent>> ReadAsync(Stream stream, string subType, string boundary)
+        private static async Task<IReadOnlyList<MultipartContent>> ReadAsync(Stream stream, string subType, string boundary)
         {
             if (stream == null)
             {
@@ -335,8 +298,7 @@ namespace System.ClientModel.Primitives
                 throw new ArgumentException("Empty data", nameof(stream));
             }
             // Read the content into a stream.
-            List<MultipartBinaryContent> parts = new List<MultipartBinaryContent>();
-            //Stream content = data.ToStream();
+            List<MultipartContent> parts = new List<MultipartContent>();
             CancellationToken cancellationToken = new CancellationToken();
             bool expectBoundariesWithCRLF = false;
             MultipartReader reader = new MultipartReader(boundary, stream) { ExpectBoundariesWithCRLF = expectBoundariesWithCRLF };
@@ -346,7 +308,7 @@ namespace System.ClientModel.Primitives
             {
                 if (section.Headers != null && section.Headers.TryGetValue("Content-Type", out string[] contentTypeValues) &&
                         contentTypeValues.Length == 1 &&
-                        GetBoundary(contentTypeValues[0], out string nestedSubType, out string subBoundary))
+                        GetBoundary(contentTypeValues[0], out _, out string subBoundary))
                 {
                     // ExpectBoundariesWithCRLF should always be true for the Body.
                     reader = new MultipartReader(subBoundary, section.Body) { ExpectBoundariesWithCRLF = true };
@@ -360,11 +322,11 @@ namespace System.ClientModel.Primitives
                         headers.Add(header.Key, string.Join(";", header.Value));
                     }
                 }
-                parts.Add(new MultipartBinaryContent(BinaryContent.Create(BinaryData.FromStream(section.Body)), headers));
+                parts.Add(new MultipartContent(BinaryContent.Create(BinaryData.FromStream(section.Body)), headers));
             }
             return parts;
         }
-        private protected static IReadOnlyList<MultipartBinaryContent> Read(Stream stream, string subType, string boundary)
+        private protected static IReadOnlyList<MultipartContent> Read(Stream stream, string subType, string boundary)
         {
             if (stream == null)
             {
@@ -375,7 +337,7 @@ namespace System.ClientModel.Primitives
                 throw new ArgumentException("Empty data", nameof(stream));
             }
             // Read the content into a stream.
-            List<MultipartBinaryContent> parts = new List<MultipartBinaryContent>();
+            List<MultipartContent> parts = new List<MultipartContent>();
             bool expectBoundariesWithCRLF = false;
             MultipartReader reader = new MultipartReader(boundary, stream) { ExpectBoundariesWithCRLF = expectBoundariesWithCRLF };
             for (MultipartSection section = reader.ReadNextSection();
@@ -384,7 +346,7 @@ namespace System.ClientModel.Primitives
             {
                 if (section.Headers != null && section.Headers.TryGetValue("Content-Type", out string[] contentTypeValues) &&
                         contentTypeValues.Length == 1 &&
-                        GetBoundary(contentTypeValues[0], out string nestedSubType, out string subBoundary))
+                        GetBoundary(contentTypeValues[0], out _, out string subBoundary))
                 {
                     // ExpectBoundariesWithCRLF should always be true for the Body.
                     reader = new MultipartReader(subBoundary, section.Body) { ExpectBoundariesWithCRLF = true };
@@ -398,7 +360,7 @@ namespace System.ClientModel.Primitives
                         headers.Add(header.Key, string.Join(";", header.Value));
                     }
                 }
-                parts.Add(new MultipartBinaryContent(BinaryContent.Create(BinaryData.FromStream(section.Body)), headers));
+                parts.Add(new MultipartContent(BinaryContent.Create(BinaryData.FromStream(section.Body)), headers));
             }
             return parts;
         }
@@ -406,7 +368,7 @@ namespace System.ClientModel.Primitives
         ///  Read the content from BinaryData and parse it.
         ///  each part of BinaryData separted by boundary will be parsed as one MultipartContentPart.
         /// </summary>
-        private static async Task<IReadOnlyList<MultipartBinaryContent>> ReadAsync(BinaryData data, string subType, string boundary)
+        private static async Task<IReadOnlyList<MultipartContent>> ReadAsync(BinaryData data, string subType, string boundary)
         {
             if (data == null)
             {
@@ -437,7 +399,7 @@ namespace System.ClientModel.Primitives
             return await ReadAsync(data.ToStream(), subType, boundary).ConfigureAwait(false);
         }
 
-        private protected static IReadOnlyList<MultipartBinaryContent> Read(BinaryData data, string subType, string boundary)
+        private protected static IReadOnlyList<MultipartContent> Read(BinaryData data, string subType, string boundary)
         {
             if (data == null)
             {
@@ -470,7 +432,7 @@ namespace System.ClientModel.Primitives
 
         private void AddInternal(BinaryContent content, Dictionary<string, string> headers)
         {
-            var part = new MultipartBinaryContent(content, headers);
+            var part = new MultipartContent(content, headers);
             _nestedContent.Add(part);
         }
         private string SerializeHeadersToString(StringBuilder scratch, int contentIndex, IDictionary<string, string> headers)
@@ -520,14 +482,14 @@ namespace System.ClientModel.Primitives
         {
             string regex = @"^multipart/(?<subType>.*); boundary=(?<boundary>.*)";
             var matchs = Regex.Matches(contentType, regex);
-            if (matchs.Count == 0)
+            if (matchs == null || matchs?.Count == 0)
             {
                 subType = null;
                 boundary = null;
                 return false;
             }
-            subType = matchs[0].Groups["subType"].Value;
-            boundary = matchs[0].Groups["boundary"].Value;
+            subType = matchs?[0].Groups["subType"].Value;
+            boundary = matchs?[0].Groups["boundary"].Value;
             return true;
         }
     }
