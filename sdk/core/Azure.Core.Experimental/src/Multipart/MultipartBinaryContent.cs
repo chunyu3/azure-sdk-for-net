@@ -257,11 +257,9 @@ namespace System.ClientModel.Primitives
         ///
         /// </summary>
         /// <param name="stream"></param>
-        /// <param name="cancellation"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private protected Task WriteToStreamAsync(Stream stream, CancellationToken cancellation) =>
-            SerializeToStreamAsync(stream, cancellation);
-        private async Task SerializeToStreamAsync(Stream stream, CancellationToken cancellationToken)
+        private protected async Task WriteToStreamAsync(Stream stream, CancellationToken cancellationToken)
         {
             try
             {

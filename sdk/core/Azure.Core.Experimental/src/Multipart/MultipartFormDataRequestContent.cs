@@ -41,6 +41,21 @@ namespace Azure.Core
         { }
         #endregion Construction
         /// <summary>
+        /// Creates an instance of <see cref="MultipartFormDataRequestContent"/> that wraps a <see cref="BinaryData"/>.
+        /// </summary>
+        /// <param name="content">The <see cref="BinaryData"/> to use.</param>
+        /// <param name="contentType">The content type of the data.</param>
+        /// <returns>An instance of <see cref="MultipartFormDataRequestContent"/> that wraps a <see cref="BinaryData"/>.</returns>
+        public static MultipartFormDataRequestContent Create(BinaryData content, string contentType)
+        {
+            if (!GetBoundary(contentType, out string subType, out string boundary) ||
+                !subType.Equals(FormData))
+            {
+                throw new ArgumentException("invalid content type.", nameof(contentType));
+            }
+            return new MultipartFormDataRequestContent(boundary, Read(content, FormData, boundary));
+        }
+        /// <summary>
         ///  Add a content part.
         /// </summary>
         /// <param name="part">The Request content to add to the collection.</param>
