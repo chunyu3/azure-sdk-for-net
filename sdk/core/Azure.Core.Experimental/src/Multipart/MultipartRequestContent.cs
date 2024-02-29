@@ -366,7 +366,7 @@ namespace Azure.Core
         }
         /// <summary>
         ///  Read the content from BinaryData and parse it.
-        ///  each part of BinaryData separted by boundary will be parsed as one MultipartContentPart.
+        ///  each part of BinaryData separted by boundary will be parsed as one MultipartContent.
         /// </summary>
         private static async Task<IReadOnlyList<MultipartContent>> ReadAsync(BinaryData data, string subType, string boundary)
         {
@@ -434,34 +434,6 @@ namespace Azure.Core
         {
             var part = new MultipartContent(content, headers);
             _nestedContent.Add(part);
-        }
-        private string SerializeHeadersToString(StringBuilder scratch, int contentIndex, IDictionary<string, string> headers)
-        {
-            scratch.Clear();
-            // Add divider.
-            if (contentIndex != 0) // Write divider for all but the first content.
-            {
-                scratch.Append(CrLf + "--"); // const strings
-                scratch.Append(_boundary);
-                scratch.Append(CrLf);
-            }
-
-            // Add headers.
-            if (headers != null)
-            {
-                foreach (KeyValuePair<string, string> header in headers)
-                {
-                    scratch.Append(header.Key);
-                    scratch.Append(": ");
-                    scratch.Append(header.Value);
-                    scratch.Append(CrLf);
-                }
-            }
-
-            // Extra CRLF to end headers (even if there are no headers).
-            scratch.Append(CrLf);
-
-            return scratch.ToString();
         }
 
         private static Task EncodeStringToStreamAsync(Stream stream, string input, CancellationToken cancellationToken)
