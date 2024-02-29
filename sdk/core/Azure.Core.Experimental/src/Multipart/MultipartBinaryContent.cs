@@ -29,7 +29,7 @@ namespace System.ClientModel.Primitives
         private protected readonly string _subtype;
         private protected readonly string _boundary;
         internal readonly Dictionary<string, string> _headers;
-        /// <summary> Gets the MIME type of the content. </summary>
+        /// <summary> The MIME type of the content. </summary>
         public readonly string ContentType;
 
         /// <summary> The list of request content parts. </summary>
