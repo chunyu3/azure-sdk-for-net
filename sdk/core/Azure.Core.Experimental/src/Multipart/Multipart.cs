@@ -137,9 +137,24 @@ namespace System.ClientModel.Primitives
         ///  get serialized to multipart/form-data MIME type.
         /// </summary>
         /// <param name="content">The Request content to add to the collection.</param>
-        public virtual void Add(MultipartContent content)
+        public virtual void Add(BinaryContent content)
         {
-            _nestedContent.Add(content);
+            AddInternal(content, null);
+        }
+        /// <summary>
+        ///  Add HTTP content to a collection of BinaryContent objects that
+        ///  get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The Request content to add to the collection.</param>
+        /// <param name="headers">The headers to add to the collection</param>
+        public virtual void Add(BinaryContent content, Dictionary<string, string> headers)
+        {
+            AddInternal(content, headers);
+        }
+        private void AddInternal(BinaryContent content, Dictionary<string, string> headers)
+        {
+            var part = new MultipartContent(content, headers);
+            _nestedContent.Add(part);
         }
 
         /// <summary>

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Azure.Core;
 
+#nullable disable
 namespace System.ClientModel.Primitives
 {
     /// <summary>
@@ -58,28 +59,55 @@ namespace System.ClientModel.Primitives
         /// <summary>
         ///  Add a content part.
         /// </summary>
-        /// <param name="part">The Request content to add to the collection.</param>
-        public override void Add(MultipartContent part) => AddInternal(part, null, null);
+        /// <param name="content">The Request content to add to the collection.</param>
+        public override void Add(BinaryContent content) => AddInternal(content, null, null, null);
         /// <summary>
         ///  Add a content part.
         /// </summary>
-        /// <param name="part">The Request content to add to the collection.</param>
+        /// <param name="content">The Request content to add to the collection.</param>
         /// <param name="name">The name for the request content to add.</param>
-        public void Add(MultipartContent part, string name) => AddInternal(part, name, null);
-
+        public void Add(BinaryContent content, string name) => AddInternal(content, null, name, null);
         /// <summary>
         ///  Add a content part.
         /// </summary>
-        /// <param name="part">The Request content to add to the collection.</param>
+        /// <param name="content">The Request content to add to the collection.</param>
         /// <param name="name">The name for the request content to add.</param>
         /// <param name="fileName">The file name for the request content to add to the collection.</param>
-        public void Add(MultipartContent part, string name, string fileName)
+        public void Add(BinaryContent content, string name, string fileName) => AddInternal(content, null, name, fileName);
+        /// <summary>
+        ///  Add a content part.
+        /// </summary>
+        /// <param name="content">The Request content to add to the collection.</param>
+        /// <param name="headers">The headers for the request content to add to the collection.</param>
+        public override void Add(BinaryContent content, Dictionary<string, string> headers) => AddInternal(content, headers, null, null);
+        /// <summary>
+        ///  Add a content part.
+        /// </summary>
+        /// <param name="content">The Request content to add to the collection.</param>
+        /// <param name="headers">The headers for the request content to add to the collection.</param>
+        /// <param name="name">The name for the request content to add.</param>
+        public void Add(BinaryContent content, Dictionary<string, string> headers, string name)
         {
-            AddInternal(part, name, fileName);
+            AddInternal(content, headers, name, null);
         }
-        private void AddInternal(MultipartContent part, string? name, string? fileName)
+        /// <summary>
+        ///  Add a content part.
+        /// </summary>
+        /// <param name="content">The Request content to add to the collection.</param>
+        /// <param name="headers">The headers for the request content to add to the collection.</param>
+        /// <param name="name">The name for the request content to add.</param>
+        /// <param name="fileName">The file name for the request content to add to the collection.</param>
+        public void Add(BinaryContent content, Dictionary<string, string> headers, string name, string fileName)
         {
-            if (!part.Headers.ContainsKey("Content-Disposition"))
+            AddInternal(content, headers, name, fileName);
+        }
+        private void AddInternal(BinaryContent content, Dictionary<string, string> headers, string name, string fileName)
+        {
+            if (headers == null)
+            {
+                headers = new Dictionary<string, string>();
+            }
+            if (!headers.ContainsKey("Content-Disposition"))
             {
                 var value = FormData;
 
@@ -92,17 +120,9 @@ namespace System.ClientModel.Primitives
                     value = value + "; filename=" + fileName;
                 }
 
-                part.Headers.Add("Content-Disposition", value);
+                headers.Add("Content-Disposition", value);
             }
-            if (!part.Headers.ContainsKey("Content-Type"))
-            {
-                var value = part.ContentType;
-                if (value != null)
-                {
-                    part.Headers.Add("Content-Type", value);
-                }
-            }
-            base.Add(part);
+            base.Add(content, headers);
         }
 
         /// <summary>
