@@ -143,24 +143,6 @@ namespace System.ClientModel.Primitives
         }
 
         /// <summary>
-        /// Writes contents of this object to an instance of <see cref="Stream"/>.
-        /// </summary>
-        /// <param name="stream">The stream to write to.</param>
-        /// <param name="cancellationToken">To cancellation token to use.</param>
-        internal async Task WriteToAsync(Stream stream, CancellationToken cancellationToken)
-        {
-            await WriteToStreamAsync(stream, cancellationToken).ConfigureAwait(false);
-        }
-        /// <summary>
-        /// Writes contents of this object to an instance of <see cref="Stream"/>.
-        /// </summary>
-        /// <param name="stream">The stream to write to.</param>
-        /// <param name="cancellationToken">To cancellation token to use.</param>
-        internal void WriteTo(Stream stream, CancellationToken cancellationToken)
-        {
-            WriteToStream(stream, cancellationToken);
-        }
-        /// <summary>
         /// Attempts to compute the length of the underlying body content, if available.
         /// </summary>
         /// <param name="length">The length of the underlying data.</param>
@@ -220,7 +202,7 @@ namespace System.ClientModel.Primitives
             }
         }
 
-        private protected void WriteToStream(Stream stream, CancellationToken cancellationToken)
+        internal void WriteTo(Stream stream, CancellationToken cancellationToken)
         {
             try
             {
@@ -259,7 +241,7 @@ namespace System.ClientModel.Primitives
         /// <param name="stream"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private protected async Task WriteToStreamAsync(Stream stream, CancellationToken cancellationToken)
+        internal async Task WriteToAsync(Stream stream, CancellationToken cancellationToken)
         {
             try
             {
