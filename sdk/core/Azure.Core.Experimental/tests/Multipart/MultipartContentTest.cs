@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core;
 using NUnit.Framework;
 
 namespace System.ClientModel.Tests.Multipart
@@ -31,9 +33,14 @@ namespace System.ClientModel.Tests.Multipart
         public void TestToContent()
         {
             MultipartFormData content = new MultipartFormData();
-            content.Add(new MultipartBinaryContent(BinaryContent.Create(BinaryData.FromString("part1"))), "part1");
-            content.Add(new MultipartBinaryContent(BinaryContent.Create(BinaryData.FromString("part2"))), "part2");
-            var binaryData = ModelReaderWriter.Write(content, ModelReaderWriterOptions.MultipartFormData);
+            content.Add(new Primitives.MultipartContent(BinaryContent.Create(BinaryData.FromString("part1"))), "part1");
+            content.Add(new Primitives.MultipartContent(BinaryContent.Create(BinaryData.FromString("part2"))), "part2");
+            //content.Add(new Primitives.MultipartContent(BinaryContent.Create(BinaryData.FromObjectAsJson<Address>(ModelReaderWriter))), "part2");
+            ///var binaryData = ModelReaderWriter.Write(content, ModelReaderWriterOptions.MultipartFormData);
+            using MemoryStream stream = new MemoryStream();
+            content.WriteTo(stream, CancellationToken.None);
+            stream.Position = 0;
+            var binaryData = BinaryData.FromStream(stream);
             string raw = binaryData.ToString();
             Console.WriteLine(binaryData.ToString());
         }

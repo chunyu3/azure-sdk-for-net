@@ -5,13 +5,14 @@ using System;
 using System.ClientModel;
 using System.Collections.Generic;
 using System.Text;
+using Azure.Core;
 
 namespace System.ClientModel.Primitives
 {
     /// <summary>
     /// A request content in multipart/form-data format.
     /// </summary>
-    public class MultipartFormDataBinaryContent: MultipartBinaryContent
+    public class MultipartFormData : Multipart
     {
         #region Fields
 
@@ -21,38 +22,38 @@ namespace System.ClientModel.Primitives
 
         #region Construction
         /// <summary>
-        ///  Initializes a new instance of the <see cref="MultipartFormDataBinaryContent"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartFormData"/> class.
         /// </summary>
-        public MultipartFormDataBinaryContent() : base(FormData)
+        public MultipartFormData() : base(FormData)
         { }
         /// <summary>
-        ///  Initializes a new instance of the <see cref="MultipartFormDataBinaryContent"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartFormData"/> class.
         /// </summary>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
-        public MultipartFormDataBinaryContent(string boundary) : base(FormData, boundary)
+        public MultipartFormData(string boundary) : base(FormData, boundary)
         { }
         /// <summary>
-        ///  Initializes a new instance of the <see cref="MultipartFormDataBinaryContent"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartFormData"/> class.
         /// </summary>
         /// <param name="boundary">The boundary string for the multipart form data content.</param>
         /// <param name="nestedContent">The list of content parts.</param>
-        public MultipartFormDataBinaryContent(string boundary, IReadOnlyList<MultipartContent> nestedContent) : base(FormData, boundary, nestedContent)
+        public MultipartFormData(string boundary, IReadOnlyList<MultipartContent> nestedContent) : base(FormData, boundary, nestedContent)
         { }
         #endregion Construction
         /// <summary>
-        /// Creates an instance of <see cref="MultipartFormDataBinaryContent"/> that wraps a <see cref="BinaryData"/>.
+        /// Creates an instance of <see cref="MultipartFormData"/> that wraps a <see cref="BinaryData"/>.
         /// </summary>
         /// <param name="content">The <see cref="BinaryData"/> to use.</param>
         /// <param name="contentType">The content type of the data.</param>
-        /// <returns>An instance of <see cref="MultipartFormDataBinaryContent"/> that wraps a <see cref="BinaryData"/>.</returns>
-        public static MultipartFormDataBinaryContent Create(BinaryData content, string contentType)
+        /// <returns>An instance of <see cref="MultipartFormData"/> that wraps a <see cref="BinaryData"/>.</returns>
+        public static MultipartFormData Create(BinaryData content, string contentType)
         {
             if (!GetBoundary(contentType, out string subType, out string boundary) ||
                 !subType.Equals(FormData))
             {
                 throw new ArgumentException("invalid content type.", nameof(contentType));
             }
-            return new MultipartFormDataBinaryContent(boundary, Read(content, FormData, boundary));
+            return new MultipartFormData(boundary, Read(content, FormData, boundary));
         }
         /// <summary>
         ///  Add a content part.
@@ -102,6 +103,21 @@ namespace System.ClientModel.Primitives
                 }
             }
             base.Add(part);
+        }
+
+        /// <summary>
+        ///  To BinaryContent
+        /// </summary>
+        public BinaryContent ToBinaryContent()
+        {
+            return new MultipartBinaryContent(this);
+        }
+        /// <summary>
+        ///  To RequestContent
+        /// </summary>
+        public RequestContent ToRequestContent()
+        {
+            return new MultipartRequestContent(this);
         }
     }
 }

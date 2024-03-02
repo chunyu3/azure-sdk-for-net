@@ -23,7 +23,7 @@ namespace Azure.Core
         /// <summary>
         /// The content type of the content.
         /// </summary>
-        public string ContentType { get; set; } = "application/octet-stream";
+        public string? ContentType { get; set; }
         internal const string SerializationRequiresUnreferencedCode = "This method uses reflection-based serialization which is incompatible with trimming. Try using one of the 'Create' overloads that doesn't wrap a serialized version of an object.";
         private static readonly Encoding s_UTF8NoBomEncoding = new UTF8Encoding(false);
 

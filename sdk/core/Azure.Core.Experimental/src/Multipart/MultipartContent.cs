@@ -21,11 +21,9 @@ namespace System.ClientModel.Primitives
         public BinaryContent Content { get; }
         /// <summary> The headers of this body piece. </summary>
         public IDictionary<string, string> Headers { get; }
-        /// <summary> Gets the MIME type of this data. </summary>
-        public string ContentType { get; set; } = "application/json";
 
         /// <summary>
-        ///  Initializes a new instance of the <see cref="MultipartBinaryContent"/> class.
+        ///  Initializes a new instance of the <see cref="MultipartContent"/> class.
         ///  </summary>
         ///  <param name="content">The content of the body part.</param>
         /// <param name="headers">The headers of this body part.</param>
