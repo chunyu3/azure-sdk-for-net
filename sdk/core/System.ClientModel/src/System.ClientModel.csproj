@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <Description>Contains building blocks for clients that call cloud services.</Description>
@@ -11,6 +11,21 @@
     <PackageIcon>DotNetPackageIcon.png</PackageIcon>
     <PackageIconPath>$(RepoEngPath)/images/$(PackageIcon)</PackageIconPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="BufferedReadStream.cs" />
+    <Compile Remove="KeyValueAccumulator.cs" />
+    <Compile Remove="Multipart.cs" />
+    <Compile Remove="MultipartBinaryContent.cs" />
+    <Compile Remove="MultipartBoundary.cs" />
+    <Compile Remove="MultipartContent.cs" />
+    <Compile Remove="MultipartFile.cs" />
+    <Compile Remove="MultipartFormData.cs" />
+    <Compile Remove="MultipartReader.cs" />
+    <Compile Remove="MultipartReaderStream.cs" />
+    <Compile Remove="MultipartRequestContent.cs" />
+    <Compile Remove="MultipartSection.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Memory.Data" />
