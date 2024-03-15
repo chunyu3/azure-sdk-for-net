@@ -207,11 +207,11 @@ namespace Azure.Core
                 BinaryData binaryData;
                 if (stream.Position > int.MaxValue)
                 {
-                    binaryData = BinaryData.FromStream(stream, contentType);
+                    binaryData = BinaryData.FromStream(stream);
                 }
                 else
                 {
-                    binaryData = new BinaryData(stream.GetBuffer().AsMemory(0, (int)stream.Position), contentType);
+                    binaryData = new BinaryData(stream.GetBuffer().AsMemory(0, (int)stream.Position));
                 }
                 return binaryData;
             }
@@ -372,27 +372,6 @@ namespace Azure.Core
             {
                 throw new ArgumentNullException(nameof(data));
             }
-            if (data.Length == 0)
-            {
-                throw new ArgumentException("Empty data", nameof(data));
-            }
-            string prefix = $"multipart/{subType}; boundary=";
-            if (boundary == null)
-            {
-                string contentType = data.MediaType;
-                if (string.IsNullOrEmpty(contentType))
-                {
-                    throw new ArgumentException("Missing content type", nameof(data));
-                }
-                if (contentType == null || !contentType.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new ArgumentException("Invalid content type", nameof(data));
-                }
-                if (!GetBoundary(contentType, out subType, out boundary))
-                {
-                    throw new ArgumentException("Missing boundary", nameof(data));
-                }
-            }
             // Read the content into a stream.
             return await ReadAsync(data.ToStream(), subType, boundary).ConfigureAwait(false);
         }
@@ -402,27 +381,6 @@ namespace Azure.Core
             if (data == null)
             {
                 throw new ArgumentNullException(nameof(data));
-            }
-            if (data.Length == 0)
-            {
-                throw new ArgumentException("Empty data", nameof(data));
-            }
-            string prefix = $"multipart/{subType}; boundary=";
-            if (boundary == null)
-            {
-                string contentType = data.MediaType;
-                if (string.IsNullOrEmpty(contentType))
-                {
-                    throw new ArgumentException("Missing content type", nameof(data));
-                }
-                if (contentType == null || !contentType.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new ArgumentException("Invalid content type", nameof(data));
-                }
-                if (!GetBoundary(contentType, out subType, out boundary))
-                {
-                    throw new ArgumentException("Missing boundary", nameof(data));
-                }
             }
             // Read the content into a stream.
             return Read(data.ToStream(), subType, boundary);

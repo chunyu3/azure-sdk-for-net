@@ -11,6 +11,10 @@ namespace System.ClientModel;
 
 public abstract class BinaryContent : IDisposable
 {
+    /// <summary>
+    /// The content type of the content.
+    /// </summary>
+    public string ContentType { get; set; } = "application/json";
     private static readonly ModelReaderWriterOptions ModelWriteWireOptions = new ModelReaderWriterOptions("W");
 
     /// <summary>
