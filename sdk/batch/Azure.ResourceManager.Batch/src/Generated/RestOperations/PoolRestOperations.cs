@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Batch.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Batch
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-06-01";
+            _apiVersion = apiVersion ?? "2024-02-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -75,10 +75,10 @@ namespace Azure.ResourceManager.Batch
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="maxresults"> The maximum number of items to return in the response. </param>
-        /// <param name="select"> Comma separated list of properties that should be returned. e.g. &quot;properties/provisioningState&quot;. Only top level properties under properties/ are valid for selection. </param>
+        /// <param name="select"> Comma separated list of properties that should be returned. e.g. "properties/provisioningState". Only top level properties under properties/ are valid for selection. </param>
         /// <param name="filter">
         /// OData filter expression. Valid properties for filtering are:
-        /// 
+        ///
         ///  name
         ///  properties/allocationState
         ///  properties/allocationStateTransitionTime
@@ -121,10 +121,10 @@ namespace Azure.ResourceManager.Batch
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="maxresults"> The maximum number of items to return in the response. </param>
-        /// <param name="select"> Comma separated list of properties that should be returned. e.g. &quot;properties/provisioningState&quot;. Only top level properties under properties/ are valid for selection. </param>
+        /// <param name="select"> Comma separated list of properties that should be returned. e.g. "properties/provisioningState". Only top level properties under properties/ are valid for selection. </param>
         /// <param name="filter">
         /// OData filter expression. Valid properties for filtering are:
-        /// 
+        ///
         ///  name
         ///  properties/allocationState
         ///  properties/allocationStateTransitionTime
@@ -162,7 +162,7 @@ namespace Azure.ResourceManager.Batch
             }
         }
 
-        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch, string ifNoneMatch)
+        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch, string ifNoneMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -181,7 +181,7 @@ namespace Azure.ResourceManager.Batch
             request.Uri = uri;
             if (ifMatch != null)
             {
-                request.Headers.Add("If-Match", ifMatch);
+                request.Headers.Add("If-Match", ifMatch.Value);
             }
             if (ifNoneMatch != null)
             {
@@ -190,7 +190,7 @@ namespace Azure.ResourceManager.Batch
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<BatchAccountPoolData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -202,12 +202,12 @@ namespace Azure.ResourceManager.Batch
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="poolName"> The pool name. This must be unique within the account. </param>
         /// <param name="data"> Additional parameters for pool creation. </param>
-        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. A value of &quot;*&quot; can be used to apply the operation only if the pool already exists. If omitted, this operation will always be applied. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new pool to be created, but to prevent updating an existing pool. Other values will be ignored. </param>
+        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. A value of "*" can be used to apply the operation only if the pool already exists. If omitted, this operation will always be applied. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new pool to be created, but to prevent updating an existing pool. Other values will be ignored. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/>, <paramref name="poolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PoolData>> CreateAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch = null, string ifNoneMatch = null, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountPoolData>> CreateAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch = null, string ifNoneMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -221,9 +221,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -237,12 +237,12 @@ namespace Azure.ResourceManager.Batch
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="poolName"> The pool name. This must be unique within the account. </param>
         /// <param name="data"> Additional parameters for pool creation. </param>
-        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. A value of &quot;*&quot; can be used to apply the operation only if the pool already exists. If omitted, this operation will always be applied. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new pool to be created, but to prevent updating an existing pool. Other values will be ignored. </param>
+        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. A value of "*" can be used to apply the operation only if the pool already exists. If omitted, this operation will always be applied. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new pool to be created, but to prevent updating an existing pool. Other values will be ignored. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/>, <paramref name="poolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PoolData> Create(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch = null, string ifNoneMatch = null, CancellationToken cancellationToken = default)
+        public Response<BatchAccountPoolData> Create(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch = null, string ifNoneMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -256,9 +256,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -266,7 +266,7 @@ namespace Azure.ResourceManager.Batch
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -285,12 +285,12 @@ namespace Azure.ResourceManager.Batch
             request.Uri = uri;
             if (ifMatch != null)
             {
-                request.Headers.Add("If-Match", ifMatch);
+                request.Headers.Add("If-Match", ifMatch.Value);
             }
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<BatchAccountPoolData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -302,11 +302,11 @@ namespace Azure.ResourceManager.Batch
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="poolName"> The pool name. This must be unique within the account. </param>
         /// <param name="data"> Pool properties that should be updated. Properties that are supplied will be updated, any property not supplied will be unchanged. </param>
-        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. This value can be omitted or set to &quot;*&quot; to apply the operation unconditionally. </param>
+        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. This value can be omitted or set to "*" to apply the operation unconditionally. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/>, <paramref name="poolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PoolData>> UpdateAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountPoolData>> UpdateAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -320,9 +320,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -336,11 +336,11 @@ namespace Azure.ResourceManager.Batch
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="poolName"> The pool name. This must be unique within the account. </param>
         /// <param name="data"> Pool properties that should be updated. Properties that are supplied will be updated, any property not supplied will be unchanged. </param>
-        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. This value can be omitted or set to &quot;*&quot; to apply the operation unconditionally. </param>
+        /// <param name="ifMatch"> The entity state (ETag) version of the pool to update. This value can be omitted or set to "*" to apply the operation unconditionally. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/>, <paramref name="poolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PoolData> Update(string subscriptionId, string resourceGroupName, string accountName, string poolName, PoolData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public Response<BatchAccountPoolData> Update(string subscriptionId, string resourceGroupName, string accountName, string poolName, BatchAccountPoolData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -354,9 +354,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -472,7 +472,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PoolData>> GetAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountPoolData>> GetAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -485,13 +485,13 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((PoolData)null, message.Response);
+                    return Response.FromValue((BatchAccountPoolData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -505,7 +505,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PoolData> Get(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public Response<BatchAccountPoolData> Get(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -518,13 +518,13 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((PoolData)null, message.Response);
+                    return Response.FromValue((BatchAccountPoolData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -561,7 +561,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PoolData>> DisableAutoScaleAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountPoolData>> DisableAutoScaleAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -574,9 +574,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -592,7 +592,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PoolData> DisableAutoScale(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public Response<BatchAccountPoolData> DisableAutoScale(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -605,9 +605,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -646,7 +646,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PoolData>> StopResizeAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountPoolData>> StopResizeAsync(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -659,9 +659,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -677,7 +677,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="poolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PoolData> StopResize(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
+        public Response<BatchAccountPoolData> StopResize(string subscriptionId, string resourceGroupName, string accountName, string poolName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -690,9 +690,9 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        PoolData value = default;
+                        BatchAccountPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PoolData.DeserializePoolData(document.RootElement);
+                        value = BatchAccountPoolData.DeserializeBatchAccountPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -720,10 +720,10 @@ namespace Azure.ResourceManager.Batch
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="maxresults"> The maximum number of items to return in the response. </param>
-        /// <param name="select"> Comma separated list of properties that should be returned. e.g. &quot;properties/provisioningState&quot;. Only top level properties under properties/ are valid for selection. </param>
+        /// <param name="select"> Comma separated list of properties that should be returned. e.g. "properties/provisioningState". Only top level properties under properties/ are valid for selection. </param>
         /// <param name="filter">
         /// OData filter expression. Valid properties for filtering are:
-        /// 
+        ///
         ///  name
         ///  properties/allocationState
         ///  properties/allocationStateTransitionTime
@@ -768,10 +768,10 @@ namespace Azure.ResourceManager.Batch
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
         /// <param name="maxresults"> The maximum number of items to return in the response. </param>
-        /// <param name="select"> Comma separated list of properties that should be returned. e.g. &quot;properties/provisioningState&quot;. Only top level properties under properties/ are valid for selection. </param>
+        /// <param name="select"> Comma separated list of properties that should be returned. e.g. "properties/provisioningState". Only top level properties under properties/ are valid for selection. </param>
         /// <param name="filter">
         /// OData filter expression. Valid properties for filtering are:
-        /// 
+        ///
         ///  name
         ///  properties/allocationState
         ///  properties/allocationStateTransitionTime

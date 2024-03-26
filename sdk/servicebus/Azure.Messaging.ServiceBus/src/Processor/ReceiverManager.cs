@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Pipeline;
+using Azure.Core.Shared;
 using Azure.Messaging.ServiceBus.Diagnostics;
 
 namespace Azure.Messaging.ServiceBus
@@ -19,19 +21,21 @@ namespace Azure.Messaging.ServiceBus
     /// </summary>
     internal class ReceiverManager
     {
-        internal virtual ServiceBusReceiver Receiver { get; set; }
+        internal virtual ServiceBusReceiver Receiver { get; private set; }
 
         protected readonly ServiceBusProcessor Processor;
         protected readonly TimeSpan? _maxReceiveWaitTime;
         private readonly ServiceBusReceiverOptions _receiverOptions;
         protected readonly ServiceBusProcessorOptions ProcessorOptions;
-        protected readonly EntityScopeFactory _scopeFactory;
+        private readonly MessagingClientDiagnostics _clientDiagnostics;
 
-        protected bool AutoRenewLock => ProcessorOptions.MaxAutoLockRenewalDuration > TimeSpan.Zero;
+        protected bool AutoRenewLock => ProcessorOptions.MaxAutoLockRenewalDuration > TimeSpan.Zero ||
+                                        ProcessorOptions.MaxAutoLockRenewalDuration == Timeout.InfiniteTimeSpan;
 
         public ReceiverManager(
             ServiceBusProcessor processor,
-            EntityScopeFactory scopeFactory)
+            MessagingClientDiagnostics clientDiagnostics,
+            bool isSession)
         {
             Processor = processor;
             ProcessorOptions = processor.Options;
@@ -41,21 +45,24 @@ namespace Azure.Messaging.ServiceBus
                 PrefetchCount = ProcessorOptions.PrefetchCount,
                 // Pass None for subqueue since the subqueue has already
                 // been taken into account when computing the EntityPath of the processor.
-                SubQueue = SubQueue.None
+                SubQueue = SubQueue.None,
+                Identifier = $"{processor.Identifier}-Receiver"
             };
             _maxReceiveWaitTime = ProcessorOptions.MaxReceiveWaitTime;
-            Receiver = new ServiceBusReceiver(
-                connection: Processor.Connection,
-                entityPath: Processor.EntityPath,
-                isSessionEntity: false,
-                isProcessor: true,
-                options: _receiverOptions);
-            _scopeFactory = scopeFactory;
+            if (!isSession)
+            {
+                Receiver = new ServiceBusReceiver(
+                    connection: Processor.Connection,
+                    entityPath: Processor.EntityPath,
+                    isSessionEntity: false,
+                    isProcessor: true,
+                    options: _receiverOptions);
+            }
+
+            _clientDiagnostics = clientDiagnostics;
         }
 
-        public virtual async Task CloseReceiverIfNeeded(
-            CancellationToken cancellationToken,
-            bool forceClose = false)
+        public virtual async Task CloseReceiverIfNeeded(CancellationToken cancellationToken)
         {
             var capturedReceiver = Receiver;
             if (capturedReceiver != null)
@@ -111,16 +118,32 @@ namespace Azure.Messaging.ServiceBus
                         errorSource,
                         Processor.FullyQualifiedNamespace,
                         Processor.EntityPath,
+                        Processor.Identifier,
                         cancellationToken))
                     .ConfigureAwait(false);
             }
         }
 
+        public virtual Task CancelAsync() => Task.CompletedTask;
+
+        public virtual void UpdatePrefetchCount(int prefetchCount)
+        {
+            var capturedReceiver = Receiver;
+
+            // If the Receiver property is set to null after we have captured a non-null instance, the Prefetch setter will essentially
+            // no-op as the underlying link has been closed.
+            if (capturedReceiver != null && capturedReceiver.PrefetchCount != prefetchCount)
+            {
+                capturedReceiver.PrefetchCount = prefetchCount;
+            }
+        }
+
         protected async Task ProcessOneMessageWithinScopeAsync(ServiceBusReceivedMessage message, string activityName, CancellationToken cancellationToken)
         {
-            using DiagnosticScope scope = _scopeFactory.CreateScope(activityName, DiagnosticScope.ActivityKind.Consumer);
-            scope.SetMessageData(message);
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(activityName, ActivityKind.Consumer, MessagingDiagnosticOperation.Process);
+            scope.SetMessageAsParent(message);
             scope.Start();
+
             try
             {
                 await ProcessOneMessage(
@@ -188,6 +211,7 @@ namespace Azure.Messaging.ServiceBus
                             errorSource,
                             Processor.FullyQualifiedNamespace,
                             Processor.EntityPath,
+                            Processor.Identifier,
                             cancellationToken))
                     .ConfigureAwait(false);
 
@@ -220,6 +244,7 @@ namespace Azure.Messaging.ServiceBus
                                         ServiceBusErrorSource.Abandon,
                                         Processor.FullyQualifiedNamespace,
                                         Processor.EntityPath,
+                                        Processor.Identifier,
                                         cancellationToken))
                                 .ConfigureAwait(false);
                         }
@@ -250,17 +275,25 @@ namespace Azure.Messaging.ServiceBus
             new ProcessMessageEventArgs(
             message,
             this,
+            Processor.Identifier,
             cancellationToken);
 
-        protected virtual async Task OnMessageHandler(EventArgs args) =>
-            await Processor.OnProcessMessageAsync((ProcessMessageEventArgs) args).ConfigureAwait(false);
+        protected virtual async Task OnMessageHandler(EventArgs args)
+        {
+            var processMessageArgs = (ProcessMessageEventArgs)args;
+            using var registration = processMessageArgs.RegisterMessageLockLostHandler();
+            await Processor.OnProcessMessageAsync((ProcessMessageEventArgs)args).ConfigureAwait(false);
+        }
 
         internal async Task RenewMessageLockAsync(
+            ProcessMessageEventArgs args,
             ServiceBusReceivedMessage message,
             CancellationTokenSource cancellationTokenSource)
         {
             cancellationTokenSource.CancelAfter(ProcessorOptions.MaxAutoLockRenewalDuration);
             CancellationToken cancellationToken = cancellationTokenSource.Token;
+            bool isTriggerMessage = args.Message == message;
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -283,6 +316,13 @@ namespace Azure.Messaging.ServiceBus
                     }
 
                     await Receiver.RenewMessageLockAsync(message, cancellationToken).ConfigureAwait(false);
+
+                    // Currently only the trigger message supports cancellation token for LockedUntil.
+                    if (isTriggerMessage)
+                    {
+                        args.MessageLockLostCancellationSource.CancelAfterLockExpired(message);
+                    }
+
                     ServiceBusEventSource.Log.ProcessorRenewMessageLockComplete(Processor.Identifier, message.LockTokenGuid);
                 }
                 catch (Exception ex) when (!(ex is TaskCanceledException))
@@ -292,6 +332,13 @@ namespace Azure.Messaging.ServiceBus
                     // If the message has already been settled there is no need to raise the lock lost exception to user error handler.
                     if (!message.IsSettled)
                     {
+                        // Currently only the trigger message supports cancellation token for LockedUntil.
+                        if (isTriggerMessage)
+                        {
+                            args.LockLostException = ex;
+                            args.MessageLockLostCancellationSource?.Cancel();
+                        }
+
                         await HandleRenewLockException(ex, cancellationToken).ConfigureAwait(false);
                     }
 
@@ -330,6 +377,7 @@ namespace Azure.Messaging.ServiceBus
                         ServiceBusErrorSource.RenewLock,
                         Processor.FullyQualifiedNamespace,
                         Processor.EntityPath,
+                        Processor.Identifier,
                         cancellationToken)).ConfigureAwait(false);
             }
         }

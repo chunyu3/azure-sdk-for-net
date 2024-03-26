@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ComputeSubnetId))
             {
-                writer.WritePropertyName("computeSubnetId");
+                writer.WritePropertyName("computeSubnetId"u8);
                 writer.WriteStringValue(ComputeSubnetId);
             }
             writer.WriteEndObject();
@@ -28,23 +28,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static VirtualNetworkProfile DeserializeVirtualNetworkProfile(JsonElement element)
         {
-            Optional<string> computeSubnetId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string computeSubnetId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("computeSubnetId"))
+                if (property.NameEquals("computeSubnetId"u8))
                 {
                     computeSubnetId = property.Value.GetString();
                     continue;
                 }
             }
-            return new VirtualNetworkProfile(computeSubnetId.Value);
+            return new VirtualNetworkProfile(computeSubnetId);
         }
 
         internal partial class VirtualNetworkProfileConverter : JsonConverter<VirtualNetworkProfile>
         {
             public override void Write(Utf8JsonWriter writer, VirtualNetworkProfile model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<VirtualNetworkProfile>(model);
             }
             public override VirtualNetworkProfile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -14,23 +14,17 @@ namespace Azure.AI.Translation.Document
     /// <summary> Translation job status response. </summary>
     public partial class TranslationStatusResult
     {
-        /// <summary> Initializes a new instance of TranslationStatusResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="TranslationStatusResult"/>. </summary>
         /// <param name="id"> Id of the operation. </param>
         /// <param name="createdOn"> Operation created date time. </param>
-        /// <param name="lastModified"> Date time in which the operation&apos;s status has been updated. </param>
+        /// <param name="lastModified"> Date time in which the operation's status has been updated. </param>
         /// <param name="status"> List of possible statuses for job or document. </param>
         /// <param name="summary"></param>
         /// <exception cref="ArgumentNullException"> <paramref name="id"/> or <paramref name="summary"/> is null. </exception>
         internal TranslationStatusResult(string id, DateTimeOffset createdOn, DateTimeOffset lastModified, DocumentTranslationStatus status, StatusSummary summary)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-            if (summary == null)
-            {
-                throw new ArgumentNullException(nameof(summary));
-            }
+            Argument.AssertNotNull(id, nameof(id));
+            Argument.AssertNotNull(summary, nameof(summary));
 
             Id = id;
             CreatedOn = createdOn;
@@ -39,10 +33,10 @@ namespace Azure.AI.Translation.Document
             Summary = summary;
         }
 
-        /// <summary> Initializes a new instance of TranslationStatusResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="TranslationStatusResult"/>. </summary>
         /// <param name="id"> Id of the operation. </param>
         /// <param name="createdOn"> Operation created date time. </param>
-        /// <param name="lastModified"> Date time in which the operation&apos;s status has been updated. </param>
+        /// <param name="lastModified"> Date time in which the operation's status has been updated. </param>
         /// <param name="status"> List of possible statuses for job or document. </param>
         /// <param name="error"> This contains an outer error with error code, message, details, target and an inner error with more descriptive details. </param>
         /// <param name="summary"></param>

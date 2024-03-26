@@ -17,11 +17,11 @@ namespace Azure.AI.TextAnalytics.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Documents))
             {
-                writer.WritePropertyName("documents");
+                writer.WritePropertyName("documents"u8);
                 writer.WriteStartArray();
                 foreach (var item in Documents)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<LanguageInput>(item);
                 }
                 writer.WriteEndArray();
             }

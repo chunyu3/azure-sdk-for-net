@@ -50,6 +50,12 @@ namespace Azure.Messaging.ServiceBus.Amqp
         public override Uri ServiceEndpoint { get; }
 
         /// <summary>
+        ///   The endpoint for the Service Bus service to be used when establishing the connection.
+        /// </summary>
+        ///
+        public Uri ConnectionEndpoint { get; }
+
+        /// <summary>
         ///   Gets the credential to use for authorization with the Service Bus service.
         /// </summary>
         ///
@@ -61,7 +67,10 @@ namespace Azure.Messaging.ServiceBus.Amqp
         ///
         private AmqpConnectionScope ConnectionScope { get; }
 
-        public override ServiceBusTransportMetrics TransportMetrics { get; }
+        /// <summary>
+        ///    The converter to use for translating <see cref="ServiceBusMessage" /> into an AMQP-specific message.
+        /// </summary>
+        private readonly AmqpMessageConverter _messageConverter;
 
         /// <summary>
         ///   Initializes a new instance of the <see cref="AmqpClient"/> class.
@@ -70,6 +79,7 @@ namespace Azure.Messaging.ServiceBus.Amqp
         /// <param name="host">The fully qualified host name for the Service Bus namespace.  This is likely to be similar to <c>{yournamespace}.servicebus.windows.net</c>.</param>
         /// <param name="credential">The Azure managed identity credential to use for authorization.  Access controls may be specified by the Service Bus namespace or the requested Service Bus entity, depending on Azure configuration.</param>
         /// <param name="options">A set of options to apply when configuring the client.</param>
+        /// <param name="useTls"><c>true</c> if the client should secure the connection using TLS; otherwise, <c>false</c>.</param>
         ///
         /// <remarks>
         ///   As an internal type, this class performs only basic sanity checks against its arguments.  It
@@ -83,31 +93,39 @@ namespace Azure.Messaging.ServiceBus.Amqp
         internal AmqpClient(
             string host,
             ServiceBusTokenCredential credential,
-            ServiceBusClientOptions options)
+            ServiceBusClientOptions options,
+            bool useTls)
         {
             Argument.AssertNotNullOrEmpty(host, nameof(host));
             Argument.AssertNotNull(credential, nameof(credential));
             Argument.AssertNotNull(options, nameof(options));
 
+            _messageConverter = AmqpMessageConverter.Default;
+
             ServiceEndpoint = new UriBuilder
             {
-                Scheme = options.TransportType.GetUriScheme(),
+                Scheme = options.TransportType.GetUriScheme(useTls),
                 Host = host
             }.Uri;
 
-            Credential = credential;
-            if (options.EnableTransportMetrics)
+            ConnectionEndpoint = (options.CustomEndpointAddress == null) ? ServiceEndpoint : new UriBuilder
             {
-                TransportMetrics = new ServiceBusTransportMetrics();
-            }
+                Scheme = ServiceEndpoint.Scheme,
+                Host = options.CustomEndpointAddress.Host,
+                Port = options.CustomEndpointAddress.IsDefaultPort ? -1 : options.CustomEndpointAddress.Port
+            }.Uri;
+
+            Credential = credential;
+
             ConnectionScope = new AmqpConnectionScope(
                 ServiceEndpoint,
+                ConnectionEndpoint,
                 credential,
                 options.TransportType,
                 options.WebProxy,
                 options.EnableCrossEntityTransactions,
                 options.RetryOptions.TryTimeout,
-                TransportMetrics);
+                options.ConnectionIdleTimeout);
         }
 
         /// <summary>
@@ -132,7 +150,8 @@ namespace Azure.Messaging.ServiceBus.Amqp
                 entityPath,
                 ConnectionScope,
                 retryPolicy,
-                identifier
+                identifier,
+                _messageConverter
             );
         }
 
@@ -175,6 +194,7 @@ namespace Azure.Messaging.ServiceBus.Amqp
                 sessionId,
                 isSessionReceiver,
                 isProcessor,
+                _messageConverter,
                 cancellationToken
             );
         }

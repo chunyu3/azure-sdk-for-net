@@ -15,7 +15,7 @@ namespace Azure.AI.TextAnalytics.Legacy
     /// <summary> The SentenceTarget. </summary>
     internal partial class SentenceTarget
     {
-        /// <summary> Initializes a new instance of SentenceTarget. </summary>
+        /// <summary> Initializes a new instance of <see cref="SentenceTarget"/>. </summary>
         /// <param name="sentiment"> Targeted sentiment in the sentence. </param>
         /// <param name="confidenceScores"> Target sentiment confidence scores for the target in the sentence. </param>
         /// <param name="offset"> The target offset from the start of the sentence. </param>
@@ -25,18 +25,9 @@ namespace Azure.AI.TextAnalytics.Legacy
         /// <exception cref="ArgumentNullException"> <paramref name="confidenceScores"/>, <paramref name="text"/> or <paramref name="relations"/> is null. </exception>
         internal SentenceTarget(TokenSentimentValue sentiment, TargetConfidenceScoreLabel confidenceScores, int offset, int length, string text, IEnumerable<TargetRelation> relations)
         {
-            if (confidenceScores == null)
-            {
-                throw new ArgumentNullException(nameof(confidenceScores));
-            }
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-            if (relations == null)
-            {
-                throw new ArgumentNullException(nameof(relations));
-            }
+            Argument.AssertNotNull(confidenceScores, nameof(confidenceScores));
+            Argument.AssertNotNull(text, nameof(text));
+            Argument.AssertNotNull(relations, nameof(relations));
 
             Sentiment = sentiment;
             ConfidenceScores = confidenceScores;
@@ -46,7 +37,7 @@ namespace Azure.AI.TextAnalytics.Legacy
             Relations = relations.ToList();
         }
 
-        /// <summary> Initializes a new instance of SentenceTarget. </summary>
+        /// <summary> Initializes a new instance of <see cref="SentenceTarget"/>. </summary>
         /// <param name="sentiment"> Targeted sentiment in the sentence. </param>
         /// <param name="confidenceScores"> Target sentiment confidence scores for the target in the sentence. </param>
         /// <param name="offset"> The target offset from the start of the sentence. </param>

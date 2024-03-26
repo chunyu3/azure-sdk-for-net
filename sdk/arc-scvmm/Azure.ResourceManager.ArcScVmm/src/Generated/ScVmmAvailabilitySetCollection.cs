@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.ArcScVmm
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ScVmmAvailabilitySetResource" /> and their operations.
-    /// Each <see cref="ScVmmAvailabilitySetResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get a <see cref="ScVmmAvailabilitySetCollection" /> instance call the GetScVmmAvailabilitySets method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="ScVmmAvailabilitySetResource"/> and their operations.
+    /// Each <see cref="ScVmmAvailabilitySetResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get a <see cref="ScVmmAvailabilitySetCollection"/> instance call the GetScVmmAvailabilitySets method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class ScVmmAvailabilitySetCollection : ArmCollection, IEnumerable<ScVmmAvailabilitySetResource>, IAsyncEnumerable<ScVmmAvailabilitySetResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// Onboards the ScVmm availability set as an Azure resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// Onboards the ScVmm availability set as an Azure resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// Implements AvailabilitySet GET method.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// Implements AvailabilitySet GET method.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,92 +242,84 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// List of AvailabilitySets in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets
-        /// Operation Id: AvailabilitySets_ListByResourceGroup
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ScVmmAvailabilitySetResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="ScVmmAvailabilitySetResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ScVmmAvailabilitySetResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<ScVmmAvailabilitySetResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _scVmmAvailabilitySetAvailabilitySetsRestClient.ListByResourceGroupAsync(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScVmmAvailabilitySetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<ScVmmAvailabilitySetResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _scVmmAvailabilitySetAvailabilitySetsRestClient.ListByResourceGroupNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScVmmAvailabilitySetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _scVmmAvailabilitySetAvailabilitySetsRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _scVmmAvailabilitySetAvailabilitySetsRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new ScVmmAvailabilitySetResource(Client, ScVmmAvailabilitySetData.DeserializeScVmmAvailabilitySetData(e)), _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics, Pipeline, "ScVmmAvailabilitySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List of AvailabilitySets in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets
-        /// Operation Id: AvailabilitySets_ListByResourceGroup
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ScVmmAvailabilitySetResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ScVmmAvailabilitySetResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ScVmmAvailabilitySetResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<ScVmmAvailabilitySetResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _scVmmAvailabilitySetAvailabilitySetsRestClient.ListByResourceGroup(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScVmmAvailabilitySetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<ScVmmAvailabilitySetResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _scVmmAvailabilitySetAvailabilitySetsRestClient.ListByResourceGroupNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScVmmAvailabilitySetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _scVmmAvailabilitySetAvailabilitySetsRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _scVmmAvailabilitySetAvailabilitySetsRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new ScVmmAvailabilitySetResource(Client, ScVmmAvailabilitySetData.DeserializeScVmmAvailabilitySetData(e)), _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics, Pipeline, "ScVmmAvailabilitySetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -291,8 +345,24 @@ namespace Azure.ResourceManager.ArcScVmm
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}
-        /// Operation Id: AvailabilitySets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -308,6 +378,96 @@ namespace Azure.ResourceManager.ArcScVmm
             {
                 var response = _scVmmAvailabilitySetAvailabilitySetsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, availabilitySetName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="availabilitySetName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="availabilitySetName"/> is null. </exception>
+        public virtual async Task<NullableResponse<ScVmmAvailabilitySetResource>> GetIfExistsAsync(string availabilitySetName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(availabilitySetName, nameof(availabilitySetName));
+
+            using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _scVmmAvailabilitySetAvailabilitySetsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, availabilitySetName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<ScVmmAvailabilitySetResource>(response.GetRawResponse());
+                return Response.FromValue(new ScVmmAvailabilitySetResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ScVmm/availabilitySets/{availabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailabilitySets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-06-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ScVmmAvailabilitySetResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="availabilitySetName"> Name of the AvailabilitySet. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="availabilitySetName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="availabilitySetName"/> is null. </exception>
+        public virtual NullableResponse<ScVmmAvailabilitySetResource> GetIfExists(string availabilitySetName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(availabilitySetName, nameof(availabilitySetName));
+
+            using var scope = _scVmmAvailabilitySetAvailabilitySetsClientDiagnostics.CreateScope("ScVmmAvailabilitySetCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _scVmmAvailabilitySetAvailabilitySetsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, availabilitySetName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<ScVmmAvailabilitySetResource>(response.GetRawResponse());
+                return Response.FromValue(new ScVmmAvailabilitySetResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

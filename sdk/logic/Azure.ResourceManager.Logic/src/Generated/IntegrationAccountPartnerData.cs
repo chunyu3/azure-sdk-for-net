@@ -13,26 +13,58 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Logic
 {
-    /// <summary> A class representing the IntegrationAccountPartner data model. </summary>
+    /// <summary>
+    /// A class representing the IntegrationAccountPartner data model.
+    /// The integration account partner.
+    /// </summary>
     public partial class IntegrationAccountPartnerData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of IntegrationAccountPartnerData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="IntegrationAccountPartnerData"/>. </summary>
         /// <param name="location"> The location. </param>
         /// <param name="partnerType"> The partner type. </param>
         /// <param name="content"> The partner content. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-        public IntegrationAccountPartnerData(AzureLocation location, PartnerType partnerType, PartnerContent content) : base(location)
+        public IntegrationAccountPartnerData(AzureLocation location, IntegrationAccountPartnerType partnerType, IntegrationAccountPartnerContent content) : base(location)
         {
-            if (content == null)
-            {
-                throw new ArgumentNullException(nameof(content));
-            }
+            Argument.AssertNotNull(content, nameof(content));
 
             PartnerType = partnerType;
             Content = content;
         }
 
-        /// <summary> Initializes a new instance of IntegrationAccountPartnerData. </summary>
+        /// <summary> Initializes a new instance of <see cref="IntegrationAccountPartnerData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -44,32 +76,68 @@ namespace Azure.ResourceManager.Logic
         /// <param name="changedOn"> The changed time. </param>
         /// <param name="metadata"> The metadata. </param>
         /// <param name="content"> The partner content. </param>
-        internal IntegrationAccountPartnerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, PartnerType partnerType, DateTimeOffset? createdOn, DateTimeOffset? changedOn, BinaryData metadata, PartnerContent content) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal IntegrationAccountPartnerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, IntegrationAccountPartnerType partnerType, DateTimeOffset? createdOn, DateTimeOffset? changedOn, BinaryData metadata, IntegrationAccountPartnerContent content, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             PartnerType = partnerType;
             CreatedOn = createdOn;
             ChangedOn = changedOn;
             Metadata = metadata;
             Content = content;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="IntegrationAccountPartnerData"/> for deserialization. </summary>
+        internal IntegrationAccountPartnerData()
+        {
         }
 
         /// <summary> The partner type. </summary>
-        public PartnerType PartnerType { get; set; }
+        public IntegrationAccountPartnerType PartnerType { get; set; }
         /// <summary> The created time. </summary>
         public DateTimeOffset? CreatedOn { get; }
         /// <summary> The changed time. </summary>
         public DateTimeOffset? ChangedOn { get; }
-        /// <summary> The metadata. </summary>
+        /// <summary>
+        /// The metadata.
+        /// <para>
+        /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public BinaryData Metadata { get; set; }
         /// <summary> The partner content. </summary>
-        internal PartnerContent Content { get; set; }
+        internal IntegrationAccountPartnerContent Content { get; set; }
         /// <summary> The list of partner business identities. </summary>
-        public IList<BusinessIdentity> B2BBusinessIdentities
+        public IList<IntegrationAccountBusinessIdentity> B2BBusinessIdentities
         {
             get
             {
                 if (Content is null)
-                    Content = new PartnerContent();
+                    Content = new IntegrationAccountPartnerContent();
                 return Content.B2BBusinessIdentities;
             }
         }

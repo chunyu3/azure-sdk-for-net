@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Resources.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Resources
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-04-01";
+            _apiVersion = apiVersion ?? "2022-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -181,7 +181,7 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -393,7 +393,7 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -551,7 +551,7 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Get all the deployments at the given scope. </summary>
         /// <param name="scope"> The resource scope. </param>
-        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq &apos;{state}&apos;. </param>
+        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq '{state}'. </param>
         /// <param name="top"> The number of results to get. If null is passed, returns all deployments. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> is null. </exception>
@@ -577,7 +577,7 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Get all the deployments at the given scope. </summary>
         /// <param name="scope"> The resource scope. </param>
-        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq &apos;{state}&apos;. </param>
+        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq '{state}'. </param>
         /// <param name="top"> The number of results to get. If null is passed, returns all deployments. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> is null. </exception>
@@ -616,7 +616,7 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentWhatIfContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -685,7 +685,7 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentWhatIfContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -758,14 +758,14 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentWhatIfContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Returns changes that will be made by the deployment if executed at the scope of the subscription. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> Subscription Id which forms part of the URI for every service call. </param>
         /// <param name="deploymentName"> The name of the deployment. </param>
         /// <param name="content"> Parameters to What If. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -790,7 +790,7 @@ namespace Azure.ResourceManager.Resources
         }
 
         /// <summary> Returns changes that will be made by the deployment if executed at the scope of the subscription. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> Subscription Id which forms part of the URI for every service call. </param>
         /// <param name="deploymentName"> The name of the deployment. </param>
         /// <param name="content"> Parameters to What If. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -833,14 +833,14 @@ namespace Azure.ResourceManager.Resources
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ArmDeploymentWhatIfContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Returns changes that will be made by the deployment if executed at the scope of the resource group. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> Subscription Id which forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group the template will be deployed to. The name is case insensitive. </param>
         /// <param name="deploymentName"> The name of the deployment. </param>
         /// <param name="content"> Parameters to validate. </param>
@@ -867,7 +867,7 @@ namespace Azure.ResourceManager.Resources
         }
 
         /// <summary> Returns changes that will be made by the deployment if executed at the scope of the resource group. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> Subscription Id which forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group the template will be deployed to. The name is case insensitive. </param>
         /// <param name="deploymentName"> The name of the deployment. </param>
         /// <param name="content"> Parameters to validate. </param>
@@ -905,13 +905,16 @@ namespace Azure.ResourceManager.Resources
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
-            var content0 = new Utf8JsonRequestContent();
+            var content = new Utf8JsonRequestContent();
 #if NET6_0_OR_GREATER
-				content0.JsonWriter.WriteRawValue(template);
+				content.JsonWriter.WriteRawValue(template);
 #else
-            JsonSerializer.Serialize(content0.JsonWriter, JsonDocument.Parse(template.ToString()).RootElement);
+            using (JsonDocument document = JsonDocument.Parse(template))
+            {
+                JsonSerializer.Serialize(content.JsonWriter, document.RootElement);
+            }
 #endif
-            request.Content = content0;
+            request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
@@ -981,7 +984,7 @@ namespace Azure.ResourceManager.Resources
         /// <summary> Get all the deployments at the given scope. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="scope"> The resource scope. </param>
-        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq &apos;{state}&apos;. </param>
+        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq '{state}'. </param>
         /// <param name="top"> The number of results to get. If null is passed, returns all deployments. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="scope"/> is null. </exception>
@@ -1009,7 +1012,7 @@ namespace Azure.ResourceManager.Resources
         /// <summary> Get all the deployments at the given scope. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="scope"> The resource scope. </param>
-        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq &apos;{state}&apos;. </param>
+        /// <param name="filter"> The filter to apply on the operation. For example, you can use $filter=provisioningState eq '{state}'. </param>
         /// <param name="top"> The number of results to get. If null is passed, returns all deployments. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="scope"/> is null. </exception>

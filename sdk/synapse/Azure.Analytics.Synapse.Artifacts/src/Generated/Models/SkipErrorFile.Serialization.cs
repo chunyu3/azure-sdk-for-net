@@ -20,52 +20,54 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(FileMissing))
             {
-                writer.WritePropertyName("fileMissing");
-                writer.WriteObjectValue(FileMissing);
+                writer.WritePropertyName("fileMissing"u8);
+                writer.WriteObjectValue<object>(FileMissing);
             }
             if (Optional.IsDefined(DataInconsistency))
             {
-                writer.WritePropertyName("dataInconsistency");
-                writer.WriteObjectValue(DataInconsistency);
+                writer.WritePropertyName("dataInconsistency"u8);
+                writer.WriteObjectValue<object>(DataInconsistency);
             }
             writer.WriteEndObject();
         }
 
         internal static SkipErrorFile DeserializeSkipErrorFile(JsonElement element)
         {
-            Optional<object> fileMissing = default;
-            Optional<object> dataInconsistency = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object fileMissing = default;
+            object dataInconsistency = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("fileMissing"))
+                if (property.NameEquals("fileMissing"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     fileMissing = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("dataInconsistency"))
+                if (property.NameEquals("dataInconsistency"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     dataInconsistency = property.Value.GetObject();
                     continue;
                 }
             }
-            return new SkipErrorFile(fileMissing.Value, dataInconsistency.Value);
+            return new SkipErrorFile(fileMissing, dataInconsistency);
         }
 
         internal partial class SkipErrorFileConverter : JsonConverter<SkipErrorFile>
         {
             public override void Write(Utf8JsonWriter writer, SkipErrorFile model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SkipErrorFile>(model);
             }
             public override SkipErrorFile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

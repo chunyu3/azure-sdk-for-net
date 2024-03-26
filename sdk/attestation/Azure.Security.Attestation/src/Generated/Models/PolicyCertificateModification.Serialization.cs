@@ -20,36 +20,39 @@ namespace Azure.Security.Attestation
             writer.WriteStartObject();
             if (Optional.IsDefined(InternalPolicyCertificate))
             {
-                writer.WritePropertyName("policyCertificate");
-                writer.WriteObjectValue(InternalPolicyCertificate);
+                writer.WritePropertyName("policyCertificate"u8);
+                writer.WriteObjectValue<JsonWebKey>(InternalPolicyCertificate);
             }
             writer.WriteEndObject();
         }
 
         internal static PolicyCertificateModification DeserializePolicyCertificateModification(JsonElement element)
         {
-            Optional<JsonWebKey> policyCertificate = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            JsonWebKey policyCertificate = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("policyCertificate"))
+                if (property.NameEquals("policyCertificate"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     policyCertificate = JsonWebKey.DeserializeJsonWebKey(property.Value);
                     continue;
                 }
             }
-            return new PolicyCertificateModification(policyCertificate.Value);
+            return new PolicyCertificateModification(policyCertificate);
         }
 
         internal partial class PolicyCertificateModificationConverter : JsonConverter<PolicyCertificateModification>
         {
             public override void Write(Utf8JsonWriter writer, PolicyCertificateModification model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<PolicyCertificateModification>(model);
             }
             public override PolicyCertificateModification Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Cdn.Models;
 using Azure.ResourceManager.Models;
@@ -15,32 +14,64 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Cdn
 {
-    /// <summary> A class representing the CdnWebApplicationFirewallPolicy data model. </summary>
+    /// <summary>
+    /// A class representing the CdnWebApplicationFirewallPolicy data model.
+    /// Defines web application firewall policy for Azure CDN.
+    /// </summary>
     public partial class CdnWebApplicationFirewallPolicyData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of CdnWebApplicationFirewallPolicyData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="CdnWebApplicationFirewallPolicyData"/>. </summary>
         /// <param name="location"> The location. </param>
         /// <param name="sku"> The pricing tier (defines a CDN provider, feature list and rate) of the CdnWebApplicationFirewallPolicy. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sku"/> is null. </exception>
         public CdnWebApplicationFirewallPolicyData(AzureLocation location, CdnSku sku) : base(location)
         {
-            if (sku == null)
-            {
-                throw new ArgumentNullException(nameof(sku));
-            }
+            Argument.AssertNotNull(sku, nameof(sku));
 
             Sku = sku;
             EndpointLinks = new ChangeTrackingList<SubResource>();
         }
 
-        /// <summary> Initializes a new instance of CdnWebApplicationFirewallPolicyData. </summary>
+        /// <summary> Initializes a new instance of <see cref="CdnWebApplicationFirewallPolicyData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="tags"> The tags. </param>
         /// <param name="location"> The location. </param>
-        /// <param name="eTag"> Gets a unique read-only string that changes whenever the resource is updated. </param>
+        /// <param name="etag"> Gets a unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="sku"> The pricing tier (defines a CDN provider, feature list and rate) of the CdnWebApplicationFirewallPolicy. </param>
         /// <param name="policySettings"> Describes  policySettings for policy. </param>
         /// <param name="rateLimitSettings"> Describes rate limit rules inside the policy. </param>
@@ -49,9 +80,10 @@ namespace Azure.ResourceManager.Cdn
         /// <param name="endpointLinks"> Describes Azure CDN endpoints associated with this Web Application Firewall policy. </param>
         /// <param name="provisioningState"> Provisioning state of the WebApplicationFirewallPolicy. </param>
         /// <param name="resourceState"> Resource status of the policy. </param>
-        internal CdnWebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? eTag, CdnSku sku, WafPolicySettings policySettings, RateLimitRuleList rateLimitSettings, CustomRuleList customSettings, ManagedRuleSetList managedRules, IReadOnlyList<SubResource> endpointLinks, WebApplicationFirewallPolicyProvisioningState? provisioningState, PolicyResourceState? resourceState) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal CdnWebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? etag, CdnSku sku, WafPolicySettings policySettings, RateLimitRuleList rateLimitSettings, CustomRuleList customSettings, ManagedRuleSetList managedRules, IReadOnlyList<SubResource> endpointLinks, WebApplicationFirewallPolicyProvisioningState? provisioningState, PolicyResourceState? resourceState, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
-            ETag = eTag;
+            ETag = etag;
             Sku = sku;
             PolicySettings = policySettings;
             RateLimitSettings = rateLimitSettings;
@@ -60,6 +92,12 @@ namespace Azure.ResourceManager.Cdn
             EndpointLinks = endpointLinks;
             ProvisioningState = provisioningState;
             ResourceState = resourceState;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="CdnWebApplicationFirewallPolicyData"/> for deserialization. </summary>
+        internal CdnWebApplicationFirewallPolicyData()
+        {
         }
 
         /// <summary> Gets a unique read-only string that changes whenever the resource is updated. </summary>

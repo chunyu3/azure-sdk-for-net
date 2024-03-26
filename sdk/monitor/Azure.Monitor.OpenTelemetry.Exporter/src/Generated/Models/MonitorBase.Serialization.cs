@@ -17,13 +17,13 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(BaseType))
             {
-                writer.WritePropertyName("baseType");
+                writer.WritePropertyName("baseType"u8);
                 writer.WriteStringValue(BaseType);
             }
             if (Optional.IsDefined(BaseData))
             {
-                writer.WritePropertyName("baseData");
-                writer.WriteObjectValue(BaseData);
+                writer.WritePropertyName("baseData"u8);
+                writer.WriteObjectValue<MonitorDomain>(BaseData);
             }
             writer.WriteEndObject();
         }

@@ -1,17 +1,15 @@
-﻿using System.IO;
-using System.Text;
+﻿using System.ClientModel.Primitives;
 using System.Text.Json;
-using Azure.Core;
 using Azure.ResourceManager.Models;
-using Azure.ResourceManager.Resources.Models;
-using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.Tests
 {
     [Parallelizable]
-    class PlanTests
+    public class PlanTests
     {
+        private static readonly ModelReaderWriterOptions _wireOptions = new("W");
+
         [TestCase(true, "name", "name")]
         [TestCase(true, "Name", "name")]
         [TestCase(true, null, null)]
@@ -123,25 +121,27 @@ namespace Azure.ResourceManager.Tests
         [Test]
         public void SerializationTest()
         {
-            string expected = "{\"properties\":{\"name\":\"NameForPlan\",\"publisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"promotionCode\":\"PromotionCodeForPlan\",\"version\":\"VersionForPlan\"}}";
+            const string expected = "{\"name\":\"NameForPlan\",\"publisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"promotionCode\":\"PromotionCodeForPlan\",\"version\":\"VersionForPlan\"}";
             ArmPlan plan = new("NameForPlan", "PublisherForPlan", "ProductForPlan", "PromotionCodeForPlan", "VersionForPlan");
-            var json = JsonHelper.SerializePropertiesToString(plan);
-            Assert.IsTrue(expected.Equals(json));
+            var binary = ModelReaderWriter.Write(plan, _wireOptions);
+            Assert.AreEqual(expected, binary.ToString());
         }
 
         [Test]
         public void InvalidSerializationTest()
         {
+            const string expected = "{\"name\":null,\"publisher\":null,\"product\":null}";
             ArmPlan plan = new(null, null, null, null, null);
-            var json = JsonHelper.SerializePropertiesToString(plan);
-            Assert.AreEqual("{\"properties\":{\"name\":null,\"publisher\":null,\"product\":null}}", json);
+            var binary = ModelReaderWriter.Write(plan, _wireOptions);
+            Assert.AreEqual(expected, binary.ToString());
         }
 
         [Test]
         public void DeserializationTest()
         {
-            string json = "{\"name\":\"NameForPlan\",\"publisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"promotionCode\":\"PromotionCodeForPlan\",\"version\":\"VersionForPlan\"}";
-            JsonElement element = JsonDocument.Parse(json).RootElement;
+            const string json = "{\"name\":\"NameForPlan\",\"publisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"promotionCode\":\"PromotionCodeForPlan\",\"version\":\"VersionForPlan\"}";
+            using var jsonDocument = JsonDocument.Parse(json);
+            JsonElement element = jsonDocument.RootElement;
             ArmPlan plan = ArmPlan.DeserializeArmPlan(element);
             Assert.IsTrue(plan.Name.Equals("NameForPlan"));
             Assert.IsTrue(plan.PromotionCode.Equals("PromotionCodeForPlan"));
@@ -150,8 +150,9 @@ namespace Azure.ResourceManager.Tests
         [Test]
         public void InvalidDeserializationTest()
         {
-            string json = "{\"name\":\"NameForPlan\",\"notPublisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"version\":\"VersionForPlan\"}";
-            JsonElement element = JsonDocument.Parse(json).RootElement;
+            const string json = "{\"name\":\"NameForPlan\",\"notPublisher\":\"PublisherForPlan\",\"product\":\"ProductForPlan\",\"version\":\"VersionForPlan\"}";
+            using var jsonDocument = JsonDocument.Parse(json);
+            JsonElement element = jsonDocument.RootElement;
             ArmPlan plan = ArmPlan.DeserializeArmPlan(element);
             Assert.IsTrue(plan.Publisher == null);
             Assert.IsTrue(plan.PromotionCode == null);

@@ -9,25 +9,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Workloads
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SapApplicationServerInstanceResource" /> and their operations.
-    /// Each <see cref="SapApplicationServerInstanceResource" /> in the collection will belong to the same instance of <see cref="SapVirtualInstanceResource" />.
-    /// To get a <see cref="SapApplicationServerInstanceCollection" /> instance call the GetSapApplicationServerInstances method from an instance of <see cref="SapVirtualInstanceResource" />.
+    /// A class representing a collection of <see cref="SapApplicationServerInstanceResource"/> and their operations.
+    /// Each <see cref="SapApplicationServerInstanceResource"/> in the collection will belong to the same instance of <see cref="SapVirtualInstanceResource"/>.
+    /// To get a <see cref="SapApplicationServerInstanceCollection"/> instance call the GetSapApplicationServerInstances method from an instance of <see cref="SapVirtualInstanceResource"/>.
     /// </summary>
     public partial class SapApplicationServerInstanceCollection : ArmCollection, IEnumerable<SapApplicationServerInstanceResource>, IAsyncEnumerable<SapApplicationServerInstanceResource>
     {
-        private readonly ClientDiagnostics _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics;
-        private readonly SAPApplicationServerInstancesRestOperations _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient;
+        private readonly ClientDiagnostics _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics;
+        private readonly SAPApplicationServerInstancesRestOperations _sapApplicationServerInstanceSapApplicationServerInstancesRestClient;
 
         /// <summary> Initializes a new instance of the <see cref="SapApplicationServerInstanceCollection"/> class for mocking. </summary>
         protected SapApplicationServerInstanceCollection()
@@ -39,9 +37,9 @@ namespace Azure.ResourceManager.Workloads
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
         internal SapApplicationServerInstanceCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Workloads", SapApplicationServerInstanceResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(SapApplicationServerInstanceResource.ResourceType, out string sapApplicationServerInstanceSAPApplicationServerInstancesApiVersion);
-            _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient = new SAPApplicationServerInstancesRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, sapApplicationServerInstanceSAPApplicationServerInstancesApiVersion);
+            _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Workloads", SapApplicationServerInstanceResource.ResourceType.Namespace, Diagnostics);
+            TryGetApiVersion(SapApplicationServerInstanceResource.ResourceType, out string sapApplicationServerInstanceSapApplicationServerInstancesApiVersion);
+            _sapApplicationServerInstanceSapApplicationServerInstancesRestClient = new SAPApplicationServerInstancesRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, sapApplicationServerInstanceSapApplicationServerInstancesApiVersion);
 #if DEBUG
 			ValidateResourceId(Id);
 #endif
@@ -54,26 +52,43 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Puts the SAP Application Server Instance. &lt;br&gt;&lt;br&gt;This will be used by service only. PUT by end user will return a Bad Request error.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Create
+        /// Puts the SAP Application Server Instance resource. &lt;br&gt;&lt;br&gt;This will be used by service only. PUT by end user will return a Bad Request error.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
-        /// <param name="data"> The SAP Application Server instance request body. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
+        /// <param name="data"> The SAP Application Server Instance resource request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
-        public virtual async Task<ArmOperation<SapApplicationServerInstanceResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string applicationInstanceName, SapApplicationServerInstanceData data = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> or <paramref name="data"/> is null. </exception>
+        public virtual async Task<ArmOperation<SapApplicationServerInstanceResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string applicationInstanceName, SapApplicationServerInstanceData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
+            Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.CreateOrUpdate");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new WorkloadsArmOperation<SapApplicationServerInstanceResource>(new SapApplicationServerInstanceOperationSource(Client), _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics, Pipeline, _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new WorkloadsArmOperation<SapApplicationServerInstanceResource>(new SapApplicationServerInstanceOperationSource(Client), _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics, Pipeline, _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -86,26 +101,43 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Puts the SAP Application Server Instance. &lt;br&gt;&lt;br&gt;This will be used by service only. PUT by end user will return a Bad Request error.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Create
+        /// Puts the SAP Application Server Instance resource. &lt;br&gt;&lt;br&gt;This will be used by service only. PUT by end user will return a Bad Request error.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
-        /// <param name="data"> The SAP Application Server instance request body. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
+        /// <param name="data"> The SAP Application Server Instance resource request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
-        public virtual ArmOperation<SapApplicationServerInstanceResource> CreateOrUpdate(WaitUntil waitUntil, string applicationInstanceName, SapApplicationServerInstanceData data = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> or <paramref name="data"/> is null. </exception>
+        public virtual ArmOperation<SapApplicationServerInstanceResource> CreateOrUpdate(WaitUntil waitUntil, string applicationInstanceName, SapApplicationServerInstanceData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
+            Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.CreateOrUpdate");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data, cancellationToken);
-                var operation = new WorkloadsArmOperation<SapApplicationServerInstanceResource>(new SapApplicationServerInstanceOperationSource(Client), _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics, Pipeline, _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data, cancellationToken);
+                var operation = new WorkloadsArmOperation<SapApplicationServerInstanceResource>(new SapApplicationServerInstanceOperationSource(Client), _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics, Pipeline, _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -118,11 +150,27 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Gets the SAP Application Server Instance.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Get
+        /// Gets the SAP Application Server Instance corresponding to the Virtual Instance for SAP solutions resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
@@ -130,11 +178,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Get");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Get");
             scope.Start();
             try
             {
-                var response = await _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken).ConfigureAwait(false);
+                var response = await _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SapApplicationServerInstanceResource(Client, response.Value), response.GetRawResponse());
@@ -147,11 +195,27 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Gets the SAP Application Server Instance.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Get
+        /// Gets the SAP Application Server Instance corresponding to the Virtual Instance for SAP solutions resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
@@ -159,11 +223,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Get");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Get");
             scope.Start();
             try
             {
-                var response = _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken);
+                var response = _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SapApplicationServerInstanceResource(Client, response.Value), response.GetRawResponse());
@@ -176,95 +240,87 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Lists the SAP Application server Instances in an SVI.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances
-        /// Operation Id: SAPApplicationServerInstances_List
+        /// Lists the SAP Application Server Instance resources for a given Virtual Instance for SAP solutions resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SapApplicationServerInstanceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SapApplicationServerInstanceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SapApplicationServerInstanceResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SapApplicationServerInstanceResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapApplicationServerInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SapApplicationServerInstanceResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapApplicationServerInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SapApplicationServerInstanceResource(Client, SapApplicationServerInstanceData.DeserializeSapApplicationServerInstanceData(e)), _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics, Pipeline, "SapApplicationServerInstanceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
-        /// Lists the SAP Application server Instances in an SVI.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances
-        /// Operation Id: SAPApplicationServerInstances_List
+        /// Lists the SAP Application Server Instance resources for a given Virtual Instance for SAP solutions resource.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SapApplicationServerInstanceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SapApplicationServerInstanceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SapApplicationServerInstanceResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SapApplicationServerInstanceResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapApplicationServerInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SapApplicationServerInstanceResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapApplicationServerInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SapApplicationServerInstanceResource(Client, SapApplicationServerInstanceData.DeserializeSapApplicationServerInstanceData(e)), _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics, Pipeline, "SapApplicationServerInstanceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
@@ -272,11 +328,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Exists");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -288,10 +344,26 @@ namespace Azure.ResourceManager.Workloads
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}
-        /// Operation Id: SAPApplicationServerInstances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="applicationInstanceName"> The name of SAP Application Server instance. </param>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
@@ -299,12 +371,102 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
 
-            using var scope = _sapApplicationServerInstanceSAPApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Exists");
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.Exists");
             scope.Start();
             try
             {
-                var response = _sapApplicationServerInstanceSAPApplicationServerInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken);
+                var response = _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SapApplicationServerInstanceResource>> GetIfExistsAsync(string applicationInstanceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
+
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SapApplicationServerInstanceResource>(response.GetRawResponse());
+                return Response.FromValue(new SapApplicationServerInstanceResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}/applicationInstances/{applicationInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPApplicationServerInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapApplicationServerInstanceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="applicationInstanceName"> The name of SAP Application Server instance resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="applicationInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="applicationInstanceName"/> is null. </exception>
+        public virtual NullableResponse<SapApplicationServerInstanceResource> GetIfExists(string applicationInstanceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(applicationInstanceName, nameof(applicationInstanceName));
+
+            using var scope = _sapApplicationServerInstanceSapApplicationServerInstancesClientDiagnostics.CreateScope("SapApplicationServerInstanceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _sapApplicationServerInstanceSapApplicationServerInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, applicationInstanceName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SapApplicationServerInstanceResource>(response.GetRawResponse());
+                return Response.FromValue(new SapApplicationServerInstanceResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

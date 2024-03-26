@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.MixedReality.RemoteRendering
 {
@@ -14,16 +13,20 @@ namespace Azure.MixedReality.RemoteRendering
     {
         internal static AssetConversionOutput DeserializeAssetConversionOutput(JsonElement element)
         {
-            Optional<string> outputAssetUri = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string outputAssetUri = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("outputAssetUri"))
+                if (property.NameEquals("outputAssetUri"u8))
                 {
                     outputAssetUri = property.Value.GetString();
                     continue;
                 }
             }
-            return new AssetConversionOutput(outputAssetUri.Value);
+            return new AssetConversionOutput(outputAssetUri);
         }
     }
 }

@@ -11,46 +11,42 @@ using System.Collections.Generic;
 namespace Azure.ResourceManager.MachineLearning.Models
 {
     /// <summary> The HdfsDatastore. </summary>
-    public partial class HdfsDatastore : DatastoreProperties
+    public partial class HdfsDatastore : MachineLearningDatastoreProperties
     {
-        /// <summary> Initializes a new instance of HdfsDatastore. </summary>
+        /// <summary> Initializes a new instance of <see cref="HdfsDatastore"/>. </summary>
         /// <param name="credentials">
         /// [Required] Account credentials.
-        /// Please note <see cref="DatastoreCredentials"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AccountKeyDatastoreCredentials"/>, <see cref="CertificateDatastoreCredentials"/>, <see cref="KerberosKeytabCredentials"/>, <see cref="KerberosPasswordCredentials"/>, <see cref="NoneDatastoreCredentials"/>, <see cref="SasDatastoreCredentials"/> and <see cref="ServicePrincipalDatastoreCredentials"/>.
+        /// Please note <see cref="MachineLearningDatastoreCredentials"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="MachineLearningAccountKeyDatastoreCredentials"/>, <see cref="MachineLearningCertificateDatastoreCredentials"/>, <see cref="KerberosKeytabCredentials"/>, <see cref="KerberosPasswordCredentials"/>, <see cref="MachineLearningNoneDatastoreCredentials"/>, <see cref="MachineLearningSasDatastoreCredentials"/> and <see cref="MachineLearningServicePrincipalDatastoreCredentials"/>.
         /// </param>
         /// <param name="nameNodeAddress"> [Required] IP Address or DNS HostName. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="credentials"/> or <paramref name="nameNodeAddress"/> is null. </exception>
-        public HdfsDatastore(DatastoreCredentials credentials, string nameNodeAddress) : base(credentials)
+        public HdfsDatastore(MachineLearningDatastoreCredentials credentials, string nameNodeAddress) : base(credentials)
         {
-            if (credentials == null)
-            {
-                throw new ArgumentNullException(nameof(credentials));
-            }
-            if (nameNodeAddress == null)
-            {
-                throw new ArgumentNullException(nameof(nameNodeAddress));
-            }
+            Argument.AssertNotNull(credentials, nameof(credentials));
+            Argument.AssertNotNull(nameNodeAddress, nameof(nameNodeAddress));
 
             NameNodeAddress = nameNodeAddress;
             DatastoreType = DatastoreType.Hdfs;
         }
 
-        /// <summary> Initializes a new instance of HdfsDatastore. </summary>
+        /// <summary> Initializes a new instance of <see cref="HdfsDatastore"/>. </summary>
         /// <param name="description"> The asset description text. </param>
         /// <param name="properties"> The asset property dictionary. </param>
         /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="credentials">
         /// [Required] Account credentials.
-        /// Please note <see cref="DatastoreCredentials"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AccountKeyDatastoreCredentials"/>, <see cref="CertificateDatastoreCredentials"/>, <see cref="KerberosKeytabCredentials"/>, <see cref="KerberosPasswordCredentials"/>, <see cref="NoneDatastoreCredentials"/>, <see cref="SasDatastoreCredentials"/> and <see cref="ServicePrincipalDatastoreCredentials"/>.
+        /// Please note <see cref="MachineLearningDatastoreCredentials"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="MachineLearningAccountKeyDatastoreCredentials"/>, <see cref="MachineLearningCertificateDatastoreCredentials"/>, <see cref="KerberosKeytabCredentials"/>, <see cref="KerberosPasswordCredentials"/>, <see cref="MachineLearningNoneDatastoreCredentials"/>, <see cref="MachineLearningSasDatastoreCredentials"/> and <see cref="MachineLearningServicePrincipalDatastoreCredentials"/>.
         /// </param>
         /// <param name="datastoreType"> [Required] Storage type backing the datastore. </param>
+        /// <param name="intellectualProperty"> Intellectual Property details. </param>
         /// <param name="isDefault"> Readonly property to indicate if datastore is the workspace default datastore. </param>
-        /// <param name="hdfsServerCertificate"> The TLS cert of the HDFS server. Needs to be a base64 encoded string. Required if &quot;Https&quot; protocol is selected. </param>
+        /// <param name="hdfsServerCertificate"> The TLS cert of the HDFS server. Needs to be a base64 encoded string. Required if "Https" protocol is selected. </param>
         /// <param name="nameNodeAddress"> [Required] IP Address or DNS HostName. </param>
         /// <param name="protocol"> Protocol used to communicate with the storage account (Https/Http). </param>
-        internal HdfsDatastore(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, DatastoreCredentials credentials, DatastoreType datastoreType, bool? isDefault, string hdfsServerCertificate, string nameNodeAddress, string protocol) : base(description, properties, tags, credentials, datastoreType, isDefault)
+        internal HdfsDatastore(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, MachineLearningDatastoreCredentials credentials, DatastoreType datastoreType, IntellectualProperty intellectualProperty, bool? isDefault, string hdfsServerCertificate, string nameNodeAddress, string protocol) : base(description, properties, tags, serializedAdditionalRawData, credentials, datastoreType, intellectualProperty, isDefault)
         {
             HdfsServerCertificate = hdfsServerCertificate;
             NameNodeAddress = nameNodeAddress;
@@ -58,7 +54,12 @@ namespace Azure.ResourceManager.MachineLearning.Models
             DatastoreType = datastoreType;
         }
 
-        /// <summary> The TLS cert of the HDFS server. Needs to be a base64 encoded string. Required if &quot;Https&quot; protocol is selected. </summary>
+        /// <summary> Initializes a new instance of <see cref="HdfsDatastore"/> for deserialization. </summary>
+        internal HdfsDatastore()
+        {
+        }
+
+        /// <summary> The TLS cert of the HDFS server. Needs to be a base64 encoded string. Required if "Https" protocol is selected. </summary>
         public string HdfsServerCertificate { get; set; }
         /// <summary> [Required] IP Address or DNS HostName. </summary>
         public string NameNodeAddress { get; set; }

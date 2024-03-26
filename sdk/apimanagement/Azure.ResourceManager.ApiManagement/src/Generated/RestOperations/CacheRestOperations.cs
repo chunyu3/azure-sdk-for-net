@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ApiManagement.Models;
@@ -75,7 +75,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CacheCollection>> ListByServiceAsync(string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<Response<CacheListResult>> ListByServiceAsync(string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -87,9 +87,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheCollection value = default;
+                        CacheListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CacheCollection.DeserializeCacheCollection(document.RootElement);
+                        value = CacheListResult.DeserializeCacheListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -106,7 +106,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CacheCollection> ListByService(string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Response<CacheListResult> ListByService(string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -118,9 +118,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheCollection value = default;
+                        CacheListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CacheCollection.DeserializeCacheCollection(document.RootElement);
+                        value = CacheListResult.DeserializeCacheListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -154,7 +154,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -188,7 +188,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -244,11 +244,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CacheContractData>> GetAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementCacheData>> GetAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -261,13 +261,13 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((CacheContractData)null, message.Response);
+                    return Response.FromValue((ApiManagementCacheData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -277,11 +277,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CacheContractData> Get(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CancellationToken cancellationToken = default)
+        public Response<ApiManagementCacheData> Get(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -294,19 +294,19 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((CacheContractData)null, message.Response);
+                    return Response.FromValue((ApiManagementCacheData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CacheContractData data, string ifMatch)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ApiManagementCacheData data, ETag? ifMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -325,12 +325,12 @@ namespace Azure.ResourceManager.ApiManagement
             request.Uri = uri;
             if (ifMatch != null)
             {
-                request.Headers.Add("If-Match", ifMatch);
+                request.Headers.Add("If-Match", ifMatch.Value);
             }
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ApiManagementCacheData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -340,13 +340,13 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="data"> Create or Update parameters. </param>
         /// <param name="ifMatch"> ETag of the Entity. Not required when creating an entity, but required when updating an entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CacheContractData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CacheContractData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementCacheData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ApiManagementCacheData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -361,9 +361,9 @@ namespace Azure.ResourceManager.ApiManagement
                 case 200:
                 case 201:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -375,13 +375,13 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="data"> Create or Update parameters. </param>
         /// <param name="ifMatch"> ETag of the Entity. Not required when creating an entity, but required when updating an entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CacheContractData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, CacheContractData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public Response<ApiManagementCacheData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ApiManagementCacheData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -396,9 +396,9 @@ namespace Azure.ResourceManager.ApiManagement
                 case 200:
                 case 201:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -406,7 +406,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch, CacheContractPatch patch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch, ApiManagementCachePatch patch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -427,7 +427,7 @@ namespace Azure.ResourceManager.ApiManagement
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(patch);
+            content.JsonWriter.WriteObjectValue<ApiManagementCachePatch>(patch, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -437,19 +437,18 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="patch"> Update parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/>, <paramref name="ifMatch"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CacheContractData>> UpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch, CacheContractPatch patch, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementCacheData>> UpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch, ApiManagementCachePatch patch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(cacheId, nameof(cacheId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
             Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, serviceName, cacheId, ifMatch, patch);
@@ -458,9 +457,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -472,19 +471,18 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="patch"> Update parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/>, <paramref name="ifMatch"/> or <paramref name="patch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CacheContractData> Update(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch, CacheContractPatch patch, CancellationToken cancellationToken = default)
+        public Response<ApiManagementCacheData> Update(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch, ApiManagementCachePatch patch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(cacheId, nameof(cacheId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
             Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, serviceName, cacheId, ifMatch, patch);
@@ -493,9 +491,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheContractData value = default;
+                        ApiManagementCacheData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CacheContractData.DeserializeCacheContractData(document.RootElement);
+                        value = ApiManagementCacheData.DeserializeApiManagementCacheData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -503,7 +501,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch)
+        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -530,18 +528,17 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="ifMatch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch, CancellationToken cancellationToken = default)
+        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(cacheId, nameof(cacheId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, serviceName, cacheId, ifMatch);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -559,18 +556,17 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either &apos;default&apos; or valid Azure region identifier). </param>
+        /// <param name="cacheId"> Identifier of the Cache entity. Cache identifier (should be either 'default' or valid Azure region identifier). </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="cacheId"/> or <paramref name="ifMatch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="cacheId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Delete(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, string ifMatch, CancellationToken cancellationToken = default)
+        public Response Delete(string subscriptionId, string resourceGroupName, string serviceName, string cacheId, ETag ifMatch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(cacheId, nameof(cacheId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, serviceName, cacheId, ifMatch);
             _pipeline.Send(message, cancellationToken);
@@ -608,7 +604,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CacheCollection>> ListByServiceNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<Response<CacheListResult>> ListByServiceNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -621,9 +617,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheCollection value = default;
+                        CacheListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CacheCollection.DeserializeCacheCollection(document.RootElement);
+                        value = CacheListResult.DeserializeCacheListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -641,7 +637,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CacheCollection> ListByServiceNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Response<CacheListResult> ListByServiceNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -654,9 +650,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        CacheCollection value = default;
+                        CacheListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CacheCollection.DeserializeCacheCollection(document.RootElement);
+                        value = CacheListResult.DeserializeCacheListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

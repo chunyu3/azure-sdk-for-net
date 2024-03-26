@@ -15,7 +15,7 @@ namespace Azure.AI.TextAnalytics.Legacy
     /// <summary> The DocumentSentiment. </summary>
     internal partial class DocumentSentiment
     {
-        /// <summary> Initializes a new instance of DocumentSentiment. </summary>
+        /// <summary> Initializes a new instance of <see cref="DocumentSentiment"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="sentiment"> Predicted sentiment for document (Negative, Neutral, Positive, or Mixed). </param>
         /// <param name="confidenceScores"> Document level sentiment confidence scores between 0 and 1 for each sentiment class. </param>
@@ -24,22 +24,10 @@ namespace Azure.AI.TextAnalytics.Legacy
         /// <exception cref="ArgumentNullException"> <paramref name="id"/>, <paramref name="confidenceScores"/>, <paramref name="sentences"/> or <paramref name="warnings"/> is null. </exception>
         internal DocumentSentiment(string id, DocumentSentimentValue sentiment, SentimentConfidenceScorePerLabel confidenceScores, IEnumerable<SentenceSentiment> sentences, IEnumerable<TextAnalyticsWarning> warnings)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-            if (confidenceScores == null)
-            {
-                throw new ArgumentNullException(nameof(confidenceScores));
-            }
-            if (sentences == null)
-            {
-                throw new ArgumentNullException(nameof(sentences));
-            }
-            if (warnings == null)
-            {
-                throw new ArgumentNullException(nameof(warnings));
-            }
+            Argument.AssertNotNull(id, nameof(id));
+            Argument.AssertNotNull(confidenceScores, nameof(confidenceScores));
+            Argument.AssertNotNull(sentences, nameof(sentences));
+            Argument.AssertNotNull(warnings, nameof(warnings));
 
             Id = id;
             Sentiment = sentiment;
@@ -48,7 +36,7 @@ namespace Azure.AI.TextAnalytics.Legacy
             Warnings = warnings.ToList();
         }
 
-        /// <summary> Initializes a new instance of DocumentSentiment. </summary>
+        /// <summary> Initializes a new instance of <see cref="DocumentSentiment"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="sentiment"> Predicted sentiment for document (Negative, Neutral, Positive, or Mixed). </param>
         /// <param name="statistics"> if showStats=true was specified in the request this field will contain information about the document payload. </param>

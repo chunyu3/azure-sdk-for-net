@@ -17,7 +17,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Language))
             {
-                writer.WritePropertyName("language");
+                writer.WritePropertyName("language"u8);
                 writer.WriteStringValue(Language);
             }
             writer.WriteEndObject();
@@ -25,16 +25,20 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static KqlScriptContentMetadata DeserializeKqlScriptContentMetadata(JsonElement element)
         {
-            Optional<string> language = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string language = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("language"))
+                if (property.NameEquals("language"u8))
                 {
                     language = property.Value.GetString();
                     continue;
                 }
             }
-            return new KqlScriptContentMetadata(language.Value);
+            return new KqlScriptContentMetadata(language);
         }
     }
 }

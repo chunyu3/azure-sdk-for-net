@@ -6,24 +6,34 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ApiManagement.Models
 {
-    public partial class AdditionalLocation : IUtf8JsonSerializable
+    public partial class AdditionalLocation : IUtf8JsonSerializable, IJsonModel<AdditionalLocation>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AdditionalLocation>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AdditionalLocation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AdditionalLocation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AdditionalLocation)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("location");
+            writer.WritePropertyName("location"u8);
             writer.WriteStringValue(Location);
-            writer.WritePropertyName("sku");
-            writer.WriteObjectValue(Sku);
+            writer.WritePropertyName("sku"u8);
+            writer.WriteObjectValue<ApiManagementServiceSkuProperties>(Sku, options);
             if (Optional.IsCollectionDefined(Zones))
             {
-                writer.WritePropertyName("zones");
+                writer.WritePropertyName("zones"u8);
                 writer.WriteStartArray();
                 foreach (var item in Zones)
                 {
@@ -31,53 +41,127 @@ namespace Azure.ResourceManager.ApiManagement.Models
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && Optional.IsCollectionDefined(PublicIPAddresses))
+            {
+                writer.WritePropertyName("publicIPAddresses"u8);
+                writer.WriteStartArray();
+                foreach (var item in PublicIPAddresses)
+                {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
+                    writer.WriteStringValue(item.ToString());
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(PrivateIPAddresses))
+            {
+                writer.WritePropertyName("privateIPAddresses"u8);
+                writer.WriteStartArray();
+                foreach (var item in PrivateIPAddresses)
+                {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
+                    writer.WriteStringValue(item.ToString());
+                }
+                writer.WriteEndArray();
+            }
             if (Optional.IsDefined(PublicIPAddressId))
             {
-                writer.WritePropertyName("publicIpAddressId");
+                writer.WritePropertyName("publicIpAddressId"u8);
                 writer.WriteStringValue(PublicIPAddressId);
             }
             if (Optional.IsDefined(VirtualNetworkConfiguration))
             {
-                writer.WritePropertyName("virtualNetworkConfiguration");
-                writer.WriteObjectValue(VirtualNetworkConfiguration);
+                writer.WritePropertyName("virtualNetworkConfiguration"u8);
+                writer.WriteObjectValue<VirtualNetworkConfiguration>(VirtualNetworkConfiguration, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(GatewayRegionalUri))
+            {
+                writer.WritePropertyName("gatewayRegionalUrl"u8);
+                writer.WriteStringValue(GatewayRegionalUri.AbsoluteUri);
             }
             if (Optional.IsDefined(DisableGateway))
             {
-                writer.WritePropertyName("disableGateway");
+                writer.WritePropertyName("disableGateway"u8);
                 writer.WriteBooleanValue(DisableGateway.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(PlatformVersion))
+            {
+                writer.WritePropertyName("platformVersion"u8);
+                writer.WriteStringValue(PlatformVersion.Value.ToString());
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static AdditionalLocation DeserializeAdditionalLocation(JsonElement element)
+        AdditionalLocation IJsonModel<AdditionalLocation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AdditionalLocation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AdditionalLocation)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAdditionalLocation(document.RootElement, options);
+        }
+
+        internal static AdditionalLocation DeserializeAdditionalLocation(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             AzureLocation location = default;
             ApiManagementServiceSkuProperties sku = default;
-            Optional<IList<string>> zones = default;
-            Optional<IReadOnlyList<string>> publicIPAddresses = default;
-            Optional<IReadOnlyList<string>> privateIPAddresses = default;
-            Optional<string> publicIpAddressId = default;
-            Optional<VirtualNetworkConfiguration> virtualNetworkConfiguration = default;
-            Optional<Uri> gatewayRegionalUrl = default;
-            Optional<bool> disableGateway = default;
-            Optional<PlatformVersion> platformVersion = default;
+            IList<string> zones = default;
+            IReadOnlyList<IPAddress> publicIPAddresses = default;
+            IReadOnlyList<IPAddress> privateIPAddresses = default;
+            ResourceIdentifier publicIPAddressId = default;
+            VirtualNetworkConfiguration virtualNetworkConfiguration = default;
+            Uri gatewayRegionalUri = default;
+            bool? disableGateway = default;
+            PlatformVersion? platformVersion = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sku"))
+                if (property.NameEquals("sku"u8))
                 {
-                    sku = ApiManagementServiceSkuProperties.DeserializeApiManagementServiceSkuProperties(property.Value);
+                    sku = ApiManagementServiceSkuProperties.DeserializeApiManagementServiceSkuProperties(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("zones"))
+                if (property.NameEquals("zones"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -88,83 +172,142 @@ namespace Azure.ResourceManager.ApiManagement.Models
                     zones = array;
                     continue;
                 }
-                if (property.NameEquals("publicIPAddresses"))
+                if (property.NameEquals("publicIPAddresses"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<string> array = new List<string>();
+                    List<IPAddress> array = new List<IPAddress>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(IPAddress.Parse(item.GetString()));
+                        }
                     }
                     publicIPAddresses = array;
                     continue;
                 }
-                if (property.NameEquals("privateIPAddresses"))
+                if (property.NameEquals("privateIPAddresses"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<string> array = new List<string>();
+                    List<IPAddress> array = new List<IPAddress>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(IPAddress.Parse(item.GetString()));
+                        }
                     }
                     privateIPAddresses = array;
                     continue;
                 }
-                if (property.NameEquals("publicIpAddressId"))
-                {
-                    publicIpAddressId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("virtualNetworkConfiguration"))
+                if (property.NameEquals("publicIpAddressId"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    virtualNetworkConfiguration = VirtualNetworkConfiguration.DeserializeVirtualNetworkConfiguration(property.Value);
+                    publicIPAddressId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("gatewayRegionalUrl"))
+                if (property.NameEquals("virtualNetworkConfiguration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        gatewayRegionalUrl = null;
                         continue;
                     }
-                    gatewayRegionalUrl = new Uri(property.Value.GetString());
+                    virtualNetworkConfiguration = VirtualNetworkConfiguration.DeserializeVirtualNetworkConfiguration(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("disableGateway"))
+                if (property.NameEquals("gatewayRegionalUrl"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    gatewayRegionalUri = new Uri(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("disableGateway"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     disableGateway = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("platformVersion"))
+                if (property.NameEquals("platformVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     platformVersion = new PlatformVersion(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AdditionalLocation(location, sku, Optional.ToList(zones), Optional.ToList(publicIPAddresses), Optional.ToList(privateIPAddresses), publicIpAddressId.Value, virtualNetworkConfiguration.Value, gatewayRegionalUrl.Value, Optional.ToNullable(disableGateway), Optional.ToNullable(platformVersion));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AdditionalLocation(
+                location,
+                sku,
+                zones ?? new ChangeTrackingList<string>(),
+                publicIPAddresses ?? new ChangeTrackingList<IPAddress>(),
+                privateIPAddresses ?? new ChangeTrackingList<IPAddress>(),
+                publicIPAddressId,
+                virtualNetworkConfiguration,
+                gatewayRegionalUri,
+                disableGateway,
+                platformVersion,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<AdditionalLocation>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AdditionalLocation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(AdditionalLocation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AdditionalLocation IPersistableModel<AdditionalLocation>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AdditionalLocation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAdditionalLocation(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AdditionalLocation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AdditionalLocation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Data.SchemaRegistry.Models
 {
@@ -15,14 +14,18 @@ namespace Azure.Data.SchemaRegistry.Models
     {
         internal static SchemaVersions DeserializeSchemaVersions(JsonElement element)
         {
-            Optional<IReadOnlyList<int>> schemaVersions = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<int> schemaVersions = default;
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("schemaVersions"))
+                if (property.NameEquals("schemaVersions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<int> array = new List<int>();
@@ -33,8 +36,13 @@ namespace Azure.Data.SchemaRegistry.Models
                     schemaVersions = array;
                     continue;
                 }
+                if (property.NameEquals("nextLink"u8))
+                {
+                    nextLink = property.Value.GetString();
+                    continue;
+                }
             }
-            return new SchemaVersions(Optional.ToList(schemaVersions));
+            return new SchemaVersions(schemaVersions ?? new ChangeTrackingList<int>(), nextLink);
         }
     }
 }

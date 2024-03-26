@@ -7,24 +7,23 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary>
     /// Import command settings.
     /// Please note <see cref="ImportSettings"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="SnowflakeImportCopyCommand"/> and <see cref="AzureDatabricksDeltaLakeImportCommand"/>.
+    /// The available derived classes include <see cref="AzureDatabricksDeltaLakeImportCommand"/> and <see cref="SnowflakeImportCopyCommand"/>.
     /// </summary>
-    public partial class ImportSettings
+    public abstract partial class ImportSettings
     {
-        /// <summary> Initializes a new instance of ImportSettings. </summary>
-        public ImportSettings()
+        /// <summary> Initializes a new instance of <see cref="ImportSettings"/>. </summary>
+        protected ImportSettings()
         {
             AdditionalProperties = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of ImportSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="ImportSettings"/>. </summary>
         /// <param name="importSettingsType"> The import setting type. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         internal ImportSettings(string importSettingsType, IDictionary<string, BinaryData> additionalProperties)
@@ -35,7 +34,36 @@ namespace Azure.ResourceManager.DataFactory.Models
 
         /// <summary> The import setting type. </summary>
         internal string ImportSettingsType { get; set; }
-        /// <summary> Additional Properties. </summary>
+        /// <summary>
+        /// Additional Properties
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IDictionary<string, BinaryData> AdditionalProperties { get; }
     }
 }

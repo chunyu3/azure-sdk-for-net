@@ -5,84 +5,163 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceEnvironmentProperties : IUtf8JsonSerializable
+    public partial class DynatraceEnvironmentProperties : IUtf8JsonSerializable, IJsonModel<DynatraceEnvironmentProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DynatraceEnvironmentProperties>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<DynatraceEnvironmentProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceEnvironmentProperties)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(UserId))
             {
-                writer.WritePropertyName("userId");
+                writer.WritePropertyName("userId"u8);
                 writer.WriteStringValue(UserId);
             }
             if (Optional.IsDefined(AccountInfo))
             {
-                writer.WritePropertyName("accountInfo");
-                writer.WriteObjectValue(AccountInfo);
+                writer.WritePropertyName("accountInfo"u8);
+                writer.WriteObjectValue<DynatraceAccountInfo>(AccountInfo, options);
             }
             if (Optional.IsDefined(EnvironmentInfo))
             {
-                writer.WritePropertyName("environmentInfo");
-                writer.WriteObjectValue(EnvironmentInfo);
+                writer.WritePropertyName("environmentInfo"u8);
+                writer.WriteObjectValue<DynatraceEnvironmentInfo>(EnvironmentInfo, options);
             }
             if (Optional.IsDefined(SingleSignOnProperties))
             {
-                writer.WritePropertyName("singleSignOnProperties");
-                writer.WriteObjectValue(SingleSignOnProperties);
+                writer.WritePropertyName("singleSignOnProperties"u8);
+                writer.WriteObjectValue<DynatraceSingleSignOnProperties>(SingleSignOnProperties, options);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static DynatraceEnvironmentProperties DeserializeDynatraceEnvironmentProperties(JsonElement element)
+        DynatraceEnvironmentProperties IJsonModel<DynatraceEnvironmentProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> userId = default;
-            Optional<AccountInfo> accountInfo = default;
-            Optional<EnvironmentInfo> environmentInfo = default;
-            Optional<DynatraceSingleSignOnProperties> singleSignOnProperties = default;
+            var format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceEnvironmentProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceEnvironmentProperties(document.RootElement, options);
+        }
+
+        internal static DynatraceEnvironmentProperties DeserializeDynatraceEnvironmentProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string userId = default;
+            DynatraceAccountInfo accountInfo = default;
+            DynatraceEnvironmentInfo environmentInfo = default;
+            DynatraceSingleSignOnProperties singleSignOnProperties = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("userId"))
+                if (property.NameEquals("userId"u8))
                 {
                     userId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("accountInfo"))
+                if (property.NameEquals("accountInfo"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    accountInfo = AccountInfo.DeserializeAccountInfo(property.Value);
+                    accountInfo = DynatraceAccountInfo.DeserializeDynatraceAccountInfo(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("environmentInfo"))
+                if (property.NameEquals("environmentInfo"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    environmentInfo = EnvironmentInfo.DeserializeEnvironmentInfo(property.Value);
+                    environmentInfo = DynatraceEnvironmentInfo.DeserializeDynatraceEnvironmentInfo(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("singleSignOnProperties"))
+                if (property.NameEquals("singleSignOnProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    singleSignOnProperties = DynatraceSingleSignOnProperties.DeserializeDynatraceSingleSignOnProperties(property.Value);
+                    singleSignOnProperties = DynatraceSingleSignOnProperties.DeserializeDynatraceSingleSignOnProperties(property.Value, options);
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
-            return new DynatraceEnvironmentProperties(userId.Value, accountInfo.Value, environmentInfo.Value, singleSignOnProperties.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new DynatraceEnvironmentProperties(userId, accountInfo, environmentInfo, singleSignOnProperties, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<DynatraceEnvironmentProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceEnvironmentProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DynatraceEnvironmentProperties IPersistableModel<DynatraceEnvironmentProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeDynatraceEnvironmentProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceEnvironmentProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DynatraceEnvironmentProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

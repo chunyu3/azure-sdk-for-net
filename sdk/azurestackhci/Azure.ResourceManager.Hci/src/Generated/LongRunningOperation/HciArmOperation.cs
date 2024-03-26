@@ -8,10 +8,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Hci
 {
@@ -31,14 +29,15 @@ namespace Azure.ResourceManager.Hci
             _operation = OperationInternal.Succeeded(response);
         }
 
-        internal HciArmOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response, OperationFinalStateVia finalStateVia)
+        internal HciArmOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response, OperationFinalStateVia finalStateVia, bool skipApiVersionOverride = false, string apiVersionOverrideValue = null)
         {
-            var nextLinkOperation = NextLinkOperationImplementation.Create(pipeline, request.Method, request.Uri.ToUri(), response, finalStateVia);
-            _operation = new OperationInternal(clientDiagnostics, nextLinkOperation, response, "HciArmOperation", fallbackStrategy: new ExponentialDelayStrategy());
+            var nextLinkOperation = NextLinkOperationImplementation.Create(pipeline, request.Method, request.Uri.ToUri(), response, finalStateVia, skipApiVersionOverride, apiVersionOverrideValue);
+            _operation = new OperationInternal(nextLinkOperation, clientDiagnostics, response, "HciArmOperation", fallbackStrategy: new SequentialDelayStrategy());
         }
 
         /// <inheritdoc />
 #pragma warning disable CA1822
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public override string Id => throw new NotImplementedException();
 #pragma warning restore CA1822
 

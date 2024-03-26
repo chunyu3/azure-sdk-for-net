@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -17,16 +16,20 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static SubscriptionDeletedEventData DeserializeSubscriptionDeletedEventData(JsonElement element)
         {
-            Optional<string> eventSubscriptionId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string eventSubscriptionId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("eventSubscriptionId"))
+                if (property.NameEquals("eventSubscriptionId"u8))
                 {
                     eventSubscriptionId = property.Value.GetString();
                     continue;
                 }
             }
-            return new SubscriptionDeletedEventData(eventSubscriptionId.Value);
+            return new SubscriptionDeletedEventData(eventSubscriptionId);
         }
 
         internal partial class SubscriptionDeletedEventDataConverter : JsonConverter<SubscriptionDeletedEventData>

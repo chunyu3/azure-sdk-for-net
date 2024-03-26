@@ -7,7 +7,7 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.Storage.Common;
 
 namespace Azure.Storage.Files.DataLake.Models
 {
@@ -15,14 +15,17 @@ namespace Azure.Storage.Files.DataLake.Models
     {
         internal static FileSystemList DeserializeFileSystemList(JsonElement element)
         {
-            Optional<IReadOnlyList<FileSystem>> filesystems = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<FileSystem> filesystems = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("filesystems"))
+                if (property.NameEquals("filesystems"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<FileSystem> array = new List<FileSystem>();
@@ -34,7 +37,7 @@ namespace Azure.Storage.Files.DataLake.Models
                     continue;
                 }
             }
-            return new FileSystemList(Optional.ToList(filesystems));
+            return new FileSystemList(filesystems ?? new ChangeTrackingList<FileSystem>());
         }
     }
 }

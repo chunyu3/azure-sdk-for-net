@@ -6,54 +6,94 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.Media.Models
 {
     /// <summary> Configures the Play Right in the PlayReady license. </summary>
     public partial class ContentKeyPolicyPlayReadyPlayRight
     {
-        /// <summary> Initializes a new instance of ContentKeyPolicyPlayReadyPlayRight. </summary>
-        /// <param name="digitalVideoOnlyContentRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
-        /// <param name="imageConstraintForAnalogComponentVideoRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
-        /// <param name="imageConstraintForAnalogComputerMonitorRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyPlayRight"/>. </summary>
+        /// <param name="hasDigitalVideoOnlyContentRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <param name="hasImageConstraintForAnalogComponentVideoRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <param name="hasImageConstraintForAnalogComputerMonitorRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
         /// <param name="allowPassingVideoContentToUnknownOutput"> Configures Unknown output handling settings of the license. </param>
-        public ContentKeyPolicyPlayReadyPlayRight(bool digitalVideoOnlyContentRestriction, bool imageConstraintForAnalogComponentVideoRestriction, bool imageConstraintForAnalogComputerMonitorRestriction, ContentKeyPolicyPlayReadyUnknownOutputPassingOption allowPassingVideoContentToUnknownOutput)
+        public ContentKeyPolicyPlayReadyPlayRight(bool hasDigitalVideoOnlyContentRestriction, bool hasImageConstraintForAnalogComponentVideoRestriction, bool hasImageConstraintForAnalogComputerMonitorRestriction, ContentKeyPolicyPlayReadyUnknownOutputPassingOption allowPassingVideoContentToUnknownOutput)
         {
-            DigitalVideoOnlyContentRestriction = digitalVideoOnlyContentRestriction;
-            ImageConstraintForAnalogComponentVideoRestriction = imageConstraintForAnalogComponentVideoRestriction;
-            ImageConstraintForAnalogComputerMonitorRestriction = imageConstraintForAnalogComputerMonitorRestriction;
+            HasDigitalVideoOnlyContentRestriction = hasDigitalVideoOnlyContentRestriction;
+            HasImageConstraintForAnalogComponentVideoRestriction = hasImageConstraintForAnalogComponentVideoRestriction;
+            HasImageConstraintForAnalogComputerMonitorRestriction = hasImageConstraintForAnalogComputerMonitorRestriction;
             AllowPassingVideoContentToUnknownOutput = allowPassingVideoContentToUnknownOutput;
         }
 
-        /// <summary> Initializes a new instance of ContentKeyPolicyPlayReadyPlayRight. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyPlayRight"/>. </summary>
         /// <param name="firstPlayExpiration"> The amount of time that the license is valid after the license is first used to play content. </param>
         /// <param name="scmsRestriction"> Configures the Serial Copy Management System (SCMS) in the license. Must be between 0 and 3 inclusive. </param>
         /// <param name="agcAndColorStripeRestriction"> Configures Automatic Gain Control (AGC) and Color Stripe in the license. Must be between 0 and 3 inclusive. </param>
         /// <param name="explicitAnalogTelevisionOutputRestriction"> Configures the Explicit Analog Television Output Restriction in the license. Configuration data must be between 0 and 3 inclusive. </param>
-        /// <param name="digitalVideoOnlyContentRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
-        /// <param name="imageConstraintForAnalogComponentVideoRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
-        /// <param name="imageConstraintForAnalogComputerMonitorRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <param name="hasDigitalVideoOnlyContentRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <param name="hasImageConstraintForAnalogComponentVideoRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
+        /// <param name="hasImageConstraintForAnalogComputerMonitorRestriction"> Enables the Image Constraint For Analog Component Video Restriction in the license. </param>
         /// <param name="allowPassingVideoContentToUnknownOutput"> Configures Unknown output handling settings of the license. </param>
-        /// <param name="uncompressedDigitalVideoOpl"> Specifies the output protection level for uncompressed digital video. </param>
-        /// <param name="compressedDigitalVideoOpl"> Specifies the output protection level for compressed digital video. </param>
-        /// <param name="analogVideoOpl"> Specifies the output protection level for compressed digital audio. </param>
-        /// <param name="compressedDigitalAudioOpl"> Specifies the output protection level for compressed digital audio. </param>
-        /// <param name="uncompressedDigitalAudioOpl"> Specifies the output protection level for uncompressed digital audio. </param>
-        internal ContentKeyPolicyPlayReadyPlayRight(TimeSpan? firstPlayExpiration, int? scmsRestriction, int? agcAndColorStripeRestriction, ContentKeyPolicyPlayReadyExplicitAnalogTelevisionRestriction explicitAnalogTelevisionOutputRestriction, bool digitalVideoOnlyContentRestriction, bool imageConstraintForAnalogComponentVideoRestriction, bool imageConstraintForAnalogComputerMonitorRestriction, ContentKeyPolicyPlayReadyUnknownOutputPassingOption allowPassingVideoContentToUnknownOutput, int? uncompressedDigitalVideoOpl, int? compressedDigitalVideoOpl, int? analogVideoOpl, int? compressedDigitalAudioOpl, int? uncompressedDigitalAudioOpl)
+        /// <param name="uncompressedDigitalVideoOutputProtectionLevel"> Specifies the output protection level for uncompressed digital video. </param>
+        /// <param name="compressedDigitalVideoOutputProtectionLevel"> Specifies the output protection level for compressed digital video. </param>
+        /// <param name="analogVideoOutputProtectionLevel"> Specifies the output protection level for compressed digital audio. </param>
+        /// <param name="compressedDigitalAudioOutputProtectionLevel"> Specifies the output protection level for compressed digital audio. </param>
+        /// <param name="uncompressedDigitalAudioOutputProtectionLevel"> Specifies the output protection level for uncompressed digital audio. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ContentKeyPolicyPlayReadyPlayRight(TimeSpan? firstPlayExpiration, int? scmsRestriction, int? agcAndColorStripeRestriction, ContentKeyPolicyPlayReadyExplicitAnalogTelevisionRestriction explicitAnalogTelevisionOutputRestriction, bool hasDigitalVideoOnlyContentRestriction, bool hasImageConstraintForAnalogComponentVideoRestriction, bool hasImageConstraintForAnalogComputerMonitorRestriction, ContentKeyPolicyPlayReadyUnknownOutputPassingOption allowPassingVideoContentToUnknownOutput, int? uncompressedDigitalVideoOutputProtectionLevel, int? compressedDigitalVideoOutputProtectionLevel, int? analogVideoOutputProtectionLevel, int? compressedDigitalAudioOutputProtectionLevel, int? uncompressedDigitalAudioOutputProtectionLevel, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             FirstPlayExpiration = firstPlayExpiration;
             ScmsRestriction = scmsRestriction;
             AgcAndColorStripeRestriction = agcAndColorStripeRestriction;
             ExplicitAnalogTelevisionOutputRestriction = explicitAnalogTelevisionOutputRestriction;
-            DigitalVideoOnlyContentRestriction = digitalVideoOnlyContentRestriction;
-            ImageConstraintForAnalogComponentVideoRestriction = imageConstraintForAnalogComponentVideoRestriction;
-            ImageConstraintForAnalogComputerMonitorRestriction = imageConstraintForAnalogComputerMonitorRestriction;
+            HasDigitalVideoOnlyContentRestriction = hasDigitalVideoOnlyContentRestriction;
+            HasImageConstraintForAnalogComponentVideoRestriction = hasImageConstraintForAnalogComponentVideoRestriction;
+            HasImageConstraintForAnalogComputerMonitorRestriction = hasImageConstraintForAnalogComputerMonitorRestriction;
             AllowPassingVideoContentToUnknownOutput = allowPassingVideoContentToUnknownOutput;
-            UncompressedDigitalVideoOpl = uncompressedDigitalVideoOpl;
-            CompressedDigitalVideoOpl = compressedDigitalVideoOpl;
-            AnalogVideoOpl = analogVideoOpl;
-            CompressedDigitalAudioOpl = compressedDigitalAudioOpl;
-            UncompressedDigitalAudioOpl = uncompressedDigitalAudioOpl;
+            UncompressedDigitalVideoOutputProtectionLevel = uncompressedDigitalVideoOutputProtectionLevel;
+            CompressedDigitalVideoOutputProtectionLevel = compressedDigitalVideoOutputProtectionLevel;
+            AnalogVideoOutputProtectionLevel = analogVideoOutputProtectionLevel;
+            CompressedDigitalAudioOutputProtectionLevel = compressedDigitalAudioOutputProtectionLevel;
+            UncompressedDigitalAudioOutputProtectionLevel = uncompressedDigitalAudioOutputProtectionLevel;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyPlayRight"/> for deserialization. </summary>
+        internal ContentKeyPolicyPlayReadyPlayRight()
+        {
         }
 
         /// <summary> The amount of time that the license is valid after the license is first used to play content. </summary>
@@ -65,22 +105,22 @@ namespace Azure.ResourceManager.Media.Models
         /// <summary> Configures the Explicit Analog Television Output Restriction in the license. Configuration data must be between 0 and 3 inclusive. </summary>
         public ContentKeyPolicyPlayReadyExplicitAnalogTelevisionRestriction ExplicitAnalogTelevisionOutputRestriction { get; set; }
         /// <summary> Enables the Image Constraint For Analog Component Video Restriction in the license. </summary>
-        public bool DigitalVideoOnlyContentRestriction { get; set; }
+        public bool HasDigitalVideoOnlyContentRestriction { get; set; }
         /// <summary> Enables the Image Constraint For Analog Component Video Restriction in the license. </summary>
-        public bool ImageConstraintForAnalogComponentVideoRestriction { get; set; }
+        public bool HasImageConstraintForAnalogComponentVideoRestriction { get; set; }
         /// <summary> Enables the Image Constraint For Analog Component Video Restriction in the license. </summary>
-        public bool ImageConstraintForAnalogComputerMonitorRestriction { get; set; }
+        public bool HasImageConstraintForAnalogComputerMonitorRestriction { get; set; }
         /// <summary> Configures Unknown output handling settings of the license. </summary>
         public ContentKeyPolicyPlayReadyUnknownOutputPassingOption AllowPassingVideoContentToUnknownOutput { get; set; }
         /// <summary> Specifies the output protection level for uncompressed digital video. </summary>
-        public int? UncompressedDigitalVideoOpl { get; set; }
+        public int? UncompressedDigitalVideoOutputProtectionLevel { get; set; }
         /// <summary> Specifies the output protection level for compressed digital video. </summary>
-        public int? CompressedDigitalVideoOpl { get; set; }
+        public int? CompressedDigitalVideoOutputProtectionLevel { get; set; }
         /// <summary> Specifies the output protection level for compressed digital audio. </summary>
-        public int? AnalogVideoOpl { get; set; }
+        public int? AnalogVideoOutputProtectionLevel { get; set; }
         /// <summary> Specifies the output protection level for compressed digital audio. </summary>
-        public int? CompressedDigitalAudioOpl { get; set; }
+        public int? CompressedDigitalAudioOutputProtectionLevel { get; set; }
         /// <summary> Specifies the output protection level for uncompressed digital audio. </summary>
-        public int? UncompressedDigitalAudioOpl { get; set; }
+        public int? UncompressedDigitalAudioOutputProtectionLevel { get; set; }
     }
 }

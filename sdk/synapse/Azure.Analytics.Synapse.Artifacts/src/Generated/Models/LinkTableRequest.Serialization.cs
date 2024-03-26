@@ -20,22 +20,22 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Id))
             {
-                writer.WritePropertyName("id");
+                writer.WritePropertyName("id"u8);
                 writer.WriteStringValue(Id);
             }
             if (Optional.IsDefined(Source))
             {
-                writer.WritePropertyName("source");
-                writer.WriteObjectValue(Source);
+                writer.WritePropertyName("source"u8);
+                writer.WriteObjectValue<LinkTableRequestSource>(Source);
             }
             if (Optional.IsDefined(Target))
             {
-                writer.WritePropertyName("target");
-                writer.WriteObjectValue(Target);
+                writer.WritePropertyName("target"u8);
+                writer.WriteObjectValue<LinkTableRequestTarget>(Target);
             }
             if (Optional.IsDefined(OperationType))
             {
-                writer.WritePropertyName("operationType");
+                writer.WritePropertyName("operationType"u8);
                 writer.WriteStringValue(OperationType);
             }
             writer.WriteEndObject();
@@ -43,51 +43,53 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static LinkTableRequest DeserializeLinkTableRequest(JsonElement element)
         {
-            Optional<string> id = default;
-            Optional<LinkTableRequestSource> source = default;
-            Optional<LinkTableRequestTarget> target = default;
-            Optional<string> operationType = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string id = default;
+            LinkTableRequestSource source = default;
+            LinkTableRequestTarget target = default;
+            string operationType = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("source"))
+                if (property.NameEquals("source"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     source = LinkTableRequestSource.DeserializeLinkTableRequestSource(property.Value);
                     continue;
                 }
-                if (property.NameEquals("target"))
+                if (property.NameEquals("target"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     target = LinkTableRequestTarget.DeserializeLinkTableRequestTarget(property.Value);
                     continue;
                 }
-                if (property.NameEquals("operationType"))
+                if (property.NameEquals("operationType"u8))
                 {
                     operationType = property.Value.GetString();
                     continue;
                 }
             }
-            return new LinkTableRequest(id.Value, source.Value, target.Value, operationType.Value);
+            return new LinkTableRequest(id, source, target, operationType);
         }
 
         internal partial class LinkTableRequestConverter : JsonConverter<LinkTableRequest>
         {
             public override void Write(Utf8JsonWriter writer, LinkTableRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LinkTableRequest>(model);
             }
             public override LinkTableRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

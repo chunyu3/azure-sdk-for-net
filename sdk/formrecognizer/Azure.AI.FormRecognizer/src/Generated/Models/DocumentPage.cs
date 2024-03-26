@@ -8,63 +8,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 
 namespace Azure.AI.FormRecognizer.DocumentAnalysis
 {
     /// <summary> Content and layout elements extracted from a page from the input. </summary>
     public partial class DocumentPage
     {
-        /// <summary> Initializes a new instance of DocumentPage. </summary>
-        /// <param name="kind"> Kind of document page. </param>
+        /// <summary> Initializes a new instance of <see cref="DocumentPage"/>. </summary>
         /// <param name="pageNumber"> 1-based page number in the input document. </param>
         /// <param name="spans"> Location of the page in the reading order concatenated content. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="spans"/> is null. </exception>
-        internal DocumentPage(DocumentPageKind kind, int pageNumber, IEnumerable<DocumentSpan> spans)
+        internal DocumentPage(int pageNumber, IEnumerable<DocumentSpan> spans)
         {
-            if (spans == null)
-            {
-                throw new ArgumentNullException(nameof(spans));
-            }
+            Argument.AssertNotNull(spans, nameof(spans));
 
-            Kind = kind;
             PageNumber = pageNumber;
             Spans = spans.ToList();
             Words = new ChangeTrackingList<DocumentWord>();
             SelectionMarks = new ChangeTrackingList<DocumentSelectionMark>();
-            Images = new ChangeTrackingList<DocumentImage>();
             Lines = new ChangeTrackingList<DocumentLine>();
+            Barcodes = new ChangeTrackingList<DocumentBarcode>();
+            Formulas = new ChangeTrackingList<DocumentFormula>();
         }
 
-        /// <summary> Initializes a new instance of DocumentPage. </summary>
-        /// <param name="kind"> Kind of document page. </param>
-        /// <param name="pageNumber"> 1-based page number in the input document. </param>
-        /// <param name="angle"> The general orientation of the content in clockwise direction, measured in degrees between (-180, 180]. </param>
-        /// <param name="width"> The width of the image/PDF in pixels/inches, respectively. </param>
-        /// <param name="height"> The height of the image/PDF in pixels/inches, respectively. </param>
-        /// <param name="unitPrivate"> The unit used by the width, height, and polygon properties. For images, the unit is &quot;pixel&quot;. For PDF, the unit is &quot;inch&quot;. </param>
-        /// <param name="spans"> Location of the page in the reading order concatenated content. </param>
-        /// <param name="words"> Extracted words from the page. </param>
-        /// <param name="selectionMarks"> Extracted selection marks from the page. </param>
-        /// <param name="images"> Extracted images from the page. </param>
-        /// <param name="lines"> Extracted lines from the page, potentially containing both textual and visual elements. </param>
-        internal DocumentPage(DocumentPageKind kind, int pageNumber, float? angle, float? width, float? height, V3LengthUnit? unitPrivate, IReadOnlyList<DocumentSpan> spans, IReadOnlyList<DocumentWord> words, IReadOnlyList<DocumentSelectionMark> selectionMarks, IReadOnlyList<DocumentImage> images, IReadOnlyList<DocumentLine> lines)
-        {
-            Kind = kind;
-            PageNumber = pageNumber;
-            Angle = angle;
-            Width = width;
-            Height = height;
-            UnitPrivate = unitPrivate;
-            Spans = spans;
-            Words = words;
-            SelectionMarks = selectionMarks;
-            Images = images;
-            Lines = lines;
-        }
-
-        /// <summary> Kind of document page. </summary>
-        public DocumentPageKind Kind { get; }
         /// <summary> 1-based page number in the input document. </summary>
         public int PageNumber { get; }
         /// <summary> The general orientation of the content in clockwise direction, measured in degrees between (-180, 180]. </summary>
@@ -81,5 +47,9 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
         public IReadOnlyList<DocumentSelectionMark> SelectionMarks { get; }
         /// <summary> Extracted lines from the page, potentially containing both textual and visual elements. </summary>
         public IReadOnlyList<DocumentLine> Lines { get; }
+        /// <summary> Extracted barcodes from the page. </summary>
+        public IReadOnlyList<DocumentBarcode> Barcodes { get; }
+        /// <summary> Extracted formulas from the page. </summary>
+        public IReadOnlyList<DocumentFormula> Formulas { get; }
     }
 }

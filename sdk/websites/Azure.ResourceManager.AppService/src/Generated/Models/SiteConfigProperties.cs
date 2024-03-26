@@ -7,27 +7,58 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.AppService.Models
 {
     /// <summary> Configuration of an App Service app. </summary>
     public partial class SiteConfigProperties
     {
-        /// <summary> Initializes a new instance of SiteConfigProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="SiteConfigProperties"/>. </summary>
         public SiteConfigProperties()
         {
             DefaultDocuments = new ChangeTrackingList<string>();
-            AppSettings = new ChangeTrackingList<NameValuePair>();
+            AppSettings = new ChangeTrackingList<AppServiceNameValuePair>();
             ConnectionStrings = new ChangeTrackingList<ConnStringInfo>();
-            HandlerMappings = new ChangeTrackingList<HandlerMapping>();
+            HandlerMappings = new ChangeTrackingList<HttpRequestHandlerMapping>();
             VirtualApplications = new ChangeTrackingList<VirtualApplication>();
-            IPSecurityRestrictions = new ChangeTrackingList<IPSecurityRestriction>();
-            ScmIPSecurityRestrictions = new ChangeTrackingList<IPSecurityRestriction>();
-            AzureStorageAccounts = new ChangeTrackingDictionary<string, AzureStorageInfoValue>();
+            IPSecurityRestrictions = new ChangeTrackingList<AppServiceIPSecurityRestriction>();
+            ScmIPSecurityRestrictions = new ChangeTrackingList<AppServiceIPSecurityRestriction>();
+            AzureStorageAccounts = new ChangeTrackingDictionary<string, AppServiceStorageAccessInfo>();
         }
 
-        /// <summary> Initializes a new instance of SiteConfigProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="SiteConfigProperties"/>. </summary>
         /// <param name="numberOfWorkers"> Number of workers. </param>
         /// <param name="defaultDocuments"> Default documents. </param>
         /// <param name="netFrameworkVersion"> .NET Framework version. </param>
@@ -37,15 +68,15 @@ namespace Azure.ResourceManager.AppService.Models
         /// <param name="powerShellVersion"> Version of PowerShell. </param>
         /// <param name="linuxFxVersion"> Linux App Framework and version. </param>
         /// <param name="windowsFxVersion"> Xenon App Framework and version. </param>
-        /// <param name="requestTracingEnabled"> &lt;code&gt;true&lt;/code&gt; if request tracing is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isRequestTracingEnabled"> &lt;code&gt;true&lt;/code&gt; if request tracing is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="requestTracingExpirationOn"> Request tracing expiration time. </param>
-        /// <param name="remoteDebuggingEnabled"> &lt;code&gt;true&lt;/code&gt; if remote debugging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isRemoteDebuggingEnabled"> &lt;code&gt;true&lt;/code&gt; if remote debugging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="remoteDebuggingVersion"> Remote debugging version. </param>
-        /// <param name="httpLoggingEnabled"> &lt;code&gt;true&lt;/code&gt; if HTTP logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
-        /// <param name="acrUseManagedIdentityCreds"> Flag to use Managed Identity Creds for ACR pull. </param>
+        /// <param name="isHttpLoggingEnabled"> &lt;code&gt;true&lt;/code&gt; if HTTP logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="useManagedIdentityCreds"> Flag to use Managed Identity Creds for ACR pull. </param>
         /// <param name="acrUserManagedIdentityId"> If using user managed identity, the user managed identity ClientId. </param>
         /// <param name="logsDirectorySizeLimit"> HTTP logs directory size limit. </param>
-        /// <param name="detailedErrorLoggingEnabled"> &lt;code&gt;true&lt;/code&gt; if detailed error logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isDetailedErrorLoggingEnabled"> &lt;code&gt;true&lt;/code&gt; if detailed error logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="publishingUsername"> Publishing user name. </param>
         /// <param name="appSettings"> Application settings. </param>
         /// <param name="connectionStrings"> Connection strings. </param>
@@ -54,8 +85,8 @@ namespace Azure.ResourceManager.AppService.Models
         /// <param name="documentRoot"> Document root. </param>
         /// <param name="scmType"> SCM type. </param>
         /// <param name="use32BitWorkerProcess"> &lt;code&gt;true&lt;/code&gt; to use 32-bit worker process; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
-        /// <param name="webSocketsEnabled"> &lt;code&gt;true&lt;/code&gt; if WebSocket is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
-        /// <param name="alwaysOn"> &lt;code&gt;true&lt;/code&gt; if Always On is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isWebSocketsEnabled"> &lt;code&gt;true&lt;/code&gt; if WebSocket is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isAlwaysOn"> &lt;code&gt;true&lt;/code&gt; if Always On is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="javaVersion"> Java version. </param>
         /// <param name="javaContainer"> Java container. </param>
         /// <param name="javaContainerVersion"> Java container version. </param>
@@ -65,25 +96,25 @@ namespace Azure.ResourceManager.AppService.Models
         /// <param name="loadBalancing"> Site load balancing. </param>
         /// <param name="experiments"> This is work around for polymorphic types. </param>
         /// <param name="limits"> Site limits. </param>
-        /// <param name="autoHealEnabled"> &lt;code&gt;true&lt;/code&gt; if Auto Heal is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isAutoHealEnabled"> &lt;code&gt;true&lt;/code&gt; if Auto Heal is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="autoHealRules"> Auto Heal rules. </param>
         /// <param name="tracingOptions"> Tracing options. </param>
         /// <param name="vnetName"> Virtual Network name. </param>
-        /// <param name="vnetRouteAllEnabled"> Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied. </param>
+        /// <param name="isVnetRouteAllEnabled"> Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied. </param>
         /// <param name="vnetPrivatePortsCount"> The number of private ports assigned to this app. These will be assigned dynamically on runtime. </param>
         /// <param name="cors"> Cross-Origin Resource Sharing (CORS) settings. </param>
         /// <param name="push"> Push endpoint settings. </param>
         /// <param name="apiDefinition"> Information about the formal API definition for the app. </param>
         /// <param name="apiManagementConfig"> Azure API management settings linked to the app. </param>
         /// <param name="autoSwapSlotName"> Auto-swap slot name. </param>
-        /// <param name="localMySqlEnabled"> &lt;code&gt;true&lt;/code&gt; to enable local MySQL; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
+        /// <param name="isLocalMySqlEnabled"> &lt;code&gt;true&lt;/code&gt; to enable local MySQL; otherwise, &lt;code&gt;false&lt;/code&gt;. </param>
         /// <param name="managedServiceIdentityId"> Managed Service Identity Id. </param>
         /// <param name="xManagedServiceIdentityId"> Explicit Managed Service Identity Id. </param>
         /// <param name="keyVaultReferenceIdentity"> Identity to use for Key Vault Reference authentication. </param>
         /// <param name="ipSecurityRestrictions"> IP security restrictions for main. </param>
         /// <param name="scmIPSecurityRestrictions"> IP security restrictions for scm. </param>
-        /// <param name="scmIPSecurityRestrictionsUseMain"> IP security restrictions for scm to use main. </param>
-        /// <param name="http20Enabled"> Http20Enabled: configures a web site to allow clients to connect over http2.0. </param>
+        /// <param name="allowIPSecurityRestrictionsForScmToUseMain"> IP security restrictions for scm to use main. </param>
+        /// <param name="isHttp20Enabled"> Http20Enabled: configures a web site to allow clients to connect over http2.0. </param>
         /// <param name="minTlsVersion"> MinTlsVersion: configures the minimum version of TLS required for SSL requests. </param>
         /// <param name="scmMinTlsVersion"> ScmMinTlsVersion: configures the minimum version of TLS required for SSL requests for SCM site. </param>
         /// <param name="ftpsState"> State of FTP / FTPS service. </param>
@@ -96,7 +127,7 @@ namespace Azure.ResourceManager.AppService.Models
         /// This setting only applies to the Consumption and Elastic Premium Plans
         /// </param>
         /// <param name="healthCheckPath"> Health check path. </param>
-        /// <param name="functionsRuntimeScaleMonitoringEnabled">
+        /// <param name="isFunctionsRuntimeScaleMonitoringEnabled">
         /// Gets or sets a value indicating whether functions runtime scale monitoring is enabled. When enabled,
         /// the ScaleController will not monitor event sources directly, but will instead call to the
         /// runtime to get scale status.
@@ -108,7 +139,8 @@ namespace Azure.ResourceManager.AppService.Models
         /// </param>
         /// <param name="azureStorageAccounts"> List of Azure Storage Accounts. </param>
         /// <param name="publicNetworkAccess"> Property to allow or block all public traffic. </param>
-        internal SiteConfigProperties(int? numberOfWorkers, IList<string> defaultDocuments, string netFrameworkVersion, string phpVersion, string pythonVersion, string nodeVersion, string powerShellVersion, string linuxFxVersion, string windowsFxVersion, bool? requestTracingEnabled, DateTimeOffset? requestTracingExpirationOn, bool? remoteDebuggingEnabled, string remoteDebuggingVersion, bool? httpLoggingEnabled, bool? acrUseManagedIdentityCreds, string acrUserManagedIdentityId, int? logsDirectorySizeLimit, bool? detailedErrorLoggingEnabled, string publishingUsername, IList<NameValuePair> appSettings, IList<ConnStringInfo> connectionStrings, SiteMachineKey machineKey, IList<HandlerMapping> handlerMappings, string documentRoot, ScmType? scmType, bool? use32BitWorkerProcess, bool? webSocketsEnabled, bool? alwaysOn, string javaVersion, string javaContainer, string javaContainerVersion, string appCommandLine, ManagedPipelineMode? managedPipelineMode, IList<VirtualApplication> virtualApplications, SiteLoadBalancing? loadBalancing, Experiments experiments, SiteLimits limits, bool? autoHealEnabled, AutoHealRules autoHealRules, string tracingOptions, string vnetName, bool? vnetRouteAllEnabled, int? vnetPrivatePortsCount, CorsSettings cors, PushSettings push, ApiDefinitionInfo apiDefinition, ApiManagementConfig apiManagementConfig, string autoSwapSlotName, bool? localMySqlEnabled, int? managedServiceIdentityId, int? xManagedServiceIdentityId, string keyVaultReferenceIdentity, IList<IPSecurityRestriction> ipSecurityRestrictions, IList<IPSecurityRestriction> scmIPSecurityRestrictions, bool? scmIPSecurityRestrictionsUseMain, bool? http20Enabled, SupportedTlsVersion? minTlsVersion, SupportedTlsVersion? scmMinTlsVersion, FtpsState? ftpsState, int? preWarmedInstanceCount, int? functionAppScaleLimit, string healthCheckPath, bool? functionsRuntimeScaleMonitoringEnabled, string websiteTimeZone, int? minimumElasticInstanceCount, IDictionary<string, AzureStorageInfoValue> azureStorageAccounts, string publicNetworkAccess)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal SiteConfigProperties(int? numberOfWorkers, IList<string> defaultDocuments, string netFrameworkVersion, string phpVersion, string pythonVersion, string nodeVersion, string powerShellVersion, string linuxFxVersion, string windowsFxVersion, bool? isRequestTracingEnabled, DateTimeOffset? requestTracingExpirationOn, bool? isRemoteDebuggingEnabled, string remoteDebuggingVersion, bool? isHttpLoggingEnabled, bool? useManagedIdentityCreds, string acrUserManagedIdentityId, int? logsDirectorySizeLimit, bool? isDetailedErrorLoggingEnabled, string publishingUsername, IList<AppServiceNameValuePair> appSettings, IList<ConnStringInfo> connectionStrings, SiteMachineKey machineKey, IList<HttpRequestHandlerMapping> handlerMappings, string documentRoot, ScmType? scmType, bool? use32BitWorkerProcess, bool? isWebSocketsEnabled, bool? isAlwaysOn, string javaVersion, string javaContainer, string javaContainerVersion, string appCommandLine, ManagedPipelineMode? managedPipelineMode, IList<VirtualApplication> virtualApplications, SiteLoadBalancing? loadBalancing, RoutingRuleExperiments experiments, SiteLimits limits, bool? isAutoHealEnabled, AutoHealRules autoHealRules, string tracingOptions, string vnetName, bool? isVnetRouteAllEnabled, int? vnetPrivatePortsCount, AppServiceCorsSettings cors, WebAppPushSettings push, AppServiceApiDefinitionInfo apiDefinition, ApiManagementConfig apiManagementConfig, string autoSwapSlotName, bool? isLocalMySqlEnabled, int? managedServiceIdentityId, int? xManagedServiceIdentityId, string keyVaultReferenceIdentity, IList<AppServiceIPSecurityRestriction> ipSecurityRestrictions, IList<AppServiceIPSecurityRestriction> scmIPSecurityRestrictions, bool? allowIPSecurityRestrictionsForScmToUseMain, bool? isHttp20Enabled, AppServiceSupportedTlsVersion? minTlsVersion, AppServiceSupportedTlsVersion? scmMinTlsVersion, AppServiceFtpsState? ftpsState, int? preWarmedInstanceCount, int? functionAppScaleLimit, string healthCheckPath, bool? isFunctionsRuntimeScaleMonitoringEnabled, string websiteTimeZone, int? minimumElasticInstanceCount, IDictionary<string, AppServiceStorageAccessInfo> azureStorageAccounts, string publicNetworkAccess, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             NumberOfWorkers = numberOfWorkers;
             DefaultDocuments = defaultDocuments;
@@ -119,15 +151,15 @@ namespace Azure.ResourceManager.AppService.Models
             PowerShellVersion = powerShellVersion;
             LinuxFxVersion = linuxFxVersion;
             WindowsFxVersion = windowsFxVersion;
-            RequestTracingEnabled = requestTracingEnabled;
+            IsRequestTracingEnabled = isRequestTracingEnabled;
             RequestTracingExpirationOn = requestTracingExpirationOn;
-            RemoteDebuggingEnabled = remoteDebuggingEnabled;
+            IsRemoteDebuggingEnabled = isRemoteDebuggingEnabled;
             RemoteDebuggingVersion = remoteDebuggingVersion;
-            HttpLoggingEnabled = httpLoggingEnabled;
-            AcrUseManagedIdentityCreds = acrUseManagedIdentityCreds;
+            IsHttpLoggingEnabled = isHttpLoggingEnabled;
+            UseManagedIdentityCreds = useManagedIdentityCreds;
             AcrUserManagedIdentityId = acrUserManagedIdentityId;
             LogsDirectorySizeLimit = logsDirectorySizeLimit;
-            DetailedErrorLoggingEnabled = detailedErrorLoggingEnabled;
+            IsDetailedErrorLoggingEnabled = isDetailedErrorLoggingEnabled;
             PublishingUsername = publishingUsername;
             AppSettings = appSettings;
             ConnectionStrings = connectionStrings;
@@ -136,8 +168,8 @@ namespace Azure.ResourceManager.AppService.Models
             DocumentRoot = documentRoot;
             ScmType = scmType;
             Use32BitWorkerProcess = use32BitWorkerProcess;
-            WebSocketsEnabled = webSocketsEnabled;
-            AlwaysOn = alwaysOn;
+            IsWebSocketsEnabled = isWebSocketsEnabled;
+            IsAlwaysOn = isAlwaysOn;
             JavaVersion = javaVersion;
             JavaContainer = javaContainer;
             JavaContainerVersion = javaContainerVersion;
@@ -147,149 +179,196 @@ namespace Azure.ResourceManager.AppService.Models
             LoadBalancing = loadBalancing;
             Experiments = experiments;
             Limits = limits;
-            AutoHealEnabled = autoHealEnabled;
+            IsAutoHealEnabled = isAutoHealEnabled;
             AutoHealRules = autoHealRules;
             TracingOptions = tracingOptions;
             VnetName = vnetName;
-            VnetRouteAllEnabled = vnetRouteAllEnabled;
+            IsVnetRouteAllEnabled = isVnetRouteAllEnabled;
             VnetPrivatePortsCount = vnetPrivatePortsCount;
             Cors = cors;
             Push = push;
             ApiDefinition = apiDefinition;
             ApiManagementConfig = apiManagementConfig;
             AutoSwapSlotName = autoSwapSlotName;
-            LocalMySqlEnabled = localMySqlEnabled;
+            IsLocalMySqlEnabled = isLocalMySqlEnabled;
             ManagedServiceIdentityId = managedServiceIdentityId;
             XManagedServiceIdentityId = xManagedServiceIdentityId;
             KeyVaultReferenceIdentity = keyVaultReferenceIdentity;
             IPSecurityRestrictions = ipSecurityRestrictions;
             ScmIPSecurityRestrictions = scmIPSecurityRestrictions;
-            ScmIPSecurityRestrictionsUseMain = scmIPSecurityRestrictionsUseMain;
-            Http20Enabled = http20Enabled;
+            AllowIPSecurityRestrictionsForScmToUseMain = allowIPSecurityRestrictionsForScmToUseMain;
+            IsHttp20Enabled = isHttp20Enabled;
             MinTlsVersion = minTlsVersion;
             ScmMinTlsVersion = scmMinTlsVersion;
             FtpsState = ftpsState;
             PreWarmedInstanceCount = preWarmedInstanceCount;
             FunctionAppScaleLimit = functionAppScaleLimit;
             HealthCheckPath = healthCheckPath;
-            FunctionsRuntimeScaleMonitoringEnabled = functionsRuntimeScaleMonitoringEnabled;
+            IsFunctionsRuntimeScaleMonitoringEnabled = isFunctionsRuntimeScaleMonitoringEnabled;
             WebsiteTimeZone = websiteTimeZone;
             MinimumElasticInstanceCount = minimumElasticInstanceCount;
             AzureStorageAccounts = azureStorageAccounts;
             PublicNetworkAccess = publicNetworkAccess;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Number of workers. </summary>
+        [WirePath("numberOfWorkers")]
         public int? NumberOfWorkers { get; set; }
         /// <summary> Default documents. </summary>
+        [WirePath("defaultDocuments")]
         public IList<string> DefaultDocuments { get; set; }
         /// <summary> .NET Framework version. </summary>
+        [WirePath("netFrameworkVersion")]
         public string NetFrameworkVersion { get; set; }
         /// <summary> Version of PHP. </summary>
+        [WirePath("phpVersion")]
         public string PhpVersion { get; set; }
         /// <summary> Version of Python. </summary>
+        [WirePath("pythonVersion")]
         public string PythonVersion { get; set; }
         /// <summary> Version of Node.js. </summary>
+        [WirePath("nodeVersion")]
         public string NodeVersion { get; set; }
         /// <summary> Version of PowerShell. </summary>
+        [WirePath("powerShellVersion")]
         public string PowerShellVersion { get; set; }
         /// <summary> Linux App Framework and version. </summary>
+        [WirePath("linuxFxVersion")]
         public string LinuxFxVersion { get; set; }
         /// <summary> Xenon App Framework and version. </summary>
+        [WirePath("windowsFxVersion")]
         public string WindowsFxVersion { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if request tracing is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? RequestTracingEnabled { get; set; }
+        [WirePath("requestTracingEnabled")]
+        public bool? IsRequestTracingEnabled { get; set; }
         /// <summary> Request tracing expiration time. </summary>
+        [WirePath("requestTracingExpirationTime")]
         public DateTimeOffset? RequestTracingExpirationOn { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if remote debugging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? RemoteDebuggingEnabled { get; set; }
+        [WirePath("remoteDebuggingEnabled")]
+        public bool? IsRemoteDebuggingEnabled { get; set; }
         /// <summary> Remote debugging version. </summary>
+        [WirePath("remoteDebuggingVersion")]
         public string RemoteDebuggingVersion { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if HTTP logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? HttpLoggingEnabled { get; set; }
+        [WirePath("httpLoggingEnabled")]
+        public bool? IsHttpLoggingEnabled { get; set; }
         /// <summary> Flag to use Managed Identity Creds for ACR pull. </summary>
-        public bool? AcrUseManagedIdentityCreds { get; set; }
+        [WirePath("acrUseManagedIdentityCreds")]
+        public bool? UseManagedIdentityCreds { get; set; }
         /// <summary> If using user managed identity, the user managed identity ClientId. </summary>
+        [WirePath("acrUserManagedIdentityID")]
         public string AcrUserManagedIdentityId { get; set; }
         /// <summary> HTTP logs directory size limit. </summary>
+        [WirePath("logsDirectorySizeLimit")]
         public int? LogsDirectorySizeLimit { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if detailed error logging is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? DetailedErrorLoggingEnabled { get; set; }
+        [WirePath("detailedErrorLoggingEnabled")]
+        public bool? IsDetailedErrorLoggingEnabled { get; set; }
         /// <summary> Publishing user name. </summary>
+        [WirePath("publishingUsername")]
         public string PublishingUsername { get; set; }
         /// <summary> Application settings. </summary>
-        public IList<NameValuePair> AppSettings { get; set; }
+        [WirePath("appSettings")]
+        public IList<AppServiceNameValuePair> AppSettings { get; set; }
         /// <summary> Connection strings. </summary>
+        [WirePath("connectionStrings")]
         public IList<ConnStringInfo> ConnectionStrings { get; set; }
         /// <summary> Site MachineKey. </summary>
+        [WirePath("machineKey")]
         public SiteMachineKey MachineKey { get; }
         /// <summary> Handler mappings. </summary>
-        public IList<HandlerMapping> HandlerMappings { get; set; }
+        [WirePath("handlerMappings")]
+        public IList<HttpRequestHandlerMapping> HandlerMappings { get; set; }
         /// <summary> Document root. </summary>
+        [WirePath("documentRoot")]
         public string DocumentRoot { get; set; }
         /// <summary> SCM type. </summary>
+        [WirePath("scmType")]
         public ScmType? ScmType { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; to use 32-bit worker process; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
+        [WirePath("use32BitWorkerProcess")]
         public bool? Use32BitWorkerProcess { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if WebSocket is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? WebSocketsEnabled { get; set; }
+        [WirePath("webSocketsEnabled")]
+        public bool? IsWebSocketsEnabled { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if Always On is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? AlwaysOn { get; set; }
+        [WirePath("alwaysOn")]
+        public bool? IsAlwaysOn { get; set; }
         /// <summary> Java version. </summary>
+        [WirePath("javaVersion")]
         public string JavaVersion { get; set; }
         /// <summary> Java container. </summary>
+        [WirePath("javaContainer")]
         public string JavaContainer { get; set; }
         /// <summary> Java container version. </summary>
+        [WirePath("javaContainerVersion")]
         public string JavaContainerVersion { get; set; }
         /// <summary> App command line to launch. </summary>
+        [WirePath("appCommandLine")]
         public string AppCommandLine { get; set; }
         /// <summary> Managed pipeline mode. </summary>
+        [WirePath("managedPipelineMode")]
         public ManagedPipelineMode? ManagedPipelineMode { get; set; }
         /// <summary> Virtual applications. </summary>
+        [WirePath("virtualApplications")]
         public IList<VirtualApplication> VirtualApplications { get; set; }
         /// <summary> Site load balancing. </summary>
+        [WirePath("loadBalancing")]
         public SiteLoadBalancing? LoadBalancing { get; set; }
         /// <summary> This is work around for polymorphic types. </summary>
-        internal Experiments Experiments { get; set; }
+        internal RoutingRuleExperiments Experiments { get; set; }
         /// <summary> List of ramp-up rules. </summary>
+        [WirePath("experiments.rampUpRules")]
         public IList<RampUpRule> ExperimentsRampUpRules
         {
             get
             {
                 if (Experiments is null)
-                    Experiments = new Experiments();
+                    Experiments = new RoutingRuleExperiments();
                 return Experiments.RampUpRules;
             }
         }
 
         /// <summary> Site limits. </summary>
+        [WirePath("limits")]
         public SiteLimits Limits { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; if Auto Heal is enabled; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? AutoHealEnabled { get; set; }
+        [WirePath("autoHealEnabled")]
+        public bool? IsAutoHealEnabled { get; set; }
         /// <summary> Auto Heal rules. </summary>
+        [WirePath("autoHealRules")]
         public AutoHealRules AutoHealRules { get; set; }
         /// <summary> Tracing options. </summary>
+        [WirePath("tracingOptions")]
         public string TracingOptions { get; set; }
         /// <summary> Virtual Network name. </summary>
+        [WirePath("vnetName")]
         public string VnetName { get; set; }
         /// <summary> Virtual Network Route All enabled. This causes all outbound traffic to have Virtual Network Security Groups and User Defined Routes applied. </summary>
-        public bool? VnetRouteAllEnabled { get; set; }
+        [WirePath("vnetRouteAllEnabled")]
+        public bool? IsVnetRouteAllEnabled { get; set; }
         /// <summary> The number of private ports assigned to this app. These will be assigned dynamically on runtime. </summary>
+        [WirePath("vnetPrivatePortsCount")]
         public int? VnetPrivatePortsCount { get; set; }
         /// <summary> Cross-Origin Resource Sharing (CORS) settings. </summary>
-        public CorsSettings Cors { get; set; }
+        [WirePath("cors")]
+        public AppServiceCorsSettings Cors { get; set; }
         /// <summary> Push endpoint settings. </summary>
-        public PushSettings Push { get; set; }
+        [WirePath("push")]
+        public WebAppPushSettings Push { get; set; }
         /// <summary> Information about the formal API definition for the app. </summary>
-        internal ApiDefinitionInfo ApiDefinition { get; set; }
+        internal AppServiceApiDefinitionInfo ApiDefinition { get; set; }
         /// <summary> The URL of the API definition. </summary>
+        [WirePath("apiDefinition.url")]
         public Uri ApiDefinitionUri
         {
             get => ApiDefinition is null ? default : ApiDefinition.Uri;
             set
             {
                 if (ApiDefinition is null)
-                    ApiDefinition = new ApiDefinitionInfo();
+                    ApiDefinition = new AppServiceApiDefinitionInfo();
                 ApiDefinition.Uri = value;
             }
         }
@@ -297,6 +376,7 @@ namespace Azure.ResourceManager.AppService.Models
         /// <summary> Azure API management settings linked to the app. </summary>
         internal ApiManagementConfig ApiManagementConfig { get; set; }
         /// <summary> APIM-Api Identifier. </summary>
+        [WirePath("apiManagementConfig.id")]
         public string ApiManagementConfigId
         {
             get => ApiManagementConfig is null ? default : ApiManagementConfig.Id;
@@ -309,57 +389,77 @@ namespace Azure.ResourceManager.AppService.Models
         }
 
         /// <summary> Auto-swap slot name. </summary>
+        [WirePath("autoSwapSlotName")]
         public string AutoSwapSlotName { get; set; }
         /// <summary> &lt;code&gt;true&lt;/code&gt; to enable local MySQL; otherwise, &lt;code&gt;false&lt;/code&gt;. </summary>
-        public bool? LocalMySqlEnabled { get; set; }
+        [WirePath("localMySqlEnabled")]
+        public bool? IsLocalMySqlEnabled { get; set; }
         /// <summary> Managed Service Identity Id. </summary>
+        [WirePath("managedServiceIdentityId")]
         public int? ManagedServiceIdentityId { get; set; }
         /// <summary> Explicit Managed Service Identity Id. </summary>
+        [WirePath("xManagedServiceIdentityId")]
         public int? XManagedServiceIdentityId { get; set; }
         /// <summary> Identity to use for Key Vault Reference authentication. </summary>
+        [WirePath("keyVaultReferenceIdentity")]
         public string KeyVaultReferenceIdentity { get; set; }
         /// <summary> IP security restrictions for main. </summary>
-        public IList<IPSecurityRestriction> IPSecurityRestrictions { get; set; }
+        [WirePath("ipSecurityRestrictions")]
+        public IList<AppServiceIPSecurityRestriction> IPSecurityRestrictions { get; set; }
         /// <summary> IP security restrictions for scm. </summary>
-        public IList<IPSecurityRestriction> ScmIPSecurityRestrictions { get; set; }
+        [WirePath("scmIpSecurityRestrictions")]
+        public IList<AppServiceIPSecurityRestriction> ScmIPSecurityRestrictions { get; set; }
         /// <summary> IP security restrictions for scm to use main. </summary>
-        public bool? ScmIPSecurityRestrictionsUseMain { get; set; }
+        [WirePath("scmIpSecurityRestrictionsUseMain")]
+        public bool? AllowIPSecurityRestrictionsForScmToUseMain { get; set; }
         /// <summary> Http20Enabled: configures a web site to allow clients to connect over http2.0. </summary>
-        public bool? Http20Enabled { get; set; }
+        [WirePath("http20Enabled")]
+        public bool? IsHttp20Enabled { get; set; }
         /// <summary> MinTlsVersion: configures the minimum version of TLS required for SSL requests. </summary>
-        public SupportedTlsVersion? MinTlsVersion { get; set; }
+        [WirePath("minTlsVersion")]
+        public AppServiceSupportedTlsVersion? MinTlsVersion { get; set; }
         /// <summary> ScmMinTlsVersion: configures the minimum version of TLS required for SSL requests for SCM site. </summary>
-        public SupportedTlsVersion? ScmMinTlsVersion { get; set; }
+        [WirePath("scmMinTlsVersion")]
+        public AppServiceSupportedTlsVersion? ScmMinTlsVersion { get; set; }
         /// <summary> State of FTP / FTPS service. </summary>
-        public FtpsState? FtpsState { get; set; }
+        [WirePath("ftpsState")]
+        public AppServiceFtpsState? FtpsState { get; set; }
         /// <summary>
         /// Number of preWarmed instances.
         /// This setting only applies to the Consumption and Elastic Plans
         /// </summary>
+        [WirePath("preWarmedInstanceCount")]
         public int? PreWarmedInstanceCount { get; set; }
         /// <summary>
         /// Maximum number of workers that a site can scale out to.
         /// This setting only applies to the Consumption and Elastic Premium Plans
         /// </summary>
+        [WirePath("functionAppScaleLimit")]
         public int? FunctionAppScaleLimit { get; set; }
         /// <summary> Health check path. </summary>
+        [WirePath("healthCheckPath")]
         public string HealthCheckPath { get; set; }
         /// <summary>
         /// Gets or sets a value indicating whether functions runtime scale monitoring is enabled. When enabled,
         /// the ScaleController will not monitor event sources directly, but will instead call to the
         /// runtime to get scale status.
         /// </summary>
-        public bool? FunctionsRuntimeScaleMonitoringEnabled { get; set; }
+        [WirePath("functionsRuntimeScaleMonitoringEnabled")]
+        public bool? IsFunctionsRuntimeScaleMonitoringEnabled { get; set; }
         /// <summary> Sets the time zone a site uses for generating timestamps. Compatible with Linux and Windows App Service. Setting the WEBSITE_TIME_ZONE app setting takes precedence over this config. For Linux, expects tz database values https://www.iana.org/time-zones (for a quick reference see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones). For Windows, expects one of the time zones listed under HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Time Zones. </summary>
+        [WirePath("websiteTimeZone")]
         public string WebsiteTimeZone { get; set; }
         /// <summary>
         /// Number of minimum instance count for a site
         /// This setting only applies to the Elastic Plans
         /// </summary>
+        [WirePath("minimumElasticInstanceCount")]
         public int? MinimumElasticInstanceCount { get; set; }
         /// <summary> List of Azure Storage Accounts. </summary>
-        public IDictionary<string, AzureStorageInfoValue> AzureStorageAccounts { get; set; }
+        [WirePath("azureStorageAccounts")]
+        public IDictionary<string, AppServiceStorageAccessInfo> AzureStorageAccounts { get; set; }
         /// <summary> Property to allow or block all public traffic. </summary>
+        [WirePath("publicNetworkAccess")]
         public string PublicNetworkAccess { get; set; }
     }
 }

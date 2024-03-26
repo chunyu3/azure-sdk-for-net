@@ -5,22 +5,32 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    public partial class HdfsDatastore : IUtf8JsonSerializable
+    public partial class HdfsDatastore : IUtf8JsonSerializable, IJsonModel<HdfsDatastore>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<HdfsDatastore>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<HdfsDatastore>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<HdfsDatastore>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HdfsDatastore)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(HdfsServerCertificate))
             {
                 if (HdfsServerCertificate != null)
                 {
-                    writer.WritePropertyName("hdfsServerCertificate");
+                    writer.WritePropertyName("hdfsServerCertificate"u8);
                     writer.WriteStringValue(HdfsServerCertificate);
                 }
                 else
@@ -28,29 +38,39 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     writer.WriteNull("hdfsServerCertificate");
                 }
             }
-            writer.WritePropertyName("nameNodeAddress");
+            writer.WritePropertyName("nameNodeAddress"u8);
             writer.WriteStringValue(NameNodeAddress);
             if (Optional.IsDefined(Protocol))
             {
-                if (Protocol != null)
+                writer.WritePropertyName("protocol"u8);
+                writer.WriteStringValue(Protocol);
+            }
+            writer.WritePropertyName("credentials"u8);
+            writer.WriteObjectValue<MachineLearningDatastoreCredentials>(Credentials, options);
+            writer.WritePropertyName("datastoreType"u8);
+            writer.WriteStringValue(DatastoreType.ToString());
+            if (Optional.IsDefined(IntellectualProperty))
+            {
+                if (IntellectualProperty != null)
                 {
-                    writer.WritePropertyName("protocol");
-                    writer.WriteStringValue(Protocol);
+                    writer.WritePropertyName("intellectualProperty"u8);
+                    writer.WriteObjectValue<IntellectualProperty>(IntellectualProperty, options);
                 }
                 else
                 {
-                    writer.WriteNull("protocol");
+                    writer.WriteNull("intellectualProperty");
                 }
             }
-            writer.WritePropertyName("credentials");
-            writer.WriteObjectValue(Credentials);
-            writer.WritePropertyName("datastoreType");
-            writer.WriteStringValue(DatastoreType.ToString());
+            if (options.Format != "W" && Optional.IsDefined(IsDefault))
+            {
+                writer.WritePropertyName("isDefault"u8);
+                writer.WriteBooleanValue(IsDefault.Value);
+            }
             if (Optional.IsDefined(Description))
             {
                 if (Description != null)
                 {
-                    writer.WritePropertyName("description");
+                    writer.WritePropertyName("description"u8);
                     writer.WriteStringValue(Description);
                 }
                 else
@@ -62,7 +82,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
             {
                 if (Properties != null)
                 {
-                    writer.WritePropertyName("properties");
+                    writer.WritePropertyName("properties"u8);
                     writer.WriteStartObject();
                     foreach (var item in Properties)
                     {
@@ -80,7 +100,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
             {
                 if (Tags != null)
                 {
-                    writer.WritePropertyName("tags");
+                    writer.WritePropertyName("tags"u8);
                     writer.WriteStartObject();
                     foreach (var item in Tags)
                     {
@@ -94,23 +114,59 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     writer.WriteNull("tags");
                 }
             }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static HdfsDatastore DeserializeHdfsDatastore(JsonElement element)
+        HdfsDatastore IJsonModel<HdfsDatastore>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> hdfsServerCertificate = default;
+            var format = options.Format == "W" ? ((IPersistableModel<HdfsDatastore>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HdfsDatastore)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeHdfsDatastore(document.RootElement, options);
+        }
+
+        internal static HdfsDatastore DeserializeHdfsDatastore(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string hdfsServerCertificate = default;
             string nameNodeAddress = default;
-            Optional<string> protocol = default;
-            DatastoreCredentials credentials = default;
+            string protocol = default;
+            MachineLearningDatastoreCredentials credentials = default;
             DatastoreType datastoreType = default;
-            Optional<bool> isDefault = default;
-            Optional<string> description = default;
-            Optional<IDictionary<string, string>> properties = default;
-            Optional<IDictionary<string, string>> tags = default;
+            IntellectualProperty intellectualProperty = default;
+            bool? isDefault = default;
+            string description = default;
+            IDictionary<string, string> properties = default;
+            IDictionary<string, string> tags = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("hdfsServerCertificate"))
+                if (property.NameEquals("hdfsServerCertificate"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -120,42 +176,46 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     hdfsServerCertificate = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("nameNodeAddress"))
+                if (property.NameEquals("nameNodeAddress"u8))
                 {
                     nameNodeAddress = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("protocol"))
+                if (property.NameEquals("protocol"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        protocol = null;
-                        continue;
-                    }
                     protocol = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("credentials"))
+                if (property.NameEquals("credentials"u8))
                 {
-                    credentials = DatastoreCredentials.DeserializeDatastoreCredentials(property.Value);
+                    credentials = MachineLearningDatastoreCredentials.DeserializeMachineLearningDatastoreCredentials(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("datastoreType"))
+                if (property.NameEquals("datastoreType"u8))
                 {
                     datastoreType = new DatastoreType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("isDefault"))
+                if (property.NameEquals("intellectualProperty"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        intellectualProperty = null;
+                        continue;
+                    }
+                    intellectualProperty = IntellectualProperty.DeserializeIntellectualProperty(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("isDefault"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     isDefault = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -165,7 +225,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -175,19 +235,12 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     Dictionary<string, string> dictionary = new Dictionary<string, string>();
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.Value.ValueKind == JsonValueKind.Null)
-                        {
-                            dictionary.Add(property0.Name, null);
-                        }
-                        else
-                        {
-                            dictionary.Add(property0.Name, property0.Value.GetString());
-                        }
+                        dictionary.Add(property0.Name, property0.Value.GetString());
                     }
                     properties = dictionary;
                     continue;
                 }
-                if (property.NameEquals("tags"))
+                if (property.NameEquals("tags"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -197,20 +250,60 @@ namespace Azure.ResourceManager.MachineLearning.Models
                     Dictionary<string, string> dictionary = new Dictionary<string, string>();
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.Value.ValueKind == JsonValueKind.Null)
-                        {
-                            dictionary.Add(property0.Name, null);
-                        }
-                        else
-                        {
-                            dictionary.Add(property0.Name, property0.Value.GetString());
-                        }
+                        dictionary.Add(property0.Name, property0.Value.GetString());
                     }
                     tags = dictionary;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new HdfsDatastore(description.Value, Optional.ToDictionary(properties), Optional.ToDictionary(tags), credentials, datastoreType, Optional.ToNullable(isDefault), hdfsServerCertificate.Value, nameNodeAddress, protocol.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new HdfsDatastore(
+                description,
+                properties ?? new ChangeTrackingDictionary<string, string>(),
+                tags ?? new ChangeTrackingDictionary<string, string>(),
+                serializedAdditionalRawData,
+                credentials,
+                datastoreType,
+                intellectualProperty,
+                isDefault,
+                hdfsServerCertificate,
+                nameNodeAddress,
+                protocol);
         }
+
+        BinaryData IPersistableModel<HdfsDatastore>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<HdfsDatastore>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(HdfsDatastore)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        HdfsDatastore IPersistableModel<HdfsDatastore>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<HdfsDatastore>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeHdfsDatastore(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(HdfsDatastore)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<HdfsDatastore>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Quantum.Jobs.Models
 {
@@ -14,44 +13,46 @@ namespace Azure.Quantum.Jobs.Models
     {
         internal static TargetStatus DeserializeTargetStatus(JsonElement element)
         {
-            Optional<string> id = default;
-            Optional<TargetAvailability> currentAvailability = default;
-            Optional<long> averageQueueTime = default;
-            Optional<string> statusPage = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string id = default;
+            TargetAvailability? currentAvailability = default;
+            long? averageQueueTime = default;
+            string statusPage = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("currentAvailability"))
+                if (property.NameEquals("currentAvailability"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     currentAvailability = new TargetAvailability(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("averageQueueTime"))
+                if (property.NameEquals("averageQueueTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     averageQueueTime = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("statusPage"))
+                if (property.NameEquals("statusPage"u8))
                 {
                     statusPage = property.Value.GetString();
                     continue;
                 }
             }
-            return new TargetStatus(id.Value, Optional.ToNullable(currentAvailability), Optional.ToNullable(averageQueueTime), statusPage.Value);
+            return new TargetStatus(id, currentAvailability, averageQueueTime, statusPage);
         }
     }
 }

@@ -5,58 +5,135 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.WebPubSub.Models
 {
-    public partial class WebPubSubSkuCapacity
+    public partial class WebPubSubSkuCapacity : IUtf8JsonSerializable, IJsonModel<WebPubSubSkuCapacity>
     {
-        internal static WebPubSubSkuCapacity DeserializeWebPubSubSkuCapacity(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<WebPubSubSkuCapacity>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<WebPubSubSkuCapacity>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<int> minimum = default;
-            Optional<int> maximum = default;
-            Optional<int> @default = default;
-            Optional<IReadOnlyList<int>> allowedValues = default;
-            Optional<WebPubSubScaleType> scaleType = default;
+            var format = options.Format == "W" ? ((IPersistableModel<WebPubSubSkuCapacity>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WebPubSubSkuCapacity)} does not support writing '{format}' format.");
+            }
+
+            writer.WriteStartObject();
+            if (options.Format != "W" && Optional.IsDefined(Minimum))
+            {
+                writer.WritePropertyName("minimum"u8);
+                writer.WriteNumberValue(Minimum.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Maximum))
+            {
+                writer.WritePropertyName("maximum"u8);
+                writer.WriteNumberValue(Maximum.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Default))
+            {
+                writer.WritePropertyName("default"u8);
+                writer.WriteNumberValue(Default.Value);
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(AllowedValues))
+            {
+                writer.WritePropertyName("allowedValues"u8);
+                writer.WriteStartArray();
+                foreach (var item in AllowedValues)
+                {
+                    writer.WriteNumberValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsDefined(ScaleType))
+            {
+                writer.WritePropertyName("scaleType"u8);
+                writer.WriteStringValue(ScaleType.Value.ToString());
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+            writer.WriteEndObject();
+        }
+
+        WebPubSubSkuCapacity IJsonModel<WebPubSubSkuCapacity>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WebPubSubSkuCapacity>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WebPubSubSkuCapacity)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWebPubSubSkuCapacity(document.RootElement, options);
+        }
+
+        internal static WebPubSubSkuCapacity DeserializeWebPubSubSkuCapacity(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? minimum = default;
+            int? maximum = default;
+            int? @default = default;
+            IReadOnlyList<int> allowedValues = default;
+            WebPubSubScaleType? scaleType = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("minimum"))
+                if (property.NameEquals("minimum"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     minimum = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maximum"))
+                if (property.NameEquals("maximum"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maximum = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("default"))
+                if (property.NameEquals("default"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     @default = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("allowedValues"))
+                if (property.NameEquals("allowedValues"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<int> array = new List<int>();
@@ -67,18 +144,59 @@ namespace Azure.ResourceManager.WebPubSub.Models
                     allowedValues = array;
                     continue;
                 }
-                if (property.NameEquals("scaleType"))
+                if (property.NameEquals("scaleType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     scaleType = new WebPubSubScaleType(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new WebPubSubSkuCapacity(Optional.ToNullable(minimum), Optional.ToNullable(maximum), Optional.ToNullable(@default), Optional.ToList(allowedValues), Optional.ToNullable(scaleType));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new WebPubSubSkuCapacity(
+                minimum,
+                maximum,
+                @default,
+                allowedValues ?? new ChangeTrackingList<int>(),
+                scaleType,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<WebPubSubSkuCapacity>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WebPubSubSkuCapacity>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(WebPubSubSkuCapacity)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        WebPubSubSkuCapacity IPersistableModel<WebPubSubSkuCapacity>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WebPubSubSkuCapacity>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeWebPubSubSkuCapacity(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WebPubSubSkuCapacity)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<WebPubSubSkuCapacity>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

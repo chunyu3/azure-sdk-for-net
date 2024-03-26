@@ -8,6 +8,9 @@ input-file:
 generation1-convenience-client: true
 modelerfour:
     seal-single-value-enum-by-default: true
+protocol-method-list:
+  - Service_SubmitBatch
+  - Container_SubmitBatch
 ```
 
 ### Batch returns a 202
@@ -87,7 +90,6 @@ directive:
   where: $.parameters
   transform: >
     delete $.Snapshot["x-ms-parameter-location"];
-    delete $.VersionId["x-ms-parameter-location"];
 ```
 
 ### Make Blob a constructor parameter

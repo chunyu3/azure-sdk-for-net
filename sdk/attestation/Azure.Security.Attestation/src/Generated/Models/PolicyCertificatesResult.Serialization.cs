@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Security.Attestation
 {
@@ -17,21 +16,24 @@ namespace Azure.Security.Attestation
     {
         internal static PolicyCertificatesResult DeserializePolicyCertificatesResult(JsonElement element)
         {
-            Optional<JsonWebKeySet> xMsPolicyCertificates = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            JsonWebKeySet xMsPolicyCertificates = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("x-ms-policy-certificates"))
+                if (property.NameEquals("x-ms-policy-certificates"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     xMsPolicyCertificates = JsonWebKeySet.DeserializeJsonWebKeySet(property.Value);
                     continue;
                 }
             }
-            return new PolicyCertificatesResult(xMsPolicyCertificates.Value);
+            return new PolicyCertificatesResult(xMsPolicyCertificates);
         }
 
         internal partial class PolicyCertificatesResultConverter : JsonConverter<PolicyCertificatesResult>

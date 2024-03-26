@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.StreamAnalytics.Models;
@@ -65,7 +65,7 @@ namespace Azure.ResourceManager.StreamAnalytics
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(input);
+            content.JsonWriter.WriteObjectValue<StreamingJobInputData>(input, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -78,7 +78,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="inputName"> The name of the input. </param>
         /// <param name="input"> The definition of the input that will be used to create a new input or replace the existing one under the streaming job. </param>
         /// <param name="ifMatch"> The ETag of the input. Omit this value to always overwrite the current input. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new input to be created, but to prevent updating an existing input. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new input to be created, but to prevent updating an existing input. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="jobName"/>, <paramref name="inputName"/> or <paramref name="input"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="jobName"/> or <paramref name="inputName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -114,7 +114,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="inputName"> The name of the input. </param>
         /// <param name="input"> The definition of the input that will be used to create a new input or replace the existing one under the streaming job. </param>
         /// <param name="ifMatch"> The ETag of the input. Omit this value to always overwrite the current input. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new input to be created, but to prevent updating an existing input. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new input to be created, but to prevent updating an existing input. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="jobName"/>, <paramref name="inputName"/> or <paramref name="input"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="jobName"/> or <paramref name="inputName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -167,7 +167,7 @@ namespace Azure.ResourceManager.StreamAnalytics
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(input);
+            content.JsonWriter.WriteObjectValue<StreamingJobInputData>(input, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -434,11 +434,11 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="jobName"> The name of the streaming job. </param>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<InputListResult>> ListByStreamingJobAsync(string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
+        public async Task<Response<StreamingJobInputListResult>> ListByStreamingJobAsync(string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -450,9 +450,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        InputListResult value = default;
+                        StreamingJobInputListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = InputListResult.DeserializeInputListResult(document.RootElement);
+                        value = StreamingJobInputListResult.DeserializeStreamingJobInputListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -464,11 +464,11 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="jobName"> The name of the streaming job. </param>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<InputListResult> ListByStreamingJob(string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
+        public Response<StreamingJobInputListResult> ListByStreamingJob(string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -480,9 +480,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        InputListResult value = default;
+                        StreamingJobInputListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = InputListResult.DeserializeInputListResult(document.RootElement);
+                        value = StreamingJobInputListResult.DeserializeStreamingJobInputListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -513,7 +513,7 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 request.Headers.Add("Content-Type", "application/json");
                 var content = new Utf8JsonRequestContent();
-                content.JsonWriter.WriteObjectValue(input);
+                content.JsonWriter.WriteObjectValue<StreamingJobInputData>(input, new ModelReaderWriterOptions("W"));
                 request.Content = content;
             }
             _userAgent.Apply(message);
@@ -595,11 +595,11 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="jobName"> The name of the streaming job. </param>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<InputListResult>> ListByStreamingJobNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
+        public async Task<Response<StreamingJobInputListResult>> ListByStreamingJobNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -612,9 +612,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        InputListResult value = default;
+                        StreamingJobInputListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = InputListResult.DeserializeInputListResult(document.RootElement);
+                        value = StreamingJobInputListResult.DeserializeStreamingJobInputListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -627,11 +627,11 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="jobName"> The name of the streaming job. </param>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="jobName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<InputListResult> ListByStreamingJobNextPage(string nextLink, string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
+        public Response<StreamingJobInputListResult> ListByStreamingJobNextPage(string nextLink, string subscriptionId, string resourceGroupName, string jobName, string select = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -644,9 +644,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        InputListResult value = default;
+                        StreamingJobInputListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = InputListResult.DeserializeInputListResult(document.RootElement);
+                        value = StreamingJobInputListResult.DeserializeStreamingJobInputListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

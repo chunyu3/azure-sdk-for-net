@@ -21,85 +21,85 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(OperationTimeout))
             {
-                writer.WritePropertyName("operationTimeout");
-                writer.WriteObjectValue(OperationTimeout);
+                writer.WritePropertyName("operationTimeout"u8);
+                writer.WriteObjectValue<object>(OperationTimeout);
             }
             if (Optional.IsDefined(UseTempFileRename))
             {
-                writer.WritePropertyName("useTempFileRename");
-                writer.WriteObjectValue(UseTempFileRename);
+                writer.WritePropertyName("useTempFileRename"u8);
+                writer.WriteObjectValue<object>(UseTempFileRename);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(MaxConcurrentConnections))
             {
-                writer.WritePropertyName("maxConcurrentConnections");
-                writer.WriteObjectValue(MaxConcurrentConnections);
+                writer.WritePropertyName("maxConcurrentConnections"u8);
+                writer.WriteObjectValue<object>(MaxConcurrentConnections);
             }
             if (Optional.IsDefined(CopyBehavior))
             {
-                writer.WritePropertyName("copyBehavior");
-                writer.WriteObjectValue(CopyBehavior);
+                writer.WritePropertyName("copyBehavior"u8);
+                writer.WriteObjectValue<object>(CopyBehavior);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static SftpWriteSettings DeserializeSftpWriteSettings(JsonElement element)
         {
-            Optional<object> operationTimeout = default;
-            Optional<object> useTempFileRename = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object operationTimeout = default;
+            object useTempFileRename = default;
             string type = default;
-            Optional<object> maxConcurrentConnections = default;
-            Optional<object> copyBehavior = default;
+            object maxConcurrentConnections = default;
+            object copyBehavior = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("operationTimeout"))
+                if (property.NameEquals("operationTimeout"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     operationTimeout = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("useTempFileRename"))
+                if (property.NameEquals("useTempFileRename"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     useTempFileRename = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("maxConcurrentConnections"))
+                if (property.NameEquals("maxConcurrentConnections"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxConcurrentConnections = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("copyBehavior"))
+                if (property.NameEquals("copyBehavior"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     copyBehavior = property.Value.GetObject();
@@ -108,14 +108,20 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new SftpWriteSettings(type, maxConcurrentConnections.Value, copyBehavior.Value, additionalProperties, operationTimeout.Value, useTempFileRename.Value);
+            return new SftpWriteSettings(
+                type,
+                maxConcurrentConnections,
+                copyBehavior,
+                additionalProperties,
+                operationTimeout,
+                useTempFileRename);
         }
 
         internal partial class SftpWriteSettingsConverter : JsonConverter<SftpWriteSettings>
         {
             public override void Write(Utf8JsonWriter writer, SftpWriteSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SftpWriteSettings>(model);
             }
             public override SftpWriteSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

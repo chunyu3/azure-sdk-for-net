@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.MySql.Models;
@@ -37,7 +37,7 @@ namespace Azure.ResourceManager.MySql
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName)
+        internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -59,7 +59,7 @@ namespace Azure.ResourceManager.MySql
             return message;
         }
 
-        /// <summary> Get a server&apos;s security alert policy. </summary>
+        /// <summary> Get a server's security alert policy. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
@@ -67,7 +67,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ServerSecurityAlertPolicyData>> GetAsync(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlServerSecurityAlertPolicyData>> GetAsync(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -79,19 +79,19 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyData value = default;
+                        MySqlServerSecurityAlertPolicyData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ServerSecurityAlertPolicyData.DeserializeServerSecurityAlertPolicyData(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyData.DeserializeMySqlServerSecurityAlertPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((ServerSecurityAlertPolicyData)null, message.Response);
+                    return Response.FromValue((MySqlServerSecurityAlertPolicyData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Get a server&apos;s security alert policy. </summary>
+        /// <summary> Get a server's security alert policy. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
@@ -99,7 +99,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ServerSecurityAlertPolicyData> Get(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName, CancellationToken cancellationToken = default)
+        public Response<MySqlServerSecurityAlertPolicyData> Get(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -111,19 +111,19 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyData value = default;
+                        MySqlServerSecurityAlertPolicyData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ServerSecurityAlertPolicyData.DeserializeServerSecurityAlertPolicyData(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyData.DeserializeMySqlServerSecurityAlertPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((ServerSecurityAlertPolicyData)null, message.Response);
+                    return Response.FromValue((MySqlServerSecurityAlertPolicyData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName, ServerSecurityAlertPolicyData data)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName, MySqlServerSecurityAlertPolicyData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -143,7 +143,7 @@ namespace Azure.ResourceManager.MySql
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<MySqlServerSecurityAlertPolicyData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -158,7 +158,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName, ServerSecurityAlertPolicyData data, CancellationToken cancellationToken = default)
+        public async Task<Response> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName, MySqlServerSecurityAlertPolicyData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -186,7 +186,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response CreateOrUpdate(string subscriptionId, string resourceGroupName, string serverName, SecurityAlertPolicyName securityAlertPolicyName, ServerSecurityAlertPolicyData data, CancellationToken cancellationToken = default)
+        public Response CreateOrUpdate(string subscriptionId, string resourceGroupName, string serverName, MySqlSecurityAlertPolicyName securityAlertPolicyName, MySqlServerSecurityAlertPolicyData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -226,14 +226,14 @@ namespace Azure.ResourceManager.MySql
             return message;
         }
 
-        /// <summary> Get the server&apos;s threat detection policies. </summary>
+        /// <summary> Get the server's threat detection policies. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ServerSecurityAlertPolicyListResult>> ListByServerAsync(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlServerSecurityAlertPolicyListResult>> ListByServerAsync(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -245,9 +245,9 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyListResult value = default;
+                        MySqlServerSecurityAlertPolicyListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ServerSecurityAlertPolicyListResult.DeserializeServerSecurityAlertPolicyListResult(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyListResult.DeserializeMySqlServerSecurityAlertPolicyListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -255,14 +255,14 @@ namespace Azure.ResourceManager.MySql
             }
         }
 
-        /// <summary> Get the server&apos;s threat detection policies. </summary>
+        /// <summary> Get the server's threat detection policies. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ServerSecurityAlertPolicyListResult> ListByServer(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public Response<MySqlServerSecurityAlertPolicyListResult> ListByServer(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -274,9 +274,9 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyListResult value = default;
+                        MySqlServerSecurityAlertPolicyListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ServerSecurityAlertPolicyListResult.DeserializeServerSecurityAlertPolicyListResult(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyListResult.DeserializeMySqlServerSecurityAlertPolicyListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -298,7 +298,7 @@ namespace Azure.ResourceManager.MySql
             return message;
         }
 
-        /// <summary> Get the server&apos;s threat detection policies. </summary>
+        /// <summary> Get the server's threat detection policies. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -306,7 +306,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ServerSecurityAlertPolicyListResult>> ListByServerNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlServerSecurityAlertPolicyListResult>> ListByServerNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -319,9 +319,9 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyListResult value = default;
+                        MySqlServerSecurityAlertPolicyListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ServerSecurityAlertPolicyListResult.DeserializeServerSecurityAlertPolicyListResult(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyListResult.DeserializeMySqlServerSecurityAlertPolicyListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -329,7 +329,7 @@ namespace Azure.ResourceManager.MySql
             }
         }
 
-        /// <summary> Get the server&apos;s threat detection policies. </summary>
+        /// <summary> Get the server's threat detection policies. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -337,7 +337,7 @@ namespace Azure.ResourceManager.MySql
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ServerSecurityAlertPolicyListResult> ListByServerNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public Response<MySqlServerSecurityAlertPolicyListResult> ListByServerNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -350,9 +350,9 @@ namespace Azure.ResourceManager.MySql
             {
                 case 200:
                     {
-                        ServerSecurityAlertPolicyListResult value = default;
+                        MySqlServerSecurityAlertPolicyListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ServerSecurityAlertPolicyListResult.DeserializeServerSecurityAlertPolicyListResult(document.RootElement);
+                        value = MySqlServerSecurityAlertPolicyListResult.DeserializeMySqlServerSecurityAlertPolicyListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

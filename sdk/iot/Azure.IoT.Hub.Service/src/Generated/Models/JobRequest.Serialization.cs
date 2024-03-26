@@ -17,37 +17,37 @@ namespace Azure.IoT.Hub.Service.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(JobId))
             {
-                writer.WritePropertyName("jobId");
+                writer.WritePropertyName("jobId"u8);
                 writer.WriteStringValue(JobId);
             }
             if (Optional.IsDefined(Type))
             {
-                writer.WritePropertyName("type");
+                writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(Type.Value.ToString());
             }
             if (Optional.IsDefined(CloudToDeviceMethod))
             {
-                writer.WritePropertyName("cloudToDeviceMethod");
-                writer.WriteObjectValue(CloudToDeviceMethod);
+                writer.WritePropertyName("cloudToDeviceMethod"u8);
+                writer.WriteObjectValue<CloudToDeviceMethodRequest>(CloudToDeviceMethod);
             }
             if (Optional.IsDefined(UpdateTwin))
             {
-                writer.WritePropertyName("updateTwin");
-                writer.WriteObjectValue(UpdateTwin);
+                writer.WritePropertyName("updateTwin"u8);
+                writer.WriteObjectValue<TwinData>(UpdateTwin);
             }
             if (Optional.IsDefined(QueryCondition))
             {
-                writer.WritePropertyName("queryCondition");
+                writer.WritePropertyName("queryCondition"u8);
                 writer.WriteStringValue(QueryCondition);
             }
             if (Optional.IsDefined(StartTime))
             {
-                writer.WritePropertyName("startTime");
+                writer.WritePropertyName("startTime"u8);
                 writer.WriteStringValue(StartTime.Value, "O");
             }
             if (Optional.IsDefined(MaxExecutionTimeInSeconds))
             {
-                writer.WritePropertyName("maxExecutionTimeInSeconds");
+                writer.WritePropertyName("maxExecutionTimeInSeconds"u8);
                 writer.WriteNumberValue(MaxExecutionTimeInSeconds.Value);
             }
             writer.WriteEndObject();

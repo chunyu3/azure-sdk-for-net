@@ -6,35 +6,63 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
+using Azure.Core;
 
 namespace Azure.ResourceManager.IotHub.Models
 {
     /// <summary> The properties related to a storage container endpoint. </summary>
     public partial class RoutingStorageContainerProperties
     {
-        /// <summary> Initializes a new instance of RoutingStorageContainerProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="RoutingStorageContainerProperties"/>. </summary>
         /// <param name="name"> The name that identifies this endpoint. The name can only include alphanumeric characters, periods, underscores, hyphens and has a maximum length of 64 characters. The following names are reserved:  events, fileNotifications, $default. Endpoint names must be unique across endpoint types. </param>
         /// <param name="containerName"> The name of storage container in the storage account. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> or <paramref name="containerName"/> is null. </exception>
         public RoutingStorageContainerProperties(string name, string containerName)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            if (containerName == null)
-            {
-                throw new ArgumentNullException(nameof(containerName));
-            }
+            Argument.AssertNotNull(name, nameof(name));
+            Argument.AssertNotNull(containerName, nameof(containerName));
 
             Name = name;
             ContainerName = containerName;
         }
 
-        /// <summary> Initializes a new instance of RoutingStorageContainerProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="RoutingStorageContainerProperties"/>. </summary>
         /// <param name="id"> Id of the storage container endpoint. </param>
         /// <param name="connectionString"> The connection string of the storage account. </param>
-        /// <param name="endpointUri"> The url of the storage endpoint. It must include the protocol https://. </param>
+        /// <param name="endpoint"> The url of the storage endpoint. It must include the protocol https://. </param>
         /// <param name="authenticationType"> Method used to authenticate against the storage endpoint. </param>
         /// <param name="identity"> Managed identity properties of routing storage endpoint. </param>
         /// <param name="name"> The name that identifies this endpoint. The name can only include alphanumeric characters, periods, underscores, hyphens and has a maximum length of 64 characters. The following names are reserved:  events, fileNotifications, $default. Endpoint names must be unique across endpoint types. </param>
@@ -44,12 +72,13 @@ namespace Azure.ResourceManager.IotHub.Models
         /// <param name="fileNameFormat"> File name format for the blob. Default format is {iothub}/{partition}/{YYYY}/{MM}/{DD}/{HH}/{mm}. All parameters are mandatory but can be reordered. </param>
         /// <param name="batchFrequencyInSeconds"> Time interval at which blobs are written to storage. Value should be between 60 and 720 seconds. Default value is 300 seconds. </param>
         /// <param name="maxChunkSizeInBytes"> Maximum number of bytes for each blob written to storage. Value should be between 10485760(10MB) and 524288000(500MB). Default value is 314572800(300MB). </param>
-        /// <param name="encoding"> Encoding that is used to serialize messages to blobs. Supported values are &apos;avro&apos;, &apos;avrodeflate&apos;, and &apos;JSON&apos;. Default value is &apos;avro&apos;. </param>
-        internal RoutingStorageContainerProperties(string id, string connectionString, Uri endpointUri, AuthenticationType? authenticationType, ManagedIdentity identity, string name, string subscriptionId, string resourceGroup, string containerName, string fileNameFormat, int? batchFrequencyInSeconds, int? maxChunkSizeInBytes, RoutingStorageContainerPropertiesEncoding? encoding)
+        /// <param name="encoding"> Encoding that is used to serialize messages to blobs. Supported values are 'avro', 'avrodeflate', and 'JSON'. Default value is 'avro'. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal RoutingStorageContainerProperties(Guid? id, string connectionString, string endpoint, IotHubAuthenticationType? authenticationType, ManagedIdentity identity, string name, string subscriptionId, string resourceGroup, string containerName, string fileNameFormat, int? batchFrequencyInSeconds, int? maxChunkSizeInBytes, RoutingStorageContainerPropertiesEncoding? encoding, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Id = id;
             ConnectionString = connectionString;
-            EndpointUri = endpointUri;
+            Endpoint = endpoint;
             AuthenticationType = authenticationType;
             Identity = identity;
             Name = name;
@@ -60,20 +89,26 @@ namespace Azure.ResourceManager.IotHub.Models
             BatchFrequencyInSeconds = batchFrequencyInSeconds;
             MaxChunkSizeInBytes = maxChunkSizeInBytes;
             Encoding = encoding;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="RoutingStorageContainerProperties"/> for deserialization. </summary>
+        internal RoutingStorageContainerProperties()
+        {
         }
 
         /// <summary> Id of the storage container endpoint. </summary>
-        public string Id { get; set; }
+        public Guid? Id { get; set; }
         /// <summary> The connection string of the storage account. </summary>
         public string ConnectionString { get; set; }
         /// <summary> The url of the storage endpoint. It must include the protocol https://. </summary>
-        public Uri EndpointUri { get; set; }
+        public string Endpoint { get; set; }
         /// <summary> Method used to authenticate against the storage endpoint. </summary>
-        public AuthenticationType? AuthenticationType { get; set; }
+        public IotHubAuthenticationType? AuthenticationType { get; set; }
         /// <summary> Managed identity properties of routing storage endpoint. </summary>
         internal ManagedIdentity Identity { get; set; }
         /// <summary> The user assigned identity. </summary>
-        public string UserAssignedIdentity
+        public ResourceIdentifier UserAssignedIdentity
         {
             get => Identity is null ? default : Identity.UserAssignedIdentity;
             set
@@ -98,7 +133,7 @@ namespace Azure.ResourceManager.IotHub.Models
         public int? BatchFrequencyInSeconds { get; set; }
         /// <summary> Maximum number of bytes for each blob written to storage. Value should be between 10485760(10MB) and 524288000(500MB). Default value is 314572800(300MB). </summary>
         public int? MaxChunkSizeInBytes { get; set; }
-        /// <summary> Encoding that is used to serialize messages to blobs. Supported values are &apos;avro&apos;, &apos;avrodeflate&apos;, and &apos;JSON&apos;. Default value is &apos;avro&apos;. </summary>
+        /// <summary> Encoding that is used to serialize messages to blobs. Supported values are 'avro', 'avrodeflate', and 'JSON'. Default value is 'avro'. </summary>
         public RoutingStorageContainerPropertiesEncoding? Encoding { get; set; }
     }
 }

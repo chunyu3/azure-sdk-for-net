@@ -6,16 +6,15 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
 namespace Azure.Analytics.Purview.Account
 {
+    // Data plane generated client.
     /// <summary> The PurviewAccount service client. </summary>
     public partial class PurviewAccountClient
     {
@@ -62,86 +61,21 @@ namespace Azure.Analytics.Purview.Account
             _apiVersion = options.Version;
         }
 
-        /// <summary> Get an account. </summary>
+        /// <summary>
+        /// [Protocol Method] Get an account
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Account</c>:
-        /// <code>{
-        ///   id: string, # Optional. Gets or sets the identifier.
-        ///   identity: {
-        ///     principalId: string, # Optional. Service principal object Id
-        ///     tenantId: string, # Optional. Tenant Id
-        ///     type: &quot;SystemAssigned&quot;, # Optional. Identity Type
-        ///   }, # Optional. Identity Info on the tracked resource
-        ///   location: string, # Optional. Gets or sets the location.
-        ///   name: string, # Optional. Gets or sets the name.
-        ///   properties: {
-        ///     cloudConnectors: {
-        ///       awsExternalId: string, # Optional. AWS external identifier.
-        /// Configured in AWS to allow use of the role arn used for scanning
-        ///     }, # Optional. Cloud connectors.
-        /// External cloud identifier used as part of scanning configuration.
-        ///     createdAt: string (ISO 8601 Format), # Optional. Gets the time at which the entity was created.
-        ///     createdBy: string, # Optional. Gets the creator of the entity.
-        ///     createdByObjectId: string, # Optional. Gets the creators of the entity&apos;s object id.
-        ///     endpoints: {
-        ///       catalog: string, # Optional. Gets the catalog endpoint.
-        ///       guardian: string, # Optional. Gets the guardian endpoint.
-        ///       scan: string, # Optional. Gets the scan endpoint.
-        ///     }, # Optional. The URIs that are the public endpoints of the account.
-        ///     friendlyName: string, # Optional. Gets or sets the friendly name.
-        ///     managedResourceGroupName: string, # Optional. Gets or sets the managed resource group name
-        ///     managedResources: {
-        ///       eventHubNamespace: string, # Optional. Gets the managed event hub namespace resource identifier.
-        ///       resourceGroup: string, # Optional. Gets the managed resource group resource identifier. This resource group will host resource dependencies for the account.
-        ///       storageAccount: string, # Optional. Gets the managed storage account resource identifier.
-        ///     }, # Optional. Gets the resource identifiers of the managed resources.
-        ///     privateEndpointConnections: [
-        ///       {
-        ///         id: string, # Optional. Gets or sets the identifier.
-        ///         name: string, # Optional. Gets or sets the name.
-        ///         properties: {
-        ///           privateEndpoint: {
-        ///             id: string, # Optional. The private endpoint identifier.
-        ///           }, # Optional. The private endpoint information.
-        ///           privateLinkServiceConnectionState: {
-        ///             actionsRequired: string, # Optional. The required actions.
-        ///             description: string, # Optional. The description.
-        ///             status: &quot;Unknown&quot; | &quot;Pending&quot; | &quot;Approved&quot; | &quot;Rejected&quot; | &quot;Disconnected&quot;, # Optional. The status.
-        ///           }, # Optional. The private link service connection state.
-        ///           provisioningState: string, # Optional. The provisioning state.
-        ///         }, # Optional. The connection identifier.
-        ///         type: string, # Optional. Gets or sets the type.
-        ///       }
-        ///     ], # Optional. Gets the private endpoint connections information.
-        ///     provisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;SoftDeleting&quot; | &quot;SoftDeleted&quot; | &quot;Failed&quot; | &quot;Succeeded&quot; | &quot;Canceled&quot;, # Optional. Gets or sets the state of the provisioning.
-        ///     publicNetworkAccess: &quot;NotSpecified&quot; | &quot;Enabled&quot; | &quot;Disabled&quot;, # Optional. Gets or sets the public network access.
-        ///   }, # Optional. Gets or sets the properties.
-        ///   sku: {
-        ///     capacity: number, # Optional. Gets or sets the sku capacity. Possible values include: 4, 16
-        ///     name: &quot;Standard&quot;, # Optional. Gets or sets the sku name.
-        ///   }, # Optional. Gets or sets the Sku.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Metadata pertaining to creation and last modification of the resource.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Tags on the azure resource.
-        ///   type: string, # Optional. Gets or sets the type.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetAccountPropertiesAsync(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetAccountPropertiesAsync(RequestContext)']/*" />
+        public virtual async Task<Response> GetAccountPropertiesAsync(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewAccountClient.GetAccountProperties");
             scope.Start();
@@ -157,86 +91,21 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> Get an account. </summary>
+        /// <summary>
+        /// [Protocol Method] Get an account
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Account</c>:
-        /// <code>{
-        ///   id: string, # Optional. Gets or sets the identifier.
-        ///   identity: {
-        ///     principalId: string, # Optional. Service principal object Id
-        ///     tenantId: string, # Optional. Tenant Id
-        ///     type: &quot;SystemAssigned&quot;, # Optional. Identity Type
-        ///   }, # Optional. Identity Info on the tracked resource
-        ///   location: string, # Optional. Gets or sets the location.
-        ///   name: string, # Optional. Gets or sets the name.
-        ///   properties: {
-        ///     cloudConnectors: {
-        ///       awsExternalId: string, # Optional. AWS external identifier.
-        /// Configured in AWS to allow use of the role arn used for scanning
-        ///     }, # Optional. Cloud connectors.
-        /// External cloud identifier used as part of scanning configuration.
-        ///     createdAt: string (ISO 8601 Format), # Optional. Gets the time at which the entity was created.
-        ///     createdBy: string, # Optional. Gets the creator of the entity.
-        ///     createdByObjectId: string, # Optional. Gets the creators of the entity&apos;s object id.
-        ///     endpoints: {
-        ///       catalog: string, # Optional. Gets the catalog endpoint.
-        ///       guardian: string, # Optional. Gets the guardian endpoint.
-        ///       scan: string, # Optional. Gets the scan endpoint.
-        ///     }, # Optional. The URIs that are the public endpoints of the account.
-        ///     friendlyName: string, # Optional. Gets or sets the friendly name.
-        ///     managedResourceGroupName: string, # Optional. Gets or sets the managed resource group name
-        ///     managedResources: {
-        ///       eventHubNamespace: string, # Optional. Gets the managed event hub namespace resource identifier.
-        ///       resourceGroup: string, # Optional. Gets the managed resource group resource identifier. This resource group will host resource dependencies for the account.
-        ///       storageAccount: string, # Optional. Gets the managed storage account resource identifier.
-        ///     }, # Optional. Gets the resource identifiers of the managed resources.
-        ///     privateEndpointConnections: [
-        ///       {
-        ///         id: string, # Optional. Gets or sets the identifier.
-        ///         name: string, # Optional. Gets or sets the name.
-        ///         properties: {
-        ///           privateEndpoint: {
-        ///             id: string, # Optional. The private endpoint identifier.
-        ///           }, # Optional. The private endpoint information.
-        ///           privateLinkServiceConnectionState: {
-        ///             actionsRequired: string, # Optional. The required actions.
-        ///             description: string, # Optional. The description.
-        ///             status: &quot;Unknown&quot; | &quot;Pending&quot; | &quot;Approved&quot; | &quot;Rejected&quot; | &quot;Disconnected&quot;, # Optional. The status.
-        ///           }, # Optional. The private link service connection state.
-        ///           provisioningState: string, # Optional. The provisioning state.
-        ///         }, # Optional. The connection identifier.
-        ///         type: string, # Optional. Gets or sets the type.
-        ///       }
-        ///     ], # Optional. Gets the private endpoint connections information.
-        ///     provisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;SoftDeleting&quot; | &quot;SoftDeleted&quot; | &quot;Failed&quot; | &quot;Succeeded&quot; | &quot;Canceled&quot;, # Optional. Gets or sets the state of the provisioning.
-        ///     publicNetworkAccess: &quot;NotSpecified&quot; | &quot;Enabled&quot; | &quot;Disabled&quot;, # Optional. Gets or sets the public network access.
-        ///   }, # Optional. Gets or sets the properties.
-        ///   sku: {
-        ///     capacity: number, # Optional. Gets or sets the sku capacity. Possible values include: 4, 16
-        ///     name: &quot;Standard&quot;, # Optional. Gets or sets the sku name.
-        ///   }, # Optional. Gets or sets the Sku.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Metadata pertaining to creation and last modification of the resource.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Tags on the azure resource.
-        ///   type: string, # Optional. Gets or sets the type.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetAccountProperties(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetAccountProperties(RequestContext)']/*" />
+        public virtual Response GetAccountProperties(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewAccountClient.GetAccountProperties");
             scope.Start();
@@ -252,95 +121,22 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> Updates an account. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Updates an account
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>DataPlaneAccountUpdateParameters</c>:
-        /// <code>{
-        ///   friendlyName: string, # Optional. The friendly name for the azure resource.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Account</c>:
-        /// <code>{
-        ///   id: string, # Optional. Gets or sets the identifier.
-        ///   identity: {
-        ///     principalId: string, # Optional. Service principal object Id
-        ///     tenantId: string, # Optional. Tenant Id
-        ///     type: &quot;SystemAssigned&quot;, # Optional. Identity Type
-        ///   }, # Optional. Identity Info on the tracked resource
-        ///   location: string, # Optional. Gets or sets the location.
-        ///   name: string, # Optional. Gets or sets the name.
-        ///   properties: {
-        ///     cloudConnectors: {
-        ///       awsExternalId: string, # Optional. AWS external identifier.
-        /// Configured in AWS to allow use of the role arn used for scanning
-        ///     }, # Optional. Cloud connectors.
-        /// External cloud identifier used as part of scanning configuration.
-        ///     createdAt: string (ISO 8601 Format), # Optional. Gets the time at which the entity was created.
-        ///     createdBy: string, # Optional. Gets the creator of the entity.
-        ///     createdByObjectId: string, # Optional. Gets the creators of the entity&apos;s object id.
-        ///     endpoints: {
-        ///       catalog: string, # Optional. Gets the catalog endpoint.
-        ///       guardian: string, # Optional. Gets the guardian endpoint.
-        ///       scan: string, # Optional. Gets the scan endpoint.
-        ///     }, # Optional. The URIs that are the public endpoints of the account.
-        ///     friendlyName: string, # Optional. Gets or sets the friendly name.
-        ///     managedResourceGroupName: string, # Optional. Gets or sets the managed resource group name
-        ///     managedResources: {
-        ///       eventHubNamespace: string, # Optional. Gets the managed event hub namespace resource identifier.
-        ///       resourceGroup: string, # Optional. Gets the managed resource group resource identifier. This resource group will host resource dependencies for the account.
-        ///       storageAccount: string, # Optional. Gets the managed storage account resource identifier.
-        ///     }, # Optional. Gets the resource identifiers of the managed resources.
-        ///     privateEndpointConnections: [
-        ///       {
-        ///         id: string, # Optional. Gets or sets the identifier.
-        ///         name: string, # Optional. Gets or sets the name.
-        ///         properties: {
-        ///           privateEndpoint: {
-        ///             id: string, # Optional. The private endpoint identifier.
-        ///           }, # Optional. The private endpoint information.
-        ///           privateLinkServiceConnectionState: {
-        ///             actionsRequired: string, # Optional. The required actions.
-        ///             description: string, # Optional. The description.
-        ///             status: &quot;Unknown&quot; | &quot;Pending&quot; | &quot;Approved&quot; | &quot;Rejected&quot; | &quot;Disconnected&quot;, # Optional. The status.
-        ///           }, # Optional. The private link service connection state.
-        ///           provisioningState: string, # Optional. The provisioning state.
-        ///         }, # Optional. The connection identifier.
-        ///         type: string, # Optional. Gets or sets the type.
-        ///       }
-        ///     ], # Optional. Gets the private endpoint connections information.
-        ///     provisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;SoftDeleting&quot; | &quot;SoftDeleted&quot; | &quot;Failed&quot; | &quot;Succeeded&quot; | &quot;Canceled&quot;, # Optional. Gets or sets the state of the provisioning.
-        ///     publicNetworkAccess: &quot;NotSpecified&quot; | &quot;Enabled&quot; | &quot;Disabled&quot;, # Optional. Gets or sets the public network access.
-        ///   }, # Optional. Gets or sets the properties.
-        ///   sku: {
-        ///     capacity: number, # Optional. Gets or sets the sku capacity. Possible values include: 4, 16
-        ///     name: &quot;Standard&quot;, # Optional. Gets or sets the sku name.
-        ///   }, # Optional. Gets or sets the Sku.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Metadata pertaining to creation and last modification of the resource.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Tags on the azure resource.
-        ///   type: string, # Optional. Gets or sets the type.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='UpdateAccountPropertiesAsync(RequestContent,RequestContext)']/*" />
         public virtual async Task<Response> UpdateAccountPropertiesAsync(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -359,95 +155,22 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> Updates an account. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Updates an account
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>DataPlaneAccountUpdateParameters</c>:
-        /// <code>{
-        ///   friendlyName: string, # Optional. The friendly name for the azure resource.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Account</c>:
-        /// <code>{
-        ///   id: string, # Optional. Gets or sets the identifier.
-        ///   identity: {
-        ///     principalId: string, # Optional. Service principal object Id
-        ///     tenantId: string, # Optional. Tenant Id
-        ///     type: &quot;SystemAssigned&quot;, # Optional. Identity Type
-        ///   }, # Optional. Identity Info on the tracked resource
-        ///   location: string, # Optional. Gets or sets the location.
-        ///   name: string, # Optional. Gets or sets the name.
-        ///   properties: {
-        ///     cloudConnectors: {
-        ///       awsExternalId: string, # Optional. AWS external identifier.
-        /// Configured in AWS to allow use of the role arn used for scanning
-        ///     }, # Optional. Cloud connectors.
-        /// External cloud identifier used as part of scanning configuration.
-        ///     createdAt: string (ISO 8601 Format), # Optional. Gets the time at which the entity was created.
-        ///     createdBy: string, # Optional. Gets the creator of the entity.
-        ///     createdByObjectId: string, # Optional. Gets the creators of the entity&apos;s object id.
-        ///     endpoints: {
-        ///       catalog: string, # Optional. Gets the catalog endpoint.
-        ///       guardian: string, # Optional. Gets the guardian endpoint.
-        ///       scan: string, # Optional. Gets the scan endpoint.
-        ///     }, # Optional. The URIs that are the public endpoints of the account.
-        ///     friendlyName: string, # Optional. Gets or sets the friendly name.
-        ///     managedResourceGroupName: string, # Optional. Gets or sets the managed resource group name
-        ///     managedResources: {
-        ///       eventHubNamespace: string, # Optional. Gets the managed event hub namespace resource identifier.
-        ///       resourceGroup: string, # Optional. Gets the managed resource group resource identifier. This resource group will host resource dependencies for the account.
-        ///       storageAccount: string, # Optional. Gets the managed storage account resource identifier.
-        ///     }, # Optional. Gets the resource identifiers of the managed resources.
-        ///     privateEndpointConnections: [
-        ///       {
-        ///         id: string, # Optional. Gets or sets the identifier.
-        ///         name: string, # Optional. Gets or sets the name.
-        ///         properties: {
-        ///           privateEndpoint: {
-        ///             id: string, # Optional. The private endpoint identifier.
-        ///           }, # Optional. The private endpoint information.
-        ///           privateLinkServiceConnectionState: {
-        ///             actionsRequired: string, # Optional. The required actions.
-        ///             description: string, # Optional. The description.
-        ///             status: &quot;Unknown&quot; | &quot;Pending&quot; | &quot;Approved&quot; | &quot;Rejected&quot; | &quot;Disconnected&quot;, # Optional. The status.
-        ///           }, # Optional. The private link service connection state.
-        ///           provisioningState: string, # Optional. The provisioning state.
-        ///         }, # Optional. The connection identifier.
-        ///         type: string, # Optional. Gets or sets the type.
-        ///       }
-        ///     ], # Optional. Gets the private endpoint connections information.
-        ///     provisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;SoftDeleting&quot; | &quot;SoftDeleted&quot; | &quot;Failed&quot; | &quot;Succeeded&quot; | &quot;Canceled&quot;, # Optional. Gets or sets the state of the provisioning.
-        ///     publicNetworkAccess: &quot;NotSpecified&quot; | &quot;Enabled&quot; | &quot;Disabled&quot;, # Optional. Gets or sets the public network access.
-        ///   }, # Optional. Gets or sets the properties.
-        ///   sku: {
-        ///     capacity: number, # Optional. Gets or sets the sku capacity. Possible values include: 4, 16
-        ///     name: &quot;Standard&quot;, # Optional. Gets or sets the sku name.
-        ///   }, # Optional. Gets or sets the Sku.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Metadata pertaining to creation and last modification of the resource.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Tags on the azure resource.
-        ///   type: string, # Optional. Gets or sets the type.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='UpdateAccountProperties(RequestContent,RequestContext)']/*" />
         public virtual Response UpdateAccountProperties(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -466,24 +189,21 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> List the authorization keys associated with this account. </summary>
+        /// <summary>
+        /// [Protocol Method] List the authorization keys associated with this account.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>AccessKeys</c>:
-        /// <code>{
-        ///   atlasKafkaPrimaryEndpoint: string, # Optional. Gets or sets the primary connection string.
-        ///   atlasKafkaSecondaryEndpoint: string, # Optional. Gets or sets the secondary connection string.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetAccessKeysAsync(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetAccessKeysAsync(RequestContext)']/*" />
+        public virtual async Task<Response> GetAccessKeysAsync(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewAccountClient.GetAccessKeys");
             scope.Start();
@@ -499,24 +219,21 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> List the authorization keys associated with this account. </summary>
+        /// <summary>
+        /// [Protocol Method] List the authorization keys associated with this account.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>AccessKeys</c>:
-        /// <code>{
-        ///   atlasKafkaPrimaryEndpoint: string, # Optional. Gets or sets the primary connection string.
-        ///   atlasKafkaSecondaryEndpoint: string, # Optional. Gets or sets the secondary connection string.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetAccessKeys(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetAccessKeys(RequestContext)']/*" />
+        public virtual Response GetAccessKeys(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewAccountClient.GetAccessKeys");
             scope.Start();
@@ -532,33 +249,22 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> Regenerate the authorization keys associated with this data catalog. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Regenerate the authorization keys associated with this data catalog.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>AccessKeyOptions</c>:
-        /// <code>{
-        ///   keyType: &quot;PrimaryAtlasKafkaKey&quot; | &quot;SecondaryAtlasKafkaKey&quot;, # Optional. The access key type.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>AccessKeys</c>:
-        /// <code>{
-        ///   atlasKafkaPrimaryEndpoint: string, # Optional. Gets or sets the primary connection string.
-        ///   atlasKafkaSecondaryEndpoint: string, # Optional. Gets or sets the secondary connection string.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='RegenerateAccessKeyAsync(RequestContent,RequestContext)']/*" />
         public virtual async Task<Response> RegenerateAccessKeyAsync(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -577,33 +283,22 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> Regenerate the authorization keys associated with this data catalog. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Regenerate the authorization keys associated with this data catalog.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>AccessKeyOptions</c>:
-        /// <code>{
-        ///   keyType: &quot;PrimaryAtlasKafkaKey&quot; | &quot;SecondaryAtlasKafkaKey&quot;, # Optional. The access key type.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>AccessKeys</c>:
-        /// <code>{
-        ///   atlasKafkaPrimaryEndpoint: string, # Optional. Gets or sets the primary connection string.
-        ///   atlasKafkaSecondaryEndpoint: string, # Optional. Gets or sets the secondary connection string.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='RegenerateAccessKey(RequestContent,RequestContext)']/*" />
         public virtual Response RegenerateAccessKey(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -622,374 +317,98 @@ namespace Azure.Analytics.Purview.Account
             }
         }
 
-        /// <summary> List the collections in the account. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] List the collections in the account.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionListValue</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetCollectionsAsync(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetCollectionsAsync(string,RequestContext)']/*" />
+        public virtual AsyncPageable<BinaryData> GetCollectionsAsync(string skipToken, RequestContext context)
         {
-            return GetCollectionsImplementationAsync("PurviewAccountClient.GetCollections", skipToken, context);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetCollectionsRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetCollectionsNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewAccountClient.GetCollections", "value", "nextLink", context);
         }
 
-        private AsyncPageable<BinaryData> GetCollectionsImplementationAsync(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetCollectionsRequest(skipToken, context)
-                        : CreateGetCollectionsNextPageRequest(nextLink, skipToken, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> List the collections in the account. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] List the collections in the account.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionListValue</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Pageable<BinaryData> GetCollections(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetCollections(string,RequestContext)']/*" />
+        public virtual Pageable<BinaryData> GetCollections(string skipToken, RequestContext context)
         {
-            return GetCollectionsImplementation("PurviewAccountClient.GetCollections", skipToken, context);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetCollectionsRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetCollectionsNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewAccountClient.GetCollections", "value", "nextLink", context);
         }
 
-        private Pageable<BinaryData> GetCollectionsImplementation(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetCollectionsRequest(skipToken, context)
-                        : CreateGetCollectionsNextPageRequest(nextLink, skipToken, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Get a resource set config service model. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] Get a resource set config service model.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>ResourceSetRuleConfigListValue</c>:
-        /// <code>{
-        ///   advancedResourceSet: {
-        ///     modifiedAt: string (ISO 8601 Format), # Optional. Date at which ResourceSetProcessing property of the account is updated.
-        ///     resourceSetProcessing: &quot;Default&quot; | &quot;Advanced&quot;, # Optional. The advanced resource property of the account.
-        ///   }, # Optional. Gets or sets the advanced resource set property of the account.
-        ///   name: string, # Optional. The name of the rule
-        ///   pathPatternConfig: {
-        ///     acceptedPatterns: [
-        ///       {
-        ///         createdBy: string, # Optional.
-        ///         filterType: &quot;Pattern&quot; | &quot;Regex&quot;, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Required.
-        ///         path: string, # Required.
-        ///       }
-        ///     ], # Optional.
-        ///     complexReplacers: [
-        ///       {
-        ///         createdBy: string, # Optional.
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Optional.
-        ///         disableRecursiveReplacerApplication: boolean, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Optional.
-        ///         typeName: string, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     createdBy: string, # Required.
-        ///     enableDefaultPatterns: boolean, # Required.
-        ///     lastUpdatedTimestamp: number, # Optional.
-        ///     modifiedBy: string, # Optional.
-        ///     normalizationRules: [
-        ///       {
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Optional.
-        ///         dynamicReplacement: boolean, # Optional.
-        ///         entityTypes: [string], # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         name: string, # Optional.
-        ///         regex: {
-        ///           maxDigits: number, # Optional.
-        ///           maxLetters: number, # Optional.
-        ///           minDashes: number, # Optional.
-        ///           minDigits: number, # Optional.
-        ///           minDigitsOrLetters: number, # Optional.
-        ///           minDots: number, # Optional.
-        ///           minHex: number, # Optional.
-        ///           minLetters: number, # Optional.
-        ///           minUnderscores: number, # Optional.
-        ///           options: number, # Optional.
-        ///           regexStr: string, # Optional.
-        ///         }, # Optional.
-        ///         replaceWith: string, # Optional.
-        ///         version: number, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     regexReplacers: [
-        ///       {
-        ///         condition: string, # Optional.
-        ///         createdBy: string, # Optional.
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Required.
-        ///         disableRecursiveReplacerApplication: boolean, # Optional.
-        ///         doNotReplaceRegex: FastRegex, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Required.
-        ///         regex: FastRegex, # Optional.
-        ///         replaceWith: string, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     rejectedPatterns: [Filter], # Optional.
-        ///     scopedRules: [
-        ///       {
-        ///         bindingUrl: string, # Required.
-        ///         rules: [
-        ///           {
-        ///             displayName: string, # Optional.
-        ///             isResourceSet: boolean, # Optional.
-        ///             lastUpdatedTimestamp: number, # Optional.
-        ///             name: string, # Optional.
-        ///             qualifiedName: string, # Required.
-        ///           }
-        ///         ], # Optional.
-        ///         storeType: string, # Required.
-        ///       }
-        ///     ], # Optional.
-        ///     version: number, # Optional.
-        ///   }, # Optional. The configuration rules for path pattern extraction.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetResourceSetRulesAsync(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetResourceSetRulesAsync(string,RequestContext)']/*" />
+        public virtual AsyncPageable<BinaryData> GetResourceSetRulesAsync(string skipToken, RequestContext context)
         {
-            return GetResourceSetRulesImplementationAsync("PurviewAccountClient.GetResourceSetRules", skipToken, context);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetResourceSetRulesRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetResourceSetRulesNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewAccountClient.GetResourceSetRules", "value", "nextLink", context);
         }
 
-        private AsyncPageable<BinaryData> GetResourceSetRulesImplementationAsync(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetResourceSetRulesRequest(skipToken, context)
-                        : CreateGetResourceSetRulesNextPageRequest(nextLink, skipToken, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Get a resource set config service model. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] Get a resource set config service model.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>ResourceSetRuleConfigListValue</c>:
-        /// <code>{
-        ///   advancedResourceSet: {
-        ///     modifiedAt: string (ISO 8601 Format), # Optional. Date at which ResourceSetProcessing property of the account is updated.
-        ///     resourceSetProcessing: &quot;Default&quot; | &quot;Advanced&quot;, # Optional. The advanced resource property of the account.
-        ///   }, # Optional. Gets or sets the advanced resource set property of the account.
-        ///   name: string, # Optional. The name of the rule
-        ///   pathPatternConfig: {
-        ///     acceptedPatterns: [
-        ///       {
-        ///         createdBy: string, # Optional.
-        ///         filterType: &quot;Pattern&quot; | &quot;Regex&quot;, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Required.
-        ///         path: string, # Required.
-        ///       }
-        ///     ], # Optional.
-        ///     complexReplacers: [
-        ///       {
-        ///         createdBy: string, # Optional.
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Optional.
-        ///         disableRecursiveReplacerApplication: boolean, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Optional.
-        ///         typeName: string, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     createdBy: string, # Required.
-        ///     enableDefaultPatterns: boolean, # Required.
-        ///     lastUpdatedTimestamp: number, # Optional.
-        ///     modifiedBy: string, # Optional.
-        ///     normalizationRules: [
-        ///       {
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Optional.
-        ///         dynamicReplacement: boolean, # Optional.
-        ///         entityTypes: [string], # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         name: string, # Optional.
-        ///         regex: {
-        ///           maxDigits: number, # Optional.
-        ///           maxLetters: number, # Optional.
-        ///           minDashes: number, # Optional.
-        ///           minDigits: number, # Optional.
-        ///           minDigitsOrLetters: number, # Optional.
-        ///           minDots: number, # Optional.
-        ///           minHex: number, # Optional.
-        ///           minLetters: number, # Optional.
-        ///           minUnderscores: number, # Optional.
-        ///           options: number, # Optional.
-        ///           regexStr: string, # Optional.
-        ///         }, # Optional.
-        ///         replaceWith: string, # Optional.
-        ///         version: number, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     regexReplacers: [
-        ///       {
-        ///         condition: string, # Optional.
-        ///         createdBy: string, # Optional.
-        ///         description: string, # Optional.
-        ///         disabled: boolean, # Required.
-        ///         disableRecursiveReplacerApplication: boolean, # Optional.
-        ///         doNotReplaceRegex: FastRegex, # Optional.
-        ///         lastUpdatedTimestamp: number, # Optional.
-        ///         modifiedBy: string, # Optional.
-        ///         name: string, # Required.
-        ///         regex: FastRegex, # Optional.
-        ///         replaceWith: string, # Optional.
-        ///       }
-        ///     ], # Optional.
-        ///     rejectedPatterns: [Filter], # Optional.
-        ///     scopedRules: [
-        ///       {
-        ///         bindingUrl: string, # Required.
-        ///         rules: [
-        ///           {
-        ///             displayName: string, # Optional.
-        ///             isResourceSet: boolean, # Optional.
-        ///             lastUpdatedTimestamp: number, # Optional.
-        ///             name: string, # Optional.
-        ///             qualifiedName: string, # Required.
-        ///           }
-        ///         ], # Optional.
-        ///         storeType: string, # Required.
-        ///       }
-        ///     ], # Optional.
-        ///     version: number, # Optional.
-        ///   }, # Optional. The configuration rules for path pattern extraction.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Pageable<BinaryData> GetResourceSetRules(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewAccountClient.xml" path="doc/members/member[@name='GetResourceSetRules(string,RequestContext)']/*" />
+        public virtual Pageable<BinaryData> GetResourceSetRules(string skipToken, RequestContext context)
         {
-            return GetResourceSetRulesImplementation("PurviewAccountClient.GetResourceSetRules", skipToken, context);
-        }
-
-        private Pageable<BinaryData> GetResourceSetRulesImplementation(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetResourceSetRulesRequest(skipToken, context)
-                        : CreateGetResourceSetRulesNextPageRequest(nextLink, skipToken, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetResourceSetRulesRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetResourceSetRulesNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewAccountClient.GetResourceSetRules", "value", "nextLink", context);
         }
 
         private PurviewResourceSetRule _cachedPurviewResourceSetRule;
 
         /// <summary> Initializes a new instance of PurviewCollection. </summary>
-        /// <param name="collectionName"> The String to use. </param>
+        /// <param name="collectionName"> The <see cref="string"/> to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="collectionName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="collectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual PurviewCollection GetPurviewCollectionClient(string collectionName)

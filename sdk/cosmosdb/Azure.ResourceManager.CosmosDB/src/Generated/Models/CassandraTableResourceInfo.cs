@@ -6,45 +6,86 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.CosmosDB.Models
 {
     /// <summary> Cosmos DB Cassandra table resource object. </summary>
     public partial class CassandraTableResourceInfo
     {
-        /// <summary> Initializes a new instance of CassandraTableResourceInfo. </summary>
-        /// <param name="id"> Name of the Cosmos DB Cassandra table. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="id"/> is null. </exception>
-        public CassandraTableResourceInfo(string id)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private protected IDictionary<string, BinaryData> _serializedAdditionalRawData;
 
-            Id = id;
+        /// <summary> Initializes a new instance of <see cref="CassandraTableResourceInfo"/>. </summary>
+        /// <param name="tableName"> Name of the Cosmos DB Cassandra table. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="tableName"/> is null. </exception>
+        public CassandraTableResourceInfo(string tableName)
+        {
+            Argument.AssertNotNull(tableName, nameof(tableName));
+
+            TableName = tableName;
         }
 
-        /// <summary> Initializes a new instance of CassandraTableResourceInfo. </summary>
-        /// <param name="id"> Name of the Cosmos DB Cassandra table. </param>
+        /// <summary> Initializes a new instance of <see cref="CassandraTableResourceInfo"/>. </summary>
+        /// <param name="tableName"> Name of the Cosmos DB Cassandra table. </param>
         /// <param name="defaultTtl"> Time to live of the Cosmos DB Cassandra table. </param>
         /// <param name="schema"> Schema of the Cosmos DB Cassandra table. </param>
         /// <param name="analyticalStorageTtl"> Analytical TTL. </param>
-        internal CassandraTableResourceInfo(string id, int? defaultTtl, CassandraSchema schema, int? analyticalStorageTtl)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal CassandraTableResourceInfo(string tableName, int? defaultTtl, CassandraSchema schema, int? analyticalStorageTtl, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Id = id;
+            TableName = tableName;
             DefaultTtl = defaultTtl;
             Schema = schema;
             AnalyticalStorageTtl = analyticalStorageTtl;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="CassandraTableResourceInfo"/> for deserialization. </summary>
+        internal CassandraTableResourceInfo()
+        {
         }
 
         /// <summary> Name of the Cosmos DB Cassandra table. </summary>
-        public string Id { get; set; }
+        [WirePath("id")]
+        public string TableName { get; set; }
         /// <summary> Time to live of the Cosmos DB Cassandra table. </summary>
+        [WirePath("defaultTtl")]
         public int? DefaultTtl { get; set; }
         /// <summary> Schema of the Cosmos DB Cassandra table. </summary>
+        [WirePath("schema")]
         public CassandraSchema Schema { get; set; }
         /// <summary> Analytical TTL. </summary>
+        [WirePath("analyticalStorageTtl")]
         public int? AnalyticalStorageTtl { get; set; }
     }
 }

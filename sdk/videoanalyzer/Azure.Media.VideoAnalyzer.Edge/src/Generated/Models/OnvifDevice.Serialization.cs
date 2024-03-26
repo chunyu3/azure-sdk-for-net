@@ -18,26 +18,26 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Hostname))
             {
-                writer.WritePropertyName("hostname");
-                writer.WriteObjectValue(Hostname);
+                writer.WritePropertyName("hostname"u8);
+                writer.WriteObjectValue<OnvifHostName>(Hostname);
             }
             if (Optional.IsDefined(SystemDateTime))
             {
-                writer.WritePropertyName("systemDateTime");
-                writer.WriteObjectValue(SystemDateTime);
+                writer.WritePropertyName("systemDateTime"u8);
+                writer.WriteObjectValue<OnvifSystemDateTime>(SystemDateTime);
             }
             if (Optional.IsDefined(Dns))
             {
-                writer.WritePropertyName("dns");
-                writer.WriteObjectValue(Dns);
+                writer.WritePropertyName("dns"u8);
+                writer.WriteObjectValue<OnvifDns>(Dns);
             }
             if (Optional.IsCollectionDefined(MediaProfiles))
             {
-                writer.WritePropertyName("mediaProfiles");
+                writer.WritePropertyName("mediaProfiles"u8);
                 writer.WriteStartArray();
                 foreach (var item in MediaProfiles)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<MediaProfile>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -46,47 +46,47 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static OnvifDevice DeserializeOnvifDevice(JsonElement element)
         {
-            Optional<OnvifHostName> hostname = default;
-            Optional<OnvifSystemDateTime> systemDateTime = default;
-            Optional<OnvifDns> dns = default;
-            Optional<IList<MediaProfile>> mediaProfiles = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            OnvifHostName hostname = default;
+            OnvifSystemDateTime systemDateTime = default;
+            OnvifDns dns = default;
+            IList<MediaProfile> mediaProfiles = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("hostname"))
+                if (property.NameEquals("hostname"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     hostname = OnvifHostName.DeserializeOnvifHostName(property.Value);
                     continue;
                 }
-                if (property.NameEquals("systemDateTime"))
+                if (property.NameEquals("systemDateTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     systemDateTime = OnvifSystemDateTime.DeserializeOnvifSystemDateTime(property.Value);
                     continue;
                 }
-                if (property.NameEquals("dns"))
+                if (property.NameEquals("dns"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     dns = OnvifDns.DeserializeOnvifDns(property.Value);
                     continue;
                 }
-                if (property.NameEquals("mediaProfiles"))
+                if (property.NameEquals("mediaProfiles"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<MediaProfile> array = new List<MediaProfile>();
@@ -98,7 +98,7 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     continue;
                 }
             }
-            return new OnvifDevice(hostname.Value, systemDateTime.Value, dns.Value, Optional.ToList(mediaProfiles));
+            return new OnvifDevice(hostname, systemDateTime, dns, mediaProfiles ?? new ChangeTrackingList<MediaProfile>());
         }
     }
 }

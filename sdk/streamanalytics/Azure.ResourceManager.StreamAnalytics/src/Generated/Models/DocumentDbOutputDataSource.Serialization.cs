@@ -5,77 +5,123 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.StreamAnalytics.Models
 {
-    public partial class DocumentDbOutputDataSource : IUtf8JsonSerializable
+    public partial class DocumentDbOutputDataSource : IUtf8JsonSerializable, IJsonModel<DocumentDbOutputDataSource>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DocumentDbOutputDataSource>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<DocumentDbOutputDataSource>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<DocumentDbOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DocumentDbOutputDataSource)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(OutputDataSourceType);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(AccountId))
             {
-                writer.WritePropertyName("accountId");
+                writer.WritePropertyName("accountId"u8);
                 writer.WriteStringValue(AccountId);
             }
             if (Optional.IsDefined(AccountKey))
             {
-                writer.WritePropertyName("accountKey");
+                writer.WritePropertyName("accountKey"u8);
                 writer.WriteStringValue(AccountKey);
             }
             if (Optional.IsDefined(Database))
             {
-                writer.WritePropertyName("database");
+                writer.WritePropertyName("database"u8);
                 writer.WriteStringValue(Database);
             }
             if (Optional.IsDefined(CollectionNamePattern))
             {
-                writer.WritePropertyName("collectionNamePattern");
+                writer.WritePropertyName("collectionNamePattern"u8);
                 writer.WriteStringValue(CollectionNamePattern);
             }
             if (Optional.IsDefined(PartitionKey))
             {
-                writer.WritePropertyName("partitionKey");
+                writer.WritePropertyName("partitionKey"u8);
                 writer.WriteStringValue(PartitionKey);
             }
             if (Optional.IsDefined(DocumentId))
             {
-                writer.WritePropertyName("documentId");
+                writer.WritePropertyName("documentId"u8);
                 writer.WriteStringValue(DocumentId);
             }
             if (Optional.IsDefined(AuthenticationMode))
             {
-                writer.WritePropertyName("authenticationMode");
+                writer.WritePropertyName("authenticationMode"u8);
                 writer.WriteStringValue(AuthenticationMode.Value.ToString());
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static DocumentDbOutputDataSource DeserializeDocumentDbOutputDataSource(JsonElement element)
+        DocumentDbOutputDataSource IJsonModel<DocumentDbOutputDataSource>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<DocumentDbOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DocumentDbOutputDataSource)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDocumentDbOutputDataSource(document.RootElement, options);
+        }
+
+        internal static DocumentDbOutputDataSource DeserializeDocumentDbOutputDataSource(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<string> accountId = default;
-            Optional<string> accountKey = default;
-            Optional<string> database = default;
-            Optional<string> collectionNamePattern = default;
-            Optional<string> partitionKey = default;
-            Optional<string> documentId = default;
-            Optional<AuthenticationMode> authenticationMode = default;
+            string accountId = default;
+            string accountKey = default;
+            string database = default;
+            string collectionNamePattern = default;
+            string partitionKey = default;
+            string documentId = default;
+            StreamAnalyticsAuthenticationMode? authenticationMode = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -84,51 +130,95 @@ namespace Azure.ResourceManager.StreamAnalytics.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("accountId"))
+                        if (property0.NameEquals("accountId"u8))
                         {
                             accountId = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("accountKey"))
+                        if (property0.NameEquals("accountKey"u8))
                         {
                             accountKey = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("database"))
+                        if (property0.NameEquals("database"u8))
                         {
                             database = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("collectionNamePattern"))
+                        if (property0.NameEquals("collectionNamePattern"u8))
                         {
                             collectionNamePattern = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("partitionKey"))
+                        if (property0.NameEquals("partitionKey"u8))
                         {
                             partitionKey = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("documentId"))
+                        if (property0.NameEquals("documentId"u8))
                         {
                             documentId = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("authenticationMode"))
+                        if (property0.NameEquals("authenticationMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            authenticationMode = new AuthenticationMode(property0.Value.GetString());
+                            authenticationMode = new StreamAnalyticsAuthenticationMode(property0.Value.GetString());
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new DocumentDbOutputDataSource(type, accountId.Value, accountKey.Value, database.Value, collectionNamePattern.Value, partitionKey.Value, documentId.Value, Optional.ToNullable(authenticationMode));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new DocumentDbOutputDataSource(
+                type,
+                serializedAdditionalRawData,
+                accountId,
+                accountKey,
+                database,
+                collectionNamePattern,
+                partitionKey,
+                documentId,
+                authenticationMode);
         }
+
+        BinaryData IPersistableModel<DocumentDbOutputDataSource>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DocumentDbOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(DocumentDbOutputDataSource)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DocumentDbOutputDataSource IPersistableModel<DocumentDbOutputDataSource>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DocumentDbOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeDocumentDbOutputDataSource(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DocumentDbOutputDataSource)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DocumentDbOutputDataSource>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

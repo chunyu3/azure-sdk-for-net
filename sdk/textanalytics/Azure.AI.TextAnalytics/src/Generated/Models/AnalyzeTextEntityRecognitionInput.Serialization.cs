@@ -17,15 +17,15 @@ namespace Azure.AI.TextAnalytics.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(AnalysisInput))
             {
-                writer.WritePropertyName("analysisInput");
-                writer.WriteObjectValue(AnalysisInput);
+                writer.WritePropertyName("analysisInput"u8);
+                writer.WriteObjectValue<MultiLanguageAnalysisInput>(AnalysisInput);
             }
             if (Optional.IsDefined(Parameters))
             {
-                writer.WritePropertyName("parameters");
-                writer.WriteObjectValue(Parameters);
+                writer.WritePropertyName("parameters"u8);
+                writer.WriteObjectValue<EntitiesTaskParameters>(Parameters);
             }
-            writer.WritePropertyName("kind");
+            writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind.ToString());
             writer.WriteEndObject();
         }

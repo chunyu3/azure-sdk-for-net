@@ -18,46 +18,49 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("linkedServiceName");
-            writer.WriteObjectValue(LinkedServiceName);
+            writer.WritePropertyName("linkedServiceName"u8);
+            writer.WriteObjectValue<LinkedServiceReference>(LinkedServiceName);
             if (Optional.IsDefined(Path))
             {
-                writer.WritePropertyName("path");
-                writer.WriteObjectValue(Path);
+                writer.WritePropertyName("path"u8);
+                writer.WriteObjectValue<object>(Path);
             }
             writer.WriteEndObject();
         }
 
         internal static LogLocationSettings DeserializeLogLocationSettings(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             LinkedServiceReference linkedServiceName = default;
-            Optional<object> path = default;
+            object path = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("linkedServiceName"))
+                if (property.NameEquals("linkedServiceName"u8))
                 {
                     linkedServiceName = LinkedServiceReference.DeserializeLinkedServiceReference(property.Value);
                     continue;
                 }
-                if (property.NameEquals("path"))
+                if (property.NameEquals("path"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     path = property.Value.GetObject();
                     continue;
                 }
             }
-            return new LogLocationSettings(linkedServiceName, path.Value);
+            return new LogLocationSettings(linkedServiceName, path);
         }
 
         internal partial class LogLocationSettingsConverter : JsonConverter<LogLocationSettings>
         {
             public override void Write(Utf8JsonWriter writer, LogLocationSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LogLocationSettings>(model);
             }
             public override LogLocationSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

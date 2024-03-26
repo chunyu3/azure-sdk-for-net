@@ -5,60 +5,158 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.AppPlatform.Models
 {
-    public partial class AvailableAppPlatformSku
+    public partial class AvailableAppPlatformSku : IUtf8JsonSerializable, IJsonModel<AvailableAppPlatformSku>
     {
-        internal static AvailableAppPlatformSku DeserializeAvailableAppPlatformSku(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AvailableAppPlatformSku>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AvailableAppPlatformSku>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<ResourceType> resourceType = default;
-            Optional<string> name = default;
-            Optional<string> tier = default;
-            Optional<SkuCapacity> capacity = default;
-            Optional<IReadOnlyList<AzureLocation>> locations = default;
-            Optional<IReadOnlyList<ResourceSkuLocationInfo>> locationInfo = default;
-            Optional<IReadOnlyList<ResourceSkuRestrictions>> restrictions = default;
+            var format = options.Format == "W" ? ((IPersistableModel<AvailableAppPlatformSku>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvailableAppPlatformSku)} does not support writing '{format}' format.");
+            }
+
+            writer.WriteStartObject();
+            if (Optional.IsDefined(ResourceType))
+            {
+                writer.WritePropertyName("resourceType"u8);
+                writer.WriteStringValue(ResourceType.Value);
+            }
+            if (Optional.IsDefined(Name))
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (Optional.IsDefined(Tier))
+            {
+                writer.WritePropertyName("tier"u8);
+                writer.WriteStringValue(Tier);
+            }
+            if (Optional.IsDefined(Capacity))
+            {
+                writer.WritePropertyName("capacity"u8);
+                writer.WriteObjectValue<AppPlatformSkuCapacity>(Capacity, options);
+            }
+            if (Optional.IsCollectionDefined(Locations))
+            {
+                writer.WritePropertyName("locations"u8);
+                writer.WriteStartArray();
+                foreach (var item in Locations)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(LocationInfo))
+            {
+                writer.WritePropertyName("locationInfo"u8);
+                writer.WriteStartArray();
+                foreach (var item in LocationInfo)
+                {
+                    writer.WriteObjectValue<AppPlatformSkuLocationInfo>(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(Restrictions))
+            {
+                writer.WritePropertyName("restrictions"u8);
+                writer.WriteStartArray();
+                foreach (var item in Restrictions)
+                {
+                    writer.WriteObjectValue<AppPlatformSkuRestrictions>(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+            writer.WriteEndObject();
+        }
+
+        AvailableAppPlatformSku IJsonModel<AvailableAppPlatformSku>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AvailableAppPlatformSku>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvailableAppPlatformSku)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAvailableAppPlatformSku(document.RootElement, options);
+        }
+
+        internal static AvailableAppPlatformSku DeserializeAvailableAppPlatformSku(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceType? resourceType = default;
+            string name = default;
+            string tier = default;
+            AppPlatformSkuCapacity capacity = default;
+            IReadOnlyList<AzureLocation> locations = default;
+            IReadOnlyList<AppPlatformSkuLocationInfo> locationInfo = default;
+            IReadOnlyList<AppPlatformSkuRestrictions> restrictions = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("resourceType"))
+                if (property.NameEquals("resourceType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     resourceType = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("tier"))
+                if (property.NameEquals("tier"u8))
                 {
                     tier = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("capacity"))
+                if (property.NameEquals("capacity"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    capacity = SkuCapacity.DeserializeSkuCapacity(property.Value);
+                    capacity = AppPlatformSkuCapacity.DeserializeAppPlatformSkuCapacity(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("locations"))
+                if (property.NameEquals("locations"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<AzureLocation> array = new List<AzureLocation>();
@@ -69,38 +167,80 @@ namespace Azure.ResourceManager.AppPlatform.Models
                     locations = array;
                     continue;
                 }
-                if (property.NameEquals("locationInfo"))
+                if (property.NameEquals("locationInfo"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<ResourceSkuLocationInfo> array = new List<ResourceSkuLocationInfo>();
+                    List<AppPlatformSkuLocationInfo> array = new List<AppPlatformSkuLocationInfo>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ResourceSkuLocationInfo.DeserializeResourceSkuLocationInfo(item));
+                        array.Add(AppPlatformSkuLocationInfo.DeserializeAppPlatformSkuLocationInfo(item, options));
                     }
                     locationInfo = array;
                     continue;
                 }
-                if (property.NameEquals("restrictions"))
+                if (property.NameEquals("restrictions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<ResourceSkuRestrictions> array = new List<ResourceSkuRestrictions>();
+                    List<AppPlatformSkuRestrictions> array = new List<AppPlatformSkuRestrictions>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ResourceSkuRestrictions.DeserializeResourceSkuRestrictions(item));
+                        array.Add(AppPlatformSkuRestrictions.DeserializeAppPlatformSkuRestrictions(item, options));
                     }
                     restrictions = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AvailableAppPlatformSku(Optional.ToNullable(resourceType), name.Value, tier.Value, capacity.Value, Optional.ToList(locations), Optional.ToList(locationInfo), Optional.ToList(restrictions));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AvailableAppPlatformSku(
+                resourceType,
+                name,
+                tier,
+                capacity,
+                locations ?? new ChangeTrackingList<AzureLocation>(),
+                locationInfo ?? new ChangeTrackingList<AppPlatformSkuLocationInfo>(),
+                restrictions ?? new ChangeTrackingList<AppPlatformSkuRestrictions>(),
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<AvailableAppPlatformSku>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AvailableAppPlatformSku>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(AvailableAppPlatformSku)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AvailableAppPlatformSku IPersistableModel<AvailableAppPlatformSku>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AvailableAppPlatformSku>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAvailableAppPlatformSku(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AvailableAppPlatformSku)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AvailableAppPlatformSku>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

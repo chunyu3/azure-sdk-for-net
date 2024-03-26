@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -14,33 +13,36 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static ImageSignature DeserializeImageSignature(JsonElement element)
         {
-            Optional<JWK> header = default;
-            Optional<string> signature = default;
-            Optional<string> @protected = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            JWK header = default;
+            string signature = default;
+            string @protected = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("header"))
+                if (property.NameEquals("header"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     header = JWK.DeserializeJWK(property.Value);
                     continue;
                 }
-                if (property.NameEquals("signature"))
+                if (property.NameEquals("signature"u8))
                 {
                     signature = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("protected"))
+                if (property.NameEquals("protected"u8))
                 {
                     @protected = property.Value.GetString();
                     continue;
                 }
             }
-            return new ImageSignature(header.Value, signature.Value, @protected.Value);
+            return new ImageSignature(header, signature, @protected);
         }
     }
 }

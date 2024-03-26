@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity Teradata source. </summary>
     public partial class TeradataSource : TabularSource
     {
-        /// <summary> Initializes a new instance of TeradataSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="TeradataSource"/>. </summary>
         public TeradataSource()
         {
             CopySourceType = "TeradataSource";
         }
 
-        /// <summary> Initializes a new instance of TeradataSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="TeradataSource"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -29,9 +30,9 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="queryTimeout"> Query timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
         /// <param name="additionalColumns"> Specifies the additional columns to be added to source data. Type: array of objects(AdditionalColumns) (or Expression with resultType array of objects). </param>
         /// <param name="query"> Teradata query. Type: string (or Expression with resultType string). </param>
-        /// <param name="partitionOption"> The partition mechanism that will be used for teradata read in parallel. Possible values include: &quot;None&quot;, &quot;Hash&quot;, &quot;DynamicRange&quot;. </param>
+        /// <param name="partitionOption"> The partition mechanism that will be used for teradata read in parallel. Possible values include: "None", "Hash", "DynamicRange". </param>
         /// <param name="partitionSettings"> The settings that will be leveraged for teradata source partitioning. </param>
-        internal TeradataSource(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData queryTimeout, BinaryData additionalColumns, BinaryData query, BinaryData partitionOption, TeradataPartitionSettings partitionSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties, queryTimeout, additionalColumns)
+        internal TeradataSource(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> queryTimeout, BinaryData additionalColumns, DataFactoryElement<string> query, DataFactoryElement<string> partitionOption, TeradataPartitionSettings partitionSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties, queryTimeout, additionalColumns)
         {
             Query = query;
             PartitionOption = partitionOption;
@@ -40,9 +41,9 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> Teradata query. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Query { get; set; }
-        /// <summary> The partition mechanism that will be used for teradata read in parallel. Possible values include: &quot;None&quot;, &quot;Hash&quot;, &quot;DynamicRange&quot;. </summary>
-        public BinaryData PartitionOption { get; set; }
+        public DataFactoryElement<string> Query { get; set; }
+        /// <summary> The partition mechanism that will be used for teradata read in parallel. Possible values include: "None", "Hash", "DynamicRange". </summary>
+        public DataFactoryElement<string> PartitionOption { get; set; }
         /// <summary> The settings that will be leveraged for teradata source partitioning. </summary>
         public TeradataPartitionSettings PartitionSettings { get; set; }
     }

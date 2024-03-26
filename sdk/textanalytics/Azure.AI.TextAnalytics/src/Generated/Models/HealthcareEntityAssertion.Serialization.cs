@@ -17,17 +17,17 @@ namespace Azure.AI.TextAnalytics
             writer.WriteStartObject();
             if (Optional.IsDefined(Conditionality))
             {
-                writer.WritePropertyName("conditionality");
+                writer.WritePropertyName("conditionality"u8);
                 writer.WriteStringValue(Conditionality.Value.ToSerialString());
             }
             if (Optional.IsDefined(Certainty))
             {
-                writer.WritePropertyName("certainty");
+                writer.WritePropertyName("certainty"u8);
                 writer.WriteStringValue(Certainty.Value.ToSerialString());
             }
             if (Optional.IsDefined(Association))
             {
-                writer.WritePropertyName("association");
+                writer.WritePropertyName("association"u8);
                 writer.WriteStringValue(Association.Value.ToSerialString());
             }
             writer.WriteEndObject();
@@ -35,43 +35,44 @@ namespace Azure.AI.TextAnalytics
 
         internal static HealthcareEntityAssertion DeserializeHealthcareEntityAssertion(JsonElement element)
         {
-            Optional<EntityConditionality> conditionality = default;
-            Optional<EntityCertainty> certainty = default;
-            Optional<EntityAssociation> association = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            EntityConditionality? conditionality = default;
+            EntityCertainty? certainty = default;
+            EntityAssociation? association = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("conditionality"))
+                if (property.NameEquals("conditionality"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     conditionality = property.Value.GetString().ToEntityConditionality();
                     continue;
                 }
-                if (property.NameEquals("certainty"))
+                if (property.NameEquals("certainty"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     certainty = property.Value.GetString().ToEntityCertainty();
                     continue;
                 }
-                if (property.NameEquals("association"))
+                if (property.NameEquals("association"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     association = property.Value.GetString().ToEntityAssociation();
                     continue;
                 }
             }
-            return new HealthcareEntityAssertion(Optional.ToNullable(conditionality), Optional.ToNullable(certainty), Optional.ToNullable(association));
+            return new HealthcareEntityAssertion(conditionality, certainty, association);
         }
     }
 }

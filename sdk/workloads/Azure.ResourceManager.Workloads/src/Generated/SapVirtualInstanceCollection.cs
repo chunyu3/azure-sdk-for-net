@@ -9,26 +9,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Workloads
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SapVirtualInstanceResource" /> and their operations.
-    /// Each <see cref="SapVirtualInstanceResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get a <see cref="SapVirtualInstanceCollection" /> instance call the GetSapVirtualInstances method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="SapVirtualInstanceResource"/> and their operations.
+    /// Each <see cref="SapVirtualInstanceResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get a <see cref="SapVirtualInstanceCollection"/> instance call the GetSapVirtualInstances method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class SapVirtualInstanceCollection : ArmCollection, IEnumerable<SapVirtualInstanceResource>, IAsyncEnumerable<SapVirtualInstanceResource>
     {
-        private readonly ClientDiagnostics _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics;
-        private readonly SAPVirtualInstancesRestOperations _sapVirtualInstanceSAPVirtualInstancesRestClient;
+        private readonly ClientDiagnostics _sapVirtualInstanceSapVirtualInstancesClientDiagnostics;
+        private readonly SAPVirtualInstancesRestOperations _sapVirtualInstanceSapVirtualInstancesRestClient;
 
         /// <summary> Initializes a new instance of the <see cref="SapVirtualInstanceCollection"/> class for mocking. </summary>
         protected SapVirtualInstanceCollection()
@@ -40,9 +38,9 @@ namespace Azure.ResourceManager.Workloads
         /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
         internal SapVirtualInstanceCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Workloads", SapVirtualInstanceResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(SapVirtualInstanceResource.ResourceType, out string sapVirtualInstanceSAPVirtualInstancesApiVersion);
-            _sapVirtualInstanceSAPVirtualInstancesRestClient = new SAPVirtualInstancesRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, sapVirtualInstanceSAPVirtualInstancesApiVersion);
+            _sapVirtualInstanceSapVirtualInstancesClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Workloads", SapVirtualInstanceResource.ResourceType.Namespace, Diagnostics);
+            TryGetApiVersion(SapVirtualInstanceResource.ResourceType, out string sapVirtualInstanceSapVirtualInstancesApiVersion);
+            _sapVirtualInstanceSapVirtualInstancesRestClient = new SAPVirtualInstancesRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, sapVirtualInstanceSapVirtualInstancesApiVersion);
 #if DEBUG
 			ValidateResourceId(Id);
 #endif
@@ -55,26 +53,43 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Creates an Virtual Instance for SAP.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Create
+        /// Creates a Virtual Instance for SAP solutions (VIS) resource
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
-        /// <param name="data"> The Virtual Instance for SAP request body. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
+        /// <param name="data"> Virtual Instance for SAP solutions resource request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
-        public virtual async Task<ArmOperation<SapVirtualInstanceResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string sapVirtualInstanceName, SapVirtualInstanceData data = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> or <paramref name="data"/> is null. </exception>
+        public virtual async Task<ArmOperation<SapVirtualInstanceResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string sapVirtualInstanceName, SapVirtualInstanceData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
+            Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.CreateOrUpdate");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _sapVirtualInstanceSAPVirtualInstancesRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new WorkloadsArmOperation<SapVirtualInstanceResource>(new SapVirtualInstanceOperationSource(Client), _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics, Pipeline, _sapVirtualInstanceSAPVirtualInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = await _sapVirtualInstanceSapVirtualInstancesRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data, cancellationToken).ConfigureAwait(false);
+                var operation = new WorkloadsArmOperation<SapVirtualInstanceResource>(new SapVirtualInstanceOperationSource(Client), _sapVirtualInstanceSapVirtualInstancesClientDiagnostics, Pipeline, _sapVirtualInstanceSapVirtualInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -87,26 +102,43 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Creates an Virtual Instance for SAP.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Create
+        /// Creates a Virtual Instance for SAP solutions (VIS) resource
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
-        /// <param name="data"> The Virtual Instance for SAP request body. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
+        /// <param name="data"> Virtual Instance for SAP solutions resource request body. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
-        public virtual ArmOperation<SapVirtualInstanceResource> CreateOrUpdate(WaitUntil waitUntil, string sapVirtualInstanceName, SapVirtualInstanceData data = null, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> or <paramref name="data"/> is null. </exception>
+        public virtual ArmOperation<SapVirtualInstanceResource> CreateOrUpdate(WaitUntil waitUntil, string sapVirtualInstanceName, SapVirtualInstanceData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
+            Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.CreateOrUpdate");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _sapVirtualInstanceSAPVirtualInstancesRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data, cancellationToken);
-                var operation = new WorkloadsArmOperation<SapVirtualInstanceResource>(new SapVirtualInstanceOperationSource(Client), _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics, Pipeline, _sapVirtualInstanceSAPVirtualInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                var response = _sapVirtualInstanceSapVirtualInstancesRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data, cancellationToken);
+                var operation = new WorkloadsArmOperation<SapVirtualInstanceResource>(new SapVirtualInstanceOperationSource(Client), _sapVirtualInstanceSapVirtualInstancesClientDiagnostics, Pipeline, _sapVirtualInstanceSapVirtualInstancesRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -119,11 +151,27 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Gets an Virtual Instance for SAP.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Get
+        /// Gets a Virtual Instance for SAP solutions resource
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
@@ -131,11 +179,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Get");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Get");
             scope.Start();
             try
             {
-                var response = await _sapVirtualInstanceSAPVirtualInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken).ConfigureAwait(false);
+                var response = await _sapVirtualInstanceSapVirtualInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SapVirtualInstanceResource(Client, response.Value), response.GetRawResponse());
@@ -148,11 +196,27 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Gets an Virtual Instance for SAP.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Get
+        /// Gets a Virtual Instance for SAP solutions resource
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
@@ -160,11 +224,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Get");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Get");
             scope.Start();
             try
             {
-                var response = _sapVirtualInstanceSAPVirtualInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken);
+                var response = _sapVirtualInstanceSapVirtualInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SapVirtualInstanceResource(Client, response.Value), response.GetRawResponse());
@@ -177,95 +241,87 @@ namespace Azure.ResourceManager.Workloads
         }
 
         /// <summary>
-        /// Gets all Virtual Instances for SAP in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances
-        /// Operation Id: SAPVirtualInstances_ListByResourceGroup
+        /// Gets all Virtual Instances for SAP solutions resources in a Resource Group.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SapVirtualInstanceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SapVirtualInstanceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SapVirtualInstanceResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SapVirtualInstanceResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sapVirtualInstanceSAPVirtualInstancesRestClient.ListByResourceGroupAsync(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapVirtualInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SapVirtualInstanceResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sapVirtualInstanceSAPVirtualInstancesRestClient.ListByResourceGroupNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapVirtualInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sapVirtualInstanceSapVirtualInstancesRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sapVirtualInstanceSapVirtualInstancesRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SapVirtualInstanceResource(Client, SapVirtualInstanceData.DeserializeSapVirtualInstanceData(e)), _sapVirtualInstanceSapVirtualInstancesClientDiagnostics, Pipeline, "SapVirtualInstanceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
-        /// Gets all Virtual Instances for SAP in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances
-        /// Operation Id: SAPVirtualInstances_ListByResourceGroup
+        /// Gets all Virtual Instances for SAP solutions resources in a Resource Group.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SapVirtualInstanceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SapVirtualInstanceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SapVirtualInstanceResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SapVirtualInstanceResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sapVirtualInstanceSAPVirtualInstancesRestClient.ListByResourceGroup(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapVirtualInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SapVirtualInstanceResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sapVirtualInstanceSAPVirtualInstancesRestClient.ListByResourceGroupNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SapVirtualInstanceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sapVirtualInstanceSapVirtualInstancesRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sapVirtualInstanceSapVirtualInstancesRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SapVirtualInstanceResource(Client, SapVirtualInstanceData.DeserializeSapVirtualInstanceData(e)), _sapVirtualInstanceSapVirtualInstancesClientDiagnostics, Pipeline, "SapVirtualInstanceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
@@ -273,11 +329,11 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Exists");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _sapVirtualInstanceSAPVirtualInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                var response = await _sapVirtualInstanceSapVirtualInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -289,10 +345,26 @@ namespace Azure.ResourceManager.Workloads
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}
-        /// Operation Id: SAPVirtualInstances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP. </param>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
@@ -300,12 +372,102 @@ namespace Azure.ResourceManager.Workloads
         {
             Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
 
-            using var scope = _sapVirtualInstanceSAPVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Exists");
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.Exists");
             scope.Start();
             try
             {
-                var response = _sapVirtualInstanceSAPVirtualInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken);
+                var response = _sapVirtualInstanceSapVirtualInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SapVirtualInstanceResource>> GetIfExistsAsync(string sapVirtualInstanceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
+
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _sapVirtualInstanceSapVirtualInstancesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SapVirtualInstanceResource>(response.GetRawResponse());
+                return Response.FromValue(new SapVirtualInstanceResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Workloads/sapVirtualInstances/{sapVirtualInstanceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SAPVirtualInstances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SapVirtualInstanceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="sapVirtualInstanceName"> The name of the Virtual Instances for SAP solutions resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="sapVirtualInstanceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="sapVirtualInstanceName"/> is null. </exception>
+        public virtual NullableResponse<SapVirtualInstanceResource> GetIfExists(string sapVirtualInstanceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(sapVirtualInstanceName, nameof(sapVirtualInstanceName));
+
+            using var scope = _sapVirtualInstanceSapVirtualInstancesClientDiagnostics.CreateScope("SapVirtualInstanceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _sapVirtualInstanceSapVirtualInstancesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, sapVirtualInstanceName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SapVirtualInstanceResource>(response.GetRawResponse());
+                return Response.FromValue(new SapVirtualInstanceResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

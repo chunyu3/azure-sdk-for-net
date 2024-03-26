@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Compute
 {
     /// <summary>
-    /// A class representing a collection of <see cref="CommunityGalleryImageResource" /> and their operations.
-    /// Each <see cref="CommunityGalleryImageResource" /> in the collection will belong to the same instance of <see cref="CommunityGalleryResource" />.
-    /// To get a <see cref="CommunityGalleryImageCollection" /> instance call the GetCommunityGalleryImages method from an instance of <see cref="CommunityGalleryResource" />.
+    /// A class representing a collection of <see cref="CommunityGalleryImageResource"/> and their operations.
+    /// Each <see cref="CommunityGalleryImageResource"/> in the collection will belong to the same instance of <see cref="CommunityGalleryResource"/>.
+    /// To get a <see cref="CommunityGalleryImageCollection"/> instance call the GetCommunityGalleryImages method from an instance of <see cref="CommunityGalleryResource"/>.
     /// </summary>
     public partial class CommunityGalleryImageCollection : ArmCollection, IEnumerable<CommunityGalleryImageResource>, IAsyncEnumerable<CommunityGalleryImageResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Get a community gallery image.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}
-        /// Operation Id: CommunityGalleryImages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -85,8 +99,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Get a community gallery image.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}
-        /// Operation Id: CommunityGalleryImages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -115,112 +145,84 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// List community gallery images inside a gallery.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images
-        /// Operation Id: CommunityGalleryImages_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="CommunityGalleryImageResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="CommunityGalleryImageResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<CommunityGalleryImageResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<CommunityGalleryImageResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _communityGalleryImageRestClient.ListAsync(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value =>
-                    {
-                        value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, value.Name);
-                        return new CommunityGalleryImageResource(Client, value);
-                    }
-                    ), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<CommunityGalleryImageResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _communityGalleryImageRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value =>
-                    {
-                        value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, value.Name);
-                        return new CommunityGalleryImageResource(Client, value);
-                    }
-                    ), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _communityGalleryImageRestClient.CreateListRequest(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _communityGalleryImageRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new CommunityGalleryImageResource(Client, CommunityGalleryImageData.DeserializeCommunityGalleryImageData(e)), _communityGalleryImageClientDiagnostics, Pipeline, "CommunityGalleryImageCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List community gallery images inside a gallery.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images
-        /// Operation Id: CommunityGalleryImages_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="CommunityGalleryImageResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="CommunityGalleryImageResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<CommunityGalleryImageResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<CommunityGalleryImageResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _communityGalleryImageRestClient.List(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value =>
-                    {
-                        value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, value.Name);
-                        return new CommunityGalleryImageResource(Client, value);
-                    }
-                    ), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<CommunityGalleryImageResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _communityGalleryImageRestClient.ListNextPage(nextLink, Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value =>
-                    {
-                        value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, value.Name);
-                        return new CommunityGalleryImageResource(Client, value);
-                    }
-                    ), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _communityGalleryImageRestClient.CreateListRequest(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _communityGalleryImageRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new CommunityGalleryImageResource(Client, CommunityGalleryImageData.DeserializeCommunityGalleryImageData(e)), _communityGalleryImageClientDiagnostics, Pipeline, "CommunityGalleryImageCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}
-        /// Operation Id: CommunityGalleryImages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -246,8 +248,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}
-        /// Operation Id: CommunityGalleryImages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -263,6 +281,98 @@ namespace Azure.ResourceManager.Compute
             {
                 var response = _communityGalleryImageRestClient.Get(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, galleryImageName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="galleryImageName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="galleryImageName"/> is null. </exception>
+        public virtual async Task<NullableResponse<CommunityGalleryImageResource>> GetIfExistsAsync(string galleryImageName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(galleryImageName, nameof(galleryImageName));
+
+            using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _communityGalleryImageRestClient.GetAsync(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, galleryImageName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<CommunityGalleryImageResource>(response.GetRawResponse());
+                response.Value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, galleryImageName);
+                return Response.FromValue(new CommunityGalleryImageResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/communityGalleries/{publicGalleryName}/images/{galleryImageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CommunityGalleryImages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-07-03</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CommunityGalleryImageResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="galleryImageName"> The name of the community gallery image definition. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="galleryImageName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="galleryImageName"/> is null. </exception>
+        public virtual NullableResponse<CommunityGalleryImageResource> GetIfExists(string galleryImageName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(galleryImageName, nameof(galleryImageName));
+
+            using var scope = _communityGalleryImageClientDiagnostics.CreateScope("CommunityGalleryImageCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _communityGalleryImageRestClient.Get(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, galleryImageName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<CommunityGalleryImageResource>(response.GetRawResponse());
+                response.Value.Id = CommunityGalleryImageResource.CreateResourceIdentifier(Id.SubscriptionId, new AzureLocation(Id.Parent.Name), Id.Name, galleryImageName);
+                return Response.FromValue(new CommunityGalleryImageResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

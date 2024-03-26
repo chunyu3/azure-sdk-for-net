@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity Salesforce source. </summary>
     public partial class SalesforceSource : TabularSource
     {
-        /// <summary> Initializes a new instance of SalesforceSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="SalesforceSource"/>. </summary>
         public SalesforceSource()
         {
             CopySourceType = "SalesforceSource";
         }
 
-        /// <summary> Initializes a new instance of SalesforceSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="SalesforceSource"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -29,8 +30,8 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="queryTimeout"> Query timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
         /// <param name="additionalColumns"> Specifies the additional columns to be added to source data. Type: array of objects(AdditionalColumns) (or Expression with resultType array of objects). </param>
         /// <param name="query"> Database query. Type: string (or Expression with resultType string). </param>
-        /// <param name="readBehavior"> The read behavior for the operation. Default is Query. </param>
-        internal SalesforceSource(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData queryTimeout, BinaryData additionalColumns, BinaryData query, SalesforceSourceReadBehavior? readBehavior) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties, queryTimeout, additionalColumns)
+        /// <param name="readBehavior"> The read behavior for the operation. Default is Query. Allowed values: Query/QueryAll. Type: string (or Expression with resultType string). </param>
+        internal SalesforceSource(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> queryTimeout, BinaryData additionalColumns, DataFactoryElement<string> query, DataFactoryElement<string> readBehavior) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties, queryTimeout, additionalColumns)
         {
             Query = query;
             ReadBehavior = readBehavior;
@@ -38,8 +39,8 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> Database query. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Query { get; set; }
-        /// <summary> The read behavior for the operation. Default is Query. </summary>
-        public SalesforceSourceReadBehavior? ReadBehavior { get; set; }
+        public DataFactoryElement<string> Query { get; set; }
+        /// <summary> The read behavior for the operation. Default is Query. Allowed values: Query/QueryAll. Type: string (or Expression with resultType string). </summary>
+        public DataFactoryElement<string> ReadBehavior { get; set; }
     }
 }

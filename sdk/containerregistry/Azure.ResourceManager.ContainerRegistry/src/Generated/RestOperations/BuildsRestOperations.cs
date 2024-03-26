@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ContainerRegistry.Models;
@@ -59,7 +58,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Get the upload location for the user to be able to upload the source. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -67,9 +66,9 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response<SourceUploadDefinition>> GetBuildSourceUploadUrlAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateGetBuildSourceUploadUrlRequest(subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -88,7 +87,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Get the upload location for the user to be able to upload the source. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -96,9 +95,9 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response<SourceUploadDefinition> GetBuildSourceUploadUrl(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateGetBuildSourceUploadUrlRequest(subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);

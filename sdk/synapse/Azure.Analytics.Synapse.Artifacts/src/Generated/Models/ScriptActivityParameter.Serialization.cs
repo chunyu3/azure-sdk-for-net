@@ -20,27 +20,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
-                writer.WriteObjectValue(Name);
+                writer.WritePropertyName("name"u8);
+                writer.WriteObjectValue<object>(Name);
             }
             if (Optional.IsDefined(Type))
             {
-                writer.WritePropertyName("type");
+                writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(Type.Value.ToString());
             }
             if (Optional.IsDefined(Value))
             {
-                writer.WritePropertyName("value");
-                writer.WriteObjectValue(Value);
+                writer.WritePropertyName("value"u8);
+                writer.WriteObjectValue<object>(Value);
             }
             if (Optional.IsDefined(Direction))
             {
-                writer.WritePropertyName("direction");
+                writer.WritePropertyName("direction"u8);
                 writer.WriteStringValue(Direction.Value.ToString());
             }
             if (Optional.IsDefined(Size))
             {
-                writer.WritePropertyName("size");
+                writer.WritePropertyName("size"u8);
                 writer.WriteNumberValue(Size.Value);
             }
             writer.WriteEndObject();
@@ -48,72 +48,71 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static ScriptActivityParameter DeserializeScriptActivityParameter(JsonElement element)
         {
-            Optional<object> name = default;
-            Optional<ScriptActivityParameterType> type = default;
-            Optional<object> value = default;
-            Optional<ScriptActivityParameterDirection> direction = default;
-            Optional<int> size = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object name = default;
+            ScriptActivityParameterType? type = default;
+            object value = default;
+            ScriptActivityParameterDirection? direction = default;
+            int? size = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     name = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new ScriptActivityParameterType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     value = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("direction"))
+                if (property.NameEquals("direction"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     direction = new ScriptActivityParameterDirection(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("size"))
+                if (property.NameEquals("size"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     size = property.Value.GetInt32();
                     continue;
                 }
             }
-            return new ScriptActivityParameter(name.Value, Optional.ToNullable(type), value.Value, Optional.ToNullable(direction), Optional.ToNullable(size));
+            return new ScriptActivityParameter(name, type, value, direction, size);
         }
 
         internal partial class ScriptActivityParameterConverter : JsonConverter<ScriptActivityParameter>
         {
             public override void Write(Utf8JsonWriter writer, ScriptActivityParameter model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ScriptActivityParameter>(model);
             }
             public override ScriptActivityParameter Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -21,17 +21,17 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(PreventDataExfiltration))
             {
-                writer.WritePropertyName("preventDataExfiltration");
+                writer.WritePropertyName("preventDataExfiltration"u8);
                 writer.WriteBooleanValue(PreventDataExfiltration.Value);
             }
             if (Optional.IsDefined(LinkedAccessCheckOnTargetResource))
             {
-                writer.WritePropertyName("linkedAccessCheckOnTargetResource");
+                writer.WritePropertyName("linkedAccessCheckOnTargetResource"u8);
                 writer.WriteBooleanValue(LinkedAccessCheckOnTargetResource.Value);
             }
             if (Optional.IsCollectionDefined(AllowedAadTenantIdsForLinking))
             {
-                writer.WritePropertyName("allowedAadTenantIdsForLinking");
+                writer.WritePropertyName("allowedAadTenantIdsForLinking"u8);
                 writer.WriteStartArray();
                 foreach (var item in AllowedAadTenantIdsForLinking)
                 {
@@ -44,36 +44,37 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static ManagedVirtualNetworkSettings DeserializeManagedVirtualNetworkSettings(JsonElement element)
         {
-            Optional<bool> preventDataExfiltration = default;
-            Optional<bool> linkedAccessCheckOnTargetResource = default;
-            Optional<IList<string>> allowedAadTenantIdsForLinking = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? preventDataExfiltration = default;
+            bool? linkedAccessCheckOnTargetResource = default;
+            IList<string> allowedAadTenantIdsForLinking = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("preventDataExfiltration"))
+                if (property.NameEquals("preventDataExfiltration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     preventDataExfiltration = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("linkedAccessCheckOnTargetResource"))
+                if (property.NameEquals("linkedAccessCheckOnTargetResource"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     linkedAccessCheckOnTargetResource = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("allowedAadTenantIdsForLinking"))
+                if (property.NameEquals("allowedAadTenantIdsForLinking"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -85,14 +86,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new ManagedVirtualNetworkSettings(Optional.ToNullable(preventDataExfiltration), Optional.ToNullable(linkedAccessCheckOnTargetResource), Optional.ToList(allowedAadTenantIdsForLinking));
+            return new ManagedVirtualNetworkSettings(preventDataExfiltration, linkedAccessCheckOnTargetResource, allowedAadTenantIdsForLinking ?? new ChangeTrackingList<string>());
         }
 
         internal partial class ManagedVirtualNetworkSettingsConverter : JsonConverter<ManagedVirtualNetworkSettings>
         {
             public override void Write(Utf8JsonWriter writer, ManagedVirtualNetworkSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ManagedVirtualNetworkSettings>(model);
             }
             public override ManagedVirtualNetworkSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

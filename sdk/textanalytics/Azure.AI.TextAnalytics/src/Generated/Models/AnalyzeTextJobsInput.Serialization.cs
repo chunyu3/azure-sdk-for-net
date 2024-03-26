@@ -17,16 +17,16 @@ namespace Azure.AI.TextAnalytics.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(DisplayName))
             {
-                writer.WritePropertyName("displayName");
+                writer.WritePropertyName("displayName"u8);
                 writer.WriteStringValue(DisplayName);
             }
-            writer.WritePropertyName("analysisInput");
-            writer.WriteObjectValue(AnalysisInput);
-            writer.WritePropertyName("tasks");
+            writer.WritePropertyName("analysisInput"u8);
+            writer.WriteObjectValue<MultiLanguageAnalysisInput>(AnalysisInput);
+            writer.WritePropertyName("tasks"u8);
             writer.WriteStartArray();
             foreach (var item in Tasks)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<AnalyzeTextLROTask>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();

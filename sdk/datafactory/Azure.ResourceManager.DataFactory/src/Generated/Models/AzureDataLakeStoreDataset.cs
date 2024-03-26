@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Azure Data Lake Store dataset. </summary>
-    public partial class AzureDataLakeStoreDataset : Dataset
+    public partial class AzureDataLakeStoreDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of AzureDataLakeStoreDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataLakeStoreDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public AzureDataLakeStoreDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public AzureDataLakeStoreDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "AzureDataLakeStoreFile";
         }
 
-        /// <summary> Initializes a new instance of AzureDataLakeStoreDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataLakeStoreDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -41,10 +39,10 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="format">
         /// The format of the Data Lake Store.
         /// Please note <see cref="DatasetStorageFormat"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AvroFormat"/>, <see cref="JsonFormat"/>, <see cref="OrcFormat"/>, <see cref="ParquetFormat"/> and <see cref="TextFormat"/>.
+        /// The available derived classes include <see cref="DatasetAvroFormat"/>, <see cref="DatasetJsonFormat"/>, <see cref="DatasetOrcFormat"/>, <see cref="DatasetParquetFormat"/> and <see cref="DatasetTextFormat"/>.
         /// </param>
         /// <param name="compression"> The data compression method used for the item(s) in the Azure Data Lake Store. </param>
-        internal AzureDataLakeStoreDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData folderPath, BinaryData fileName, DatasetStorageFormat format, DatasetCompression compression) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal AzureDataLakeStoreDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> folderPath, DataFactoryElement<string> fileName, DatasetStorageFormat format, DatasetCompression compression) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             FolderPath = folderPath;
             FileName = fileName;
@@ -53,14 +51,19 @@ namespace Azure.ResourceManager.DataFactory.Models
             DatasetType = datasetType ?? "AzureDataLakeStoreFile";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AzureDataLakeStoreDataset"/> for deserialization. </summary>
+        internal AzureDataLakeStoreDataset()
+        {
+        }
+
         /// <summary> Path to the folder in the Azure Data Lake Store. Type: string (or Expression with resultType string). </summary>
-        public BinaryData FolderPath { get; set; }
+        public DataFactoryElement<string> FolderPath { get; set; }
         /// <summary> The name of the file in the Azure Data Lake Store. Type: string (or Expression with resultType string). </summary>
-        public BinaryData FileName { get; set; }
+        public DataFactoryElement<string> FileName { get; set; }
         /// <summary>
         /// The format of the Data Lake Store.
         /// Please note <see cref="DatasetStorageFormat"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AvroFormat"/>, <see cref="JsonFormat"/>, <see cref="OrcFormat"/>, <see cref="ParquetFormat"/> and <see cref="TextFormat"/>.
+        /// The available derived classes include <see cref="DatasetAvroFormat"/>, <see cref="DatasetJsonFormat"/>, <see cref="DatasetOrcFormat"/>, <see cref="DatasetParquetFormat"/> and <see cref="DatasetTextFormat"/>.
         /// </summary>
         public DatasetStorageFormat Format { get; set; }
         /// <summary> The data compression method used for the item(s) in the Azure Data Lake Store. </summary>

@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -14,16 +13,20 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static AcrRefreshToken DeserializeAcrRefreshToken(JsonElement element)
         {
-            Optional<string> refreshToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string refreshToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("refresh_token"))
+                if (property.NameEquals("refresh_token"u8))
                 {
                     refreshToken = property.Value.GetString();
                     continue;
                 }
             }
-            return new AcrRefreshToken(refreshToken.Value);
+            return new AcrRefreshToken(refreshToken);
         }
     }
 }

@@ -18,31 +18,31 @@ namespace Azure.Search.Documents.Indexes.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Tables))
             {
-                writer.WritePropertyName("tables");
+                writer.WritePropertyName("tables"u8);
                 writer.WriteStartArray();
                 foreach (var item in Tables)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<KnowledgeStoreTableProjectionSelector>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(Objects))
             {
-                writer.WritePropertyName("objects");
+                writer.WritePropertyName("objects"u8);
                 writer.WriteStartArray();
                 foreach (var item in Objects)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<KnowledgeStoreObjectProjectionSelector>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(Files))
             {
-                writer.WritePropertyName("files");
+                writer.WritePropertyName("files"u8);
                 writer.WriteStartArray();
                 foreach (var item in Files)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<KnowledgeStoreFileProjectionSelector>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -51,16 +51,19 @@ namespace Azure.Search.Documents.Indexes.Models
 
         internal static KnowledgeStoreProjection DeserializeKnowledgeStoreProjection(JsonElement element)
         {
-            Optional<IList<KnowledgeStoreTableProjectionSelector>> tables = default;
-            Optional<IList<KnowledgeStoreObjectProjectionSelector>> objects = default;
-            Optional<IList<KnowledgeStoreFileProjectionSelector>> files = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<KnowledgeStoreTableProjectionSelector> tables = default;
+            IList<KnowledgeStoreObjectProjectionSelector> objects = default;
+            IList<KnowledgeStoreFileProjectionSelector> files = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("tables"))
+                if (property.NameEquals("tables"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<KnowledgeStoreTableProjectionSelector> array = new List<KnowledgeStoreTableProjectionSelector>();
@@ -71,11 +74,10 @@ namespace Azure.Search.Documents.Indexes.Models
                     tables = array;
                     continue;
                 }
-                if (property.NameEquals("objects"))
+                if (property.NameEquals("objects"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<KnowledgeStoreObjectProjectionSelector> array = new List<KnowledgeStoreObjectProjectionSelector>();
@@ -86,11 +88,10 @@ namespace Azure.Search.Documents.Indexes.Models
                     objects = array;
                     continue;
                 }
-                if (property.NameEquals("files"))
+                if (property.NameEquals("files"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<KnowledgeStoreFileProjectionSelector> array = new List<KnowledgeStoreFileProjectionSelector>();
@@ -102,7 +103,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     continue;
                 }
             }
-            return new KnowledgeStoreProjection(Optional.ToList(tables), Optional.ToList(objects), Optional.ToList(files));
+            return new KnowledgeStoreProjection(tables ?? new ChangeTrackingList<KnowledgeStoreTableProjectionSelector>(), objects ?? new ChangeTrackingList<KnowledgeStoreObjectProjectionSelector>(), files ?? new ChangeTrackingList<KnowledgeStoreFileProjectionSelector>());
         }
     }
 }

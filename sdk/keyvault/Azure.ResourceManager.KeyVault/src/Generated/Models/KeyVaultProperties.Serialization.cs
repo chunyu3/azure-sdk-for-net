@@ -6,277 +6,669 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    public partial class KeyVaultProperties : IUtf8JsonSerializable
+    public partial class KeyVaultProperties : IUtf8JsonSerializable, IJsonModel<KeyVaultProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<KeyVaultProperties>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<KeyVaultProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyVaultProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KeyVaultProperties)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("tenantId");
+            writer.WritePropertyName("tenantId"u8);
             writer.WriteStringValue(TenantId);
-            writer.WritePropertyName("sku");
-            writer.WriteObjectValue(Sku);
+            writer.WritePropertyName("sku"u8);
+            writer.WriteObjectValue<KeyVaultSku>(Sku, options);
             if (Optional.IsCollectionDefined(AccessPolicies))
             {
-                writer.WritePropertyName("accessPolicies");
+                writer.WritePropertyName("accessPolicies"u8);
                 writer.WriteStartArray();
                 foreach (var item in AccessPolicies)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<KeyVaultAccessPolicy>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(VaultUri))
             {
-                writer.WritePropertyName("vaultUri");
+                writer.WritePropertyName("vaultUri"u8);
                 writer.WriteStringValue(VaultUri.AbsoluteUri);
+            }
+            if (options.Format != "W" && Optional.IsDefined(HsmPoolResourceId))
+            {
+                writer.WritePropertyName("hsmPoolResourceId"u8);
+                writer.WriteStringValue(HsmPoolResourceId);
             }
             if (Optional.IsDefined(EnabledForDeployment))
             {
-                writer.WritePropertyName("enabledForDeployment");
+                writer.WritePropertyName("enabledForDeployment"u8);
                 writer.WriteBooleanValue(EnabledForDeployment.Value);
             }
             if (Optional.IsDefined(EnabledForDiskEncryption))
             {
-                writer.WritePropertyName("enabledForDiskEncryption");
+                writer.WritePropertyName("enabledForDiskEncryption"u8);
                 writer.WriteBooleanValue(EnabledForDiskEncryption.Value);
             }
             if (Optional.IsDefined(EnabledForTemplateDeployment))
             {
-                writer.WritePropertyName("enabledForTemplateDeployment");
+                writer.WritePropertyName("enabledForTemplateDeployment"u8);
                 writer.WriteBooleanValue(EnabledForTemplateDeployment.Value);
             }
             if (Optional.IsDefined(EnableSoftDelete))
             {
-                writer.WritePropertyName("enableSoftDelete");
+                writer.WritePropertyName("enableSoftDelete"u8);
                 writer.WriteBooleanValue(EnableSoftDelete.Value);
             }
             if (Optional.IsDefined(SoftDeleteRetentionInDays))
             {
-                writer.WritePropertyName("softDeleteRetentionInDays");
+                writer.WritePropertyName("softDeleteRetentionInDays"u8);
                 writer.WriteNumberValue(SoftDeleteRetentionInDays.Value);
             }
             if (Optional.IsDefined(EnableRbacAuthorization))
             {
-                writer.WritePropertyName("enableRbacAuthorization");
+                writer.WritePropertyName("enableRbacAuthorization"u8);
                 writer.WriteBooleanValue(EnableRbacAuthorization.Value);
             }
             if (Optional.IsDefined(CreateMode))
             {
-                writer.WritePropertyName("createMode");
+                writer.WritePropertyName("createMode"u8);
                 writer.WriteStringValue(CreateMode.Value.ToSerialString());
             }
             if (Optional.IsDefined(EnablePurgeProtection))
             {
-                writer.WritePropertyName("enablePurgeProtection");
+                writer.WritePropertyName("enablePurgeProtection"u8);
                 writer.WriteBooleanValue(EnablePurgeProtection.Value);
             }
             if (Optional.IsDefined(NetworkRuleSet))
             {
-                writer.WritePropertyName("networkAcls");
-                writer.WriteObjectValue(NetworkRuleSet);
+                writer.WritePropertyName("networkAcls"u8);
+                writer.WriteObjectValue<KeyVaultNetworkRuleSet>(NetworkRuleSet, options);
             }
             if (Optional.IsDefined(ProvisioningState))
             {
-                writer.WritePropertyName("provisioningState");
+                writer.WritePropertyName("provisioningState"u8);
                 writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(PrivateEndpointConnections))
+            {
+                writer.WritePropertyName("privateEndpointConnections"u8);
+                writer.WriteStartArray();
+                foreach (var item in PrivateEndpointConnections)
+                {
+                    writer.WriteObjectValue<KeyVaultPrivateEndpointConnectionItemData>(item, options);
+                }
+                writer.WriteEndArray();
             }
             if (Optional.IsDefined(PublicNetworkAccess))
             {
-                writer.WritePropertyName("publicNetworkAccess");
+                writer.WritePropertyName("publicNetworkAccess"u8);
                 writer.WriteStringValue(PublicNetworkAccess);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static KeyVaultProperties DeserializeKeyVaultProperties(JsonElement element)
+        KeyVaultProperties IJsonModel<KeyVaultProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyVaultProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KeyVaultProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKeyVaultProperties(document.RootElement, options);
+        }
+
+        internal static KeyVaultProperties DeserializeKeyVaultProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             Guid tenantId = default;
             KeyVaultSku sku = default;
-            Optional<IList<KeyVaultAccessPolicy>> accessPolicies = default;
-            Optional<Uri> vaultUri = default;
-            Optional<string> hsmPoolResourceId = default;
-            Optional<bool> enabledForDeployment = default;
-            Optional<bool> enabledForDiskEncryption = default;
-            Optional<bool> enabledForTemplateDeployment = default;
-            Optional<bool> enableSoftDelete = default;
-            Optional<int> softDeleteRetentionInDays = default;
-            Optional<bool> enableRbacAuthorization = default;
-            Optional<KeyVaultCreateMode> createMode = default;
-            Optional<bool> enablePurgeProtection = default;
-            Optional<KeyVaultNetworkRuleSet> networkAcls = default;
-            Optional<KeyVaultProvisioningState> provisioningState = default;
-            Optional<IReadOnlyList<KeyVaultPrivateEndpointConnectionItemData>> privateEndpointConnections = default;
-            Optional<string> publicNetworkAccess = default;
+            IList<KeyVaultAccessPolicy> accessPolicies = default;
+            Uri vaultUri = default;
+            string hsmPoolResourceId = default;
+            bool? enabledForDeployment = default;
+            bool? enabledForDiskEncryption = default;
+            bool? enabledForTemplateDeployment = default;
+            bool? enableSoftDelete = default;
+            int? softDeleteRetentionInDays = default;
+            bool? enableRbacAuthorization = default;
+            KeyVaultCreateMode? createMode = default;
+            bool? enablePurgeProtection = default;
+            KeyVaultNetworkRuleSet networkAcls = default;
+            KeyVaultProvisioningState? provisioningState = default;
+            IReadOnlyList<KeyVaultPrivateEndpointConnectionItemData> privateEndpointConnections = default;
+            string publicNetworkAccess = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("tenantId"))
+                if (property.NameEquals("tenantId"u8))
                 {
                     tenantId = property.Value.GetGuid();
                     continue;
                 }
-                if (property.NameEquals("sku"))
+                if (property.NameEquals("sku"u8))
                 {
-                    sku = KeyVaultSku.DeserializeKeyVaultSku(property.Value);
+                    sku = KeyVaultSku.DeserializeKeyVaultSku(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("accessPolicies"))
+                if (property.NameEquals("accessPolicies"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<KeyVaultAccessPolicy> array = new List<KeyVaultAccessPolicy>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(KeyVaultAccessPolicy.DeserializeKeyVaultAccessPolicy(item));
+                        array.Add(KeyVaultAccessPolicy.DeserializeKeyVaultAccessPolicy(item, options));
                     }
                     accessPolicies = array;
                     continue;
                 }
-                if (property.NameEquals("vaultUri"))
+                if (property.NameEquals("vaultUri"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        vaultUri = null;
                         continue;
                     }
                     vaultUri = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("hsmPoolResourceId"))
+                if (property.NameEquals("hsmPoolResourceId"u8))
                 {
                     hsmPoolResourceId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("enabledForDeployment"))
+                if (property.NameEquals("enabledForDeployment"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabledForDeployment = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enabledForDiskEncryption"))
+                if (property.NameEquals("enabledForDiskEncryption"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabledForDiskEncryption = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enabledForTemplateDeployment"))
+                if (property.NameEquals("enabledForTemplateDeployment"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabledForTemplateDeployment = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableSoftDelete"))
+                if (property.NameEquals("enableSoftDelete"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableSoftDelete = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("softDeleteRetentionInDays"))
+                if (property.NameEquals("softDeleteRetentionInDays"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     softDeleteRetentionInDays = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("enableRbacAuthorization"))
+                if (property.NameEquals("enableRbacAuthorization"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableRbacAuthorization = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("createMode"))
+                if (property.NameEquals("createMode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     createMode = property.Value.GetString().ToKeyVaultCreateMode();
                     continue;
                 }
-                if (property.NameEquals("enablePurgeProtection"))
+                if (property.NameEquals("enablePurgeProtection"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enablePurgeProtection = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("networkAcls"))
+                if (property.NameEquals("networkAcls"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    networkAcls = KeyVaultNetworkRuleSet.DeserializeKeyVaultNetworkRuleSet(property.Value);
+                    networkAcls = KeyVaultNetworkRuleSet.DeserializeKeyVaultNetworkRuleSet(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (property.NameEquals("provisioningState"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     provisioningState = new KeyVaultProvisioningState(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("privateEndpointConnections"))
+                if (property.NameEquals("privateEndpointConnections"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<KeyVaultPrivateEndpointConnectionItemData> array = new List<KeyVaultPrivateEndpointConnectionItemData>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(KeyVaultPrivateEndpointConnectionItemData.DeserializeKeyVaultPrivateEndpointConnectionItemData(item));
+                        array.Add(KeyVaultPrivateEndpointConnectionItemData.DeserializeKeyVaultPrivateEndpointConnectionItemData(item, options));
                     }
                     privateEndpointConnections = array;
                     continue;
                 }
-                if (property.NameEquals("publicNetworkAccess"))
+                if (property.NameEquals("publicNetworkAccess"u8))
                 {
                     publicNetworkAccess = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new KeyVaultProperties(tenantId, sku, Optional.ToList(accessPolicies), vaultUri.Value, hsmPoolResourceId.Value, Optional.ToNullable(enabledForDeployment), Optional.ToNullable(enabledForDiskEncryption), Optional.ToNullable(enabledForTemplateDeployment), Optional.ToNullable(enableSoftDelete), Optional.ToNullable(softDeleteRetentionInDays), Optional.ToNullable(enableRbacAuthorization), Optional.ToNullable(createMode), Optional.ToNullable(enablePurgeProtection), networkAcls.Value, Optional.ToNullable(provisioningState), Optional.ToList(privateEndpointConnections), publicNetworkAccess.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new KeyVaultProperties(
+                tenantId,
+                sku,
+                accessPolicies ?? new ChangeTrackingList<KeyVaultAccessPolicy>(),
+                vaultUri,
+                hsmPoolResourceId,
+                enabledForDeployment,
+                enabledForDiskEncryption,
+                enabledForTemplateDeployment,
+                enableSoftDelete,
+                softDeleteRetentionInDays,
+                enableRbacAuthorization,
+                createMode,
+                enablePurgeProtection,
+                networkAcls,
+                provisioningState,
+                privateEndpointConnections ?? new ChangeTrackingList<KeyVaultPrivateEndpointConnectionItemData>(),
+                publicNetworkAccess,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TenantId), out propertyOverride);
+            builder.Append("  tenantId: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{TenantId.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Sku), out propertyOverride);
+            if (Optional.IsDefined(Sku) || hasPropertyOverride)
+            {
+                builder.Append("  sku: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Sku, options, 2, false, "  sku: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AccessPolicies), out propertyOverride);
+            if (Optional.IsCollectionDefined(AccessPolicies) || hasPropertyOverride)
+            {
+                if (AccessPolicies.Any() || hasPropertyOverride)
+                {
+                    builder.Append("  accessPolicies: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in AccessPolicies)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  accessPolicies: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VaultUri), out propertyOverride);
+            if (Optional.IsDefined(VaultUri) || hasPropertyOverride)
+            {
+                builder.Append("  vaultUri: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{VaultUri.AbsoluteUri}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HsmPoolResourceId), out propertyOverride);
+            if (Optional.IsDefined(HsmPoolResourceId) || hasPropertyOverride)
+            {
+                builder.Append("  hsmPoolResourceId: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (HsmPoolResourceId.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{HsmPoolResourceId}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{HsmPoolResourceId}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnabledForDeployment), out propertyOverride);
+            if (Optional.IsDefined(EnabledForDeployment) || hasPropertyOverride)
+            {
+                builder.Append("  enabledForDeployment: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnabledForDeployment.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnabledForDiskEncryption), out propertyOverride);
+            if (Optional.IsDefined(EnabledForDiskEncryption) || hasPropertyOverride)
+            {
+                builder.Append("  enabledForDiskEncryption: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnabledForDiskEncryption.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnabledForTemplateDeployment), out propertyOverride);
+            if (Optional.IsDefined(EnabledForTemplateDeployment) || hasPropertyOverride)
+            {
+                builder.Append("  enabledForTemplateDeployment: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnabledForTemplateDeployment.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnableSoftDelete), out propertyOverride);
+            if (Optional.IsDefined(EnableSoftDelete) || hasPropertyOverride)
+            {
+                builder.Append("  enableSoftDelete: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnableSoftDelete.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SoftDeleteRetentionInDays), out propertyOverride);
+            if (Optional.IsDefined(SoftDeleteRetentionInDays) || hasPropertyOverride)
+            {
+                builder.Append("  softDeleteRetentionInDays: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{SoftDeleteRetentionInDays.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnableRbacAuthorization), out propertyOverride);
+            if (Optional.IsDefined(EnableRbacAuthorization) || hasPropertyOverride)
+            {
+                builder.Append("  enableRbacAuthorization: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnableRbacAuthorization.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CreateMode), out propertyOverride);
+            if (Optional.IsDefined(CreateMode) || hasPropertyOverride)
+            {
+                builder.Append("  createMode: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{CreateMode.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnablePurgeProtection), out propertyOverride);
+            if (Optional.IsDefined(EnablePurgeProtection) || hasPropertyOverride)
+            {
+                builder.Append("  enablePurgeProtection: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = EnablePurgeProtection.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NetworkRuleSet), out propertyOverride);
+            if (Optional.IsDefined(NetworkRuleSet) || hasPropertyOverride)
+            {
+                builder.Append("  networkAcls: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, NetworkRuleSet, options, 2, false, "  networkAcls: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (Optional.IsDefined(ProvisioningState) || hasPropertyOverride)
+            {
+                builder.Append("  provisioningState: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateEndpointConnections), out propertyOverride);
+            if (Optional.IsCollectionDefined(PrivateEndpointConnections) || hasPropertyOverride)
+            {
+                if (PrivateEndpointConnections.Any() || hasPropertyOverride)
+                {
+                    builder.Append("  privateEndpointConnections: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in PrivateEndpointConnections)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  privateEndpointConnections: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PublicNetworkAccess), out propertyOverride);
+            if (Optional.IsDefined(PublicNetworkAccess) || hasPropertyOverride)
+            {
+                builder.Append("  publicNetworkAccess: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (PublicNetworkAccess.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{PublicNetworkAccess}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{PublicNetworkAccess}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<KeyVaultProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyVaultProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(KeyVaultProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        KeyVaultProperties IPersistableModel<KeyVaultProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyVaultProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeKeyVaultProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KeyVaultProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<KeyVaultProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

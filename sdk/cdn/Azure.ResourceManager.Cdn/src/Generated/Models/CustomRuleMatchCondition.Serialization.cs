@@ -5,32 +5,42 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class CustomRuleMatchCondition : IUtf8JsonSerializable
+    public partial class CustomRuleMatchCondition : IUtf8JsonSerializable, IJsonModel<CustomRuleMatchCondition>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<CustomRuleMatchCondition>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<CustomRuleMatchCondition>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomRuleMatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CustomRuleMatchCondition)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("matchVariable");
+            writer.WritePropertyName("matchVariable"u8);
             writer.WriteStringValue(MatchVariable.ToString());
             if (Optional.IsDefined(Selector))
             {
-                writer.WritePropertyName("selector");
+                writer.WritePropertyName("selector"u8);
                 writer.WriteStringValue(Selector);
             }
-            writer.WritePropertyName("operator");
+            writer.WritePropertyName("operator"u8);
             writer.WriteStringValue(MatchOperator.ToString());
             if (Optional.IsDefined(NegateCondition))
             {
-                writer.WritePropertyName("negateCondition");
+                writer.WritePropertyName("negateCondition"u8);
                 writer.WriteBooleanValue(NegateCondition.Value);
             }
-            writer.WritePropertyName("matchValue");
+            writer.WritePropertyName("matchValue"u8);
             writer.WriteStartArray();
             foreach (var item in MatchValue)
             {
@@ -39,7 +49,7 @@ namespace Azure.ResourceManager.Cdn.Models
             writer.WriteEndArray();
             if (Optional.IsCollectionDefined(Transforms))
             {
-                writer.WritePropertyName("transforms");
+                writer.WritePropertyName("transforms"u8);
                 writer.WriteStartArray();
                 foreach (var item in Transforms)
                 {
@@ -47,45 +57,79 @@ namespace Azure.ResourceManager.Cdn.Models
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static CustomRuleMatchCondition DeserializeCustomRuleMatchCondition(JsonElement element)
+        CustomRuleMatchCondition IJsonModel<CustomRuleMatchCondition>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomRuleMatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CustomRuleMatchCondition)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeCustomRuleMatchCondition(document.RootElement, options);
+        }
+
+        internal static CustomRuleMatchCondition DeserializeCustomRuleMatchCondition(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             WafMatchVariable matchVariable = default;
-            Optional<string> selector = default;
+            string selector = default;
             MatchOperator @operator = default;
-            Optional<bool> negateCondition = default;
+            bool? negateCondition = default;
             IList<string> matchValue = default;
-            Optional<IList<TransformType>> transforms = default;
+            IList<TransformType> transforms = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("matchVariable"))
+                if (property.NameEquals("matchVariable"u8))
                 {
                     matchVariable = new WafMatchVariable(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("selector"))
+                if (property.NameEquals("selector"u8))
                 {
                     selector = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("operator"))
+                if (property.NameEquals("operator"u8))
                 {
                     @operator = new MatchOperator(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("negateCondition"))
+                if (property.NameEquals("negateCondition"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     negateCondition = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("matchValue"))
+                if (property.NameEquals("matchValue"u8))
                 {
                     List<string> array = new List<string>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -95,11 +139,10 @@ namespace Azure.ResourceManager.Cdn.Models
                     matchValue = array;
                     continue;
                 }
-                if (property.NameEquals("transforms"))
+                if (property.NameEquals("transforms"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<TransformType> array = new List<TransformType>();
@@ -110,8 +153,51 @@ namespace Azure.ResourceManager.Cdn.Models
                     transforms = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new CustomRuleMatchCondition(matchVariable, selector.Value, @operator, Optional.ToNullable(negateCondition), matchValue, Optional.ToList(transforms));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new CustomRuleMatchCondition(
+                matchVariable,
+                selector,
+                @operator,
+                negateCondition,
+                matchValue,
+                transforms ?? new ChangeTrackingList<TransformType>(),
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<CustomRuleMatchCondition>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomRuleMatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(CustomRuleMatchCondition)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        CustomRuleMatchCondition IPersistableModel<CustomRuleMatchCondition>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomRuleMatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeCustomRuleMatchCondition(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(CustomRuleMatchCondition)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<CustomRuleMatchCondition>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

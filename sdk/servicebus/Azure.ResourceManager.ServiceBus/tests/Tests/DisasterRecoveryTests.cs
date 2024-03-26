@@ -8,12 +8,11 @@ using Azure.Core.TestFramework;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Resources.Models;
 using Azure.ResourceManager.ServiceBus.Models;
-using Azure.ResourceManager.ServiceBus.Tests.Helpers;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.ServiceBus.Tests
 {
-    public class DisasterRecoveryTests : ServiceBusTestBase
+    public class DisasterRecoveryTests : ServiceBusManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         public DisasterRecoveryTests(bool isAsync) : base(isAsync)
@@ -95,7 +94,7 @@ namespace Azure.ResourceManager.ServiceBus.Tests
 
             //check name availability
             ServiceBusNameAvailabilityResult nameAvailability = await serviceBusNamespace1.CheckServiceBusDisasterRecoveryNameAvailabilityAsync(new ServiceBusNameAvailabilityContent(disasterRecoveryName));
-            Assert.IsFalse(nameAvailability.NameAvailable);
+            Assert.IsFalse(nameAvailability.IsNameAvailable);
 
             List<ServiceBusDisasterRecoveryAuthorizationRuleResource> rules = await disasterRecovery.GetServiceBusDisasterRecoveryAuthorizationRules().GetAllAsync().ToEnumerableAsync();
             Assert.IsTrue(rules.Count > 0);

@@ -20,42 +20,45 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Key))
             {
-                writer.WritePropertyName("key");
-                writer.WriteObjectValue(Key);
+                writer.WritePropertyName("key"u8);
+                writer.WriteObjectValue<WorkspaceKeyDetails>(Key);
             }
             writer.WriteEndObject();
         }
 
         internal static CustomerManagedKeyDetails DeserializeCustomerManagedKeyDetails(JsonElement element)
         {
-            Optional<string> status = default;
-            Optional<WorkspaceKeyDetails> key = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string status = default;
+            WorkspaceKeyDetails key = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     status = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("key"))
+                if (property.NameEquals("key"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     key = WorkspaceKeyDetails.DeserializeWorkspaceKeyDetails(property.Value);
                     continue;
                 }
             }
-            return new CustomerManagedKeyDetails(status.Value, key.Value);
+            return new CustomerManagedKeyDetails(status, key);
         }
 
         internal partial class CustomerManagedKeyDetailsConverter : JsonConverter<CustomerManagedKeyDetails>
         {
             public override void Write(Utf8JsonWriter writer, CustomerManagedKeyDetails model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<CustomerManagedKeyDetails>(model);
             }
             public override CustomerManagedKeyDetails Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

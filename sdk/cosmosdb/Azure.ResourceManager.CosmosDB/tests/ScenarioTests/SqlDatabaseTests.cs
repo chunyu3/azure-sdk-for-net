@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.CosmosDB.Models;
+using Azure.ResourceManager.Models;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.CosmosDB.Tests
@@ -32,11 +33,11 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         }
 
         [OneTimeTearDown]
-        public virtual void GlobalTeardown()
+        public async Task GlobalTeardown()
         {
             if (_databaseAccountIdentifier != null)
             {
-                ArmClient.GetCosmosDBAccountResource(_databaseAccountIdentifier).Delete(WaitUntil.Completed);
+                await ArmClient.GetCosmosDBAccountResource(_databaseAccountIdentifier).DeleteAsync(WaitUntil.Completed);
             }
         }
 
@@ -63,7 +64,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         public async Task SqlDatabaseCreateAndUpdate()
         {
             var database = await CreateSqlDatabase(null);
-            Assert.AreEqual(_databaseName, database.Data.Resource.Id);
+            Assert.AreEqual(_databaseName, database.Data.Resource.DatabaseName);
             // Seems bug in swagger definition
             //Assert.AreEqual(TestThroughput1, database.Data.Options.Throughput);
 
@@ -71,19 +72,19 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             Assert.True(ifExists);
 
             // NOT WORKING API
-            //ThroughputSettingsData throughtput = await database.GetMongoDBCollectionThroughputAsync();
+            //ThroughputSettingData throughtput = await database.GetMongoDBCollectionThroughputAsync();
             CosmosDBSqlDatabaseResource database2 = await SqlDatabaseContainer.GetAsync(_databaseName);
-            Assert.AreEqual(_databaseName, database2.Data.Resource.Id);
+            Assert.AreEqual(_databaseName, database2.Data.Resource.DatabaseName);
             //Assert.AreEqual(TestThroughput1, database2.Data.Options.Throughput);
 
             VerifyDatabases(database, database2);
 
             var updateOptions = new CosmosDBSqlDatabaseCreateOrUpdateContent(database.Id, _databaseName, database.Data.ResourceType, null,
                 new Dictionary<string, string>(),// TODO: use original tags see defect: https://github.com/Azure/autorest.csharp/issues/1590
-                AzureLocation.WestUS, database.Data.Resource, new CosmosDBCreateUpdateConfig { Throughput = TestThroughput2 });
+                AzureLocation.WestUS, database.Data.Resource, new CosmosDBCreateUpdateConfig { Throughput = TestThroughput2 }, default(ManagedServiceIdentity), null);
 
             database = (await SqlDatabaseContainer.CreateOrUpdateAsync(WaitUntil.Completed, _databaseName, updateOptions)).Value;
-            Assert.AreEqual(_databaseName, database.Data.Resource.Id);
+            Assert.AreEqual(_databaseName, database.Data.Resource.DatabaseName);
             database2 = await SqlDatabaseContainer.GetAsync(_databaseName);
             VerifyDatabases(database, database2);
         }
@@ -111,7 +112,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             Assert.AreEqual(TestThroughput1, throughput.Data.Resource.Throughput);
 
             CosmosDBSqlDatabaseThroughputSettingResource throughput2 = (await throughput.CreateOrUpdateAsync(WaitUntil.Completed, new ThroughputSettingsUpdateData(AzureLocation.WestUS,
-                new ThroughputSettingsResourceInfo(TestThroughput2, null, null, null)))).Value;
+                new ThroughputSettingsResourceInfo(TestThroughput2, null, null, null, null, null, null)))).Value;
 
             Assert.AreEqual(TestThroughput2, throughput2.Data.Resource.Throughput);
         }
@@ -125,7 +126,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             CosmosDBSqlDatabaseThroughputSettingResource throughput = await database.GetCosmosDBSqlDatabaseThroughputSetting().GetAsync();
             AssertManualThroughput(throughput.Data);
 
-            ThroughputSettingsData throughputData = (await throughput.MigrateSqlDatabaseToAutoscaleAsync(WaitUntil.Completed)).Value.Data;
+            ThroughputSettingData throughputData = (await throughput.MigrateSqlDatabaseToAutoscaleAsync(WaitUntil.Completed)).Value.Data;
             AssertAutoscale(throughputData);
         }
 
@@ -142,7 +143,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             CosmosDBSqlDatabaseThroughputSettingResource throughput = await database.GetCosmosDBSqlDatabaseThroughputSetting().GetAsync();
             AssertAutoscale(throughput.Data);
 
-            ThroughputSettingsData throughputData = (await throughput.MigrateSqlDatabaseToManualThroughputAsync(WaitUntil.Completed)).Value.Data;
+            ThroughputSettingData throughputData = (await throughput.MigrateSqlDatabaseToManualThroughputAsync(WaitUntil.Completed)).Value.Data;
             AssertManualThroughput(throughputData);
         }
 
@@ -178,7 +179,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         {
             Assert.AreEqual(expectedValue.Id, actualValue.Id);
             Assert.AreEqual(expectedValue.Data.Name, actualValue.Data.Name);
-            Assert.AreEqual(expectedValue.Data.Resource.Id, actualValue.Data.Resource.Id);
+            Assert.AreEqual(expectedValue.Data.Resource.DatabaseName, actualValue.Data.Resource.DatabaseName);
             Assert.AreEqual(expectedValue.Data.Resource.Rid, actualValue.Data.Resource.Rid);
             Assert.AreEqual(expectedValue.Data.Resource.Timestamp, actualValue.Data.Resource.Timestamp);
             Assert.AreEqual(expectedValue.Data.Resource.ETag, actualValue.Data.Resource.ETag);

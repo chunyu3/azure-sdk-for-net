@@ -10,20 +10,22 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
     /// <summary> The LinkTableRequestTarget. </summary>
     public partial class LinkTableRequestTarget
     {
-        /// <summary> Initializes a new instance of LinkTableRequestTarget. </summary>
+        /// <summary> Initializes a new instance of <see cref="LinkTableRequestTarget"/>. </summary>
         public LinkTableRequestTarget()
         {
         }
 
-        /// <summary> Initializes a new instance of LinkTableRequestTarget. </summary>
+        /// <summary> Initializes a new instance of <see cref="LinkTableRequestTarget"/>. </summary>
         /// <param name="tableName"> Target table table name. </param>
         /// <param name="schemaName"> Target table schema name. </param>
         /// <param name="distributionOptions"> Target table distribution options for link table request. </param>
-        internal LinkTableRequestTarget(string tableName, string schemaName, LinkTableRequestTargetDistributionOptions distributionOptions)
+        /// <param name="structureOptions"> Target table structure options for link table request. </param>
+        internal LinkTableRequestTarget(string tableName, string schemaName, LinkTableRequestTargetDistributionOptions distributionOptions, LinkTableRequestTargetStructureOptions structureOptions)
         {
             TableName = tableName;
             SchemaName = schemaName;
             DistributionOptions = distributionOptions;
+            StructureOptions = structureOptions;
         }
 
         /// <summary> Target table table name. </summary>
@@ -32,5 +34,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         public string SchemaName { get; set; }
         /// <summary> Target table distribution options for link table request. </summary>
         public LinkTableRequestTargetDistributionOptions DistributionOptions { get; set; }
+        /// <summary> Target table structure options for link table request. </summary>
+        public LinkTableRequestTargetStructureOptions StructureOptions { get; set; }
     }
 }

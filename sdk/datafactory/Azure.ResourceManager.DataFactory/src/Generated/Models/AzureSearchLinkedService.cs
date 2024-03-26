@@ -7,27 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Linked service for Windows Azure Search Service. </summary>
-    public partial class AzureSearchLinkedService : LinkedService
+    public partial class AzureSearchLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of AzureSearchLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureSearchLinkedService"/>. </summary>
         /// <param name="uri"> URL for Azure Search service. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="uri"/> is null. </exception>
-        public AzureSearchLinkedService(BinaryData uri)
+        public AzureSearchLinkedService(DataFactoryElement<string> uri)
         {
-            if (uri == null)
-            {
-                throw new ArgumentNullException(nameof(uri));
-            }
+            Argument.AssertNotNull(uri, nameof(uri));
 
             Uri = uri;
             LinkedServiceType = "AzureSearch";
         }
 
-        /// <summary> Initializes a new instance of AzureSearchLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureSearchLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -35,13 +33,9 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="uri"> URL for Azure Search service. Type: string (or Expression with resultType string). </param>
-        /// <param name="key">
-        /// Admin Key for Azure Search service
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal AzureSearchLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData uri, SecretBase key, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="key"> Admin Key for Azure Search service. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal AzureSearchLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> uri, DataFactorySecret key, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Uri = uri;
             Key = key;
@@ -49,15 +43,16 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "AzureSearch";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AzureSearchLinkedService"/> for deserialization. </summary>
+        internal AzureSearchLinkedService()
+        {
+        }
+
         /// <summary> URL for Azure Search service. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Uri { get; set; }
-        /// <summary>
-        /// Admin Key for Azure Search service
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Key { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> Uri { get; set; }
+        /// <summary> Admin Key for Azure Search service. </summary>
+        public DataFactorySecret Key { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

@@ -15,8 +15,8 @@ namespace Azure.AI.TextAnalytics.Legacy
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("tasks");
-            writer.WriteObjectValue(Tasks);
+            writer.WritePropertyName("tasks"u8);
+            writer.WriteObjectValue<JobManifestTasks>(Tasks);
             writer.WriteEndObject();
         }
     }

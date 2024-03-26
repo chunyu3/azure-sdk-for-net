@@ -15,11 +15,11 @@ namespace Azure.IoT.TimeSeriesInsights
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("searchString");
+            writer.WritePropertyName("searchString"u8);
             writer.WriteStringValue(SearchString);
             if (Optional.IsCollectionDefined(Path))
             {
-                writer.WritePropertyName("path");
+                writer.WritePropertyName("path"u8);
                 writer.WriteStartArray();
                 foreach (var item in Path)
                 {
@@ -29,13 +29,13 @@ namespace Azure.IoT.TimeSeriesInsights
             }
             if (Optional.IsDefined(Instances))
             {
-                writer.WritePropertyName("instances");
-                writer.WriteObjectValue(Instances);
+                writer.WritePropertyName("instances"u8);
+                writer.WriteObjectValue<SearchInstancesParameters>(Instances);
             }
             if (Optional.IsDefined(Hierarchies))
             {
-                writer.WritePropertyName("hierarchies");
-                writer.WriteObjectValue(Hierarchies);
+                writer.WritePropertyName("hierarchies"u8);
+                writer.WriteObjectValue<SearchInstancesHierarchiesParameters>(Hierarchies);
             }
             writer.WriteEndObject();
         }

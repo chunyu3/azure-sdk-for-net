@@ -5,7 +5,6 @@
 
 #nullable disable
 
-using System;
 using System.Text.Json;
 using Azure.Core;
 
@@ -16,12 +15,12 @@ namespace Azure.AI.MetricsAdvisor
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("feedbackType");
+            writer.WritePropertyName("feedbackType"u8);
             writer.WriteStringValue(FeedbackKind.ToString());
-            writer.WritePropertyName("metricId");
+            writer.WritePropertyName("metricId"u8);
             writer.WriteStringValue(MetricId);
-            writer.WritePropertyName("dimensionFilter");
-            writer.WriteObjectValue(DimensionFilter);
+            writer.WritePropertyName("dimensionFilter"u8);
+            writer.WriteObjectValue<FeedbackFilter>(DimensionFilter);
             writer.WriteEndObject();
         }
     }

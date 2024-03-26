@@ -17,7 +17,7 @@ namespace Azure.AI.MetricsAdvisor.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ConnectionString))
             {
-                writer.WritePropertyName("connectionString");
+                writer.WritePropertyName("connectionString"u8);
                 writer.WriteStringValue(ConnectionString);
             }
             writer.WriteEndObject();
@@ -25,16 +25,20 @@ namespace Azure.AI.MetricsAdvisor.Models
 
         internal static AzureSQLConnectionStringParam DeserializeAzureSQLConnectionStringParam(JsonElement element)
         {
-            Optional<string> connectionString = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string connectionString = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("connectionString"))
+                if (property.NameEquals("connectionString"u8))
                 {
                     connectionString = property.Value.GetString();
                     continue;
                 }
             }
-            return new AzureSQLConnectionStringParam(connectionString.Value);
+            return new AzureSQLConnectionStringParam(connectionString);
         }
     }
 }

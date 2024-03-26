@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy
 {
@@ -14,10 +13,14 @@ namespace Azure.AI.TextAnalytics.Legacy
     {
         internal static ErrorResponse DeserializeErrorResponse(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             TextAnalyticsError error = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("error"))
+                if (property.NameEquals("error"u8))
                 {
                     error = TextAnalyticsError.DeserializeTextAnalyticsError(property.Value);
                     continue;

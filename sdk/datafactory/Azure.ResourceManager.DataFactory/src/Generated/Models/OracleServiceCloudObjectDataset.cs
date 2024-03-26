@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Oracle Service Cloud dataset. </summary>
-    public partial class OracleServiceCloudObjectDataset : Dataset
+    public partial class OracleServiceCloudObjectDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of OracleServiceCloudObjectDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="OracleServiceCloudObjectDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public OracleServiceCloudObjectDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public OracleServiceCloudObjectDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "OracleServiceCloudObject";
         }
 
-        /// <summary> Initializes a new instance of OracleServiceCloudObjectDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="OracleServiceCloudObjectDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="tableName"> The table name. Type: string (or Expression with resultType string). </param>
-        internal OracleServiceCloudObjectDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal OracleServiceCloudObjectDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             TableName = tableName;
             DatasetType = datasetType ?? "OracleServiceCloudObject";
         }
 
+        /// <summary> Initializes a new instance of <see cref="OracleServiceCloudObjectDataset"/> for deserialization. </summary>
+        internal OracleServiceCloudObjectDataset()
+        {
+        }
+
         /// <summary> The table name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData TableName { get; set; }
+        public DataFactoryElement<string> TableName { get; set; }
     }
 }

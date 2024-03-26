@@ -7,8 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Containers.ContainerRegistry.Specialized;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -16,30 +14,33 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static ManifestWrapper DeserializeManifestWrapper(JsonElement element)
         {
-            Optional<string> mediaType = default;
-            Optional<IReadOnlyList<ManifestListAttributes>> manifests = default;
-            Optional<OciBlobDescriptor> config = default;
-            Optional<IReadOnlyList<OciBlobDescriptor>> layers = default;
-            Optional<OciAnnotations> annotations = default;
-            Optional<string> architecture = default;
-            Optional<string> name = default;
-            Optional<string> tag = default;
-            Optional<IReadOnlyList<FsLayer>> fsLayers = default;
-            Optional<IReadOnlyList<History>> history = default;
-            Optional<IReadOnlyList<ImageSignature>> signatures = default;
-            Optional<int> schemaVersion = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string mediaType = default;
+            IReadOnlyList<ManifestListAttributes> manifests = default;
+            OciDescriptor config = default;
+            IReadOnlyList<OciDescriptor> layers = default;
+            OciAnnotations annotations = default;
+            string architecture = default;
+            string name = default;
+            string tag = default;
+            IReadOnlyList<FsLayer> fsLayers = default;
+            IReadOnlyList<History> history = default;
+            IReadOnlyList<ImageSignature> signatures = default;
+            int? schemaVersion = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("mediaType"))
+                if (property.NameEquals("mediaType"u8))
                 {
                     mediaType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("manifests"))
+                if (property.NameEquals("manifests"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ManifestListAttributes> array = new List<ManifestListAttributes>();
@@ -50,32 +51,30 @@ namespace Azure.Containers.ContainerRegistry
                     manifests = array;
                     continue;
                 }
-                if (property.NameEquals("config"))
+                if (property.NameEquals("config"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    config = OciBlobDescriptor.DeserializeOciBlobDescriptor(property.Value);
+                    config = OciDescriptor.DeserializeOciDescriptor(property.Value);
                     continue;
                 }
-                if (property.NameEquals("layers"))
+                if (property.NameEquals("layers"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<OciBlobDescriptor> array = new List<OciBlobDescriptor>();
+                    List<OciDescriptor> array = new List<OciDescriptor>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(OciBlobDescriptor.DeserializeOciBlobDescriptor(item));
+                        array.Add(OciDescriptor.DeserializeOciDescriptor(item));
                     }
                     layers = array;
                     continue;
                 }
-                if (property.NameEquals("annotations"))
+                if (property.NameEquals("annotations"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -85,26 +84,25 @@ namespace Azure.Containers.ContainerRegistry
                     annotations = OciAnnotations.DeserializeOciAnnotations(property.Value);
                     continue;
                 }
-                if (property.NameEquals("architecture"))
+                if (property.NameEquals("architecture"u8))
                 {
                     architecture = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("tag"))
+                if (property.NameEquals("tag"u8))
                 {
                     tag = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("fsLayers"))
+                if (property.NameEquals("fsLayers"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<FsLayer> array = new List<FsLayer>();
@@ -115,11 +113,10 @@ namespace Azure.Containers.ContainerRegistry
                     fsLayers = array;
                     continue;
                 }
-                if (property.NameEquals("history"))
+                if (property.NameEquals("history"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<History> array = new List<History>();
@@ -130,11 +127,10 @@ namespace Azure.Containers.ContainerRegistry
                     history = array;
                     continue;
                 }
-                if (property.NameEquals("signatures"))
+                if (property.NameEquals("signatures"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ImageSignature> array = new List<ImageSignature>();
@@ -145,18 +141,29 @@ namespace Azure.Containers.ContainerRegistry
                     signatures = array;
                     continue;
                 }
-                if (property.NameEquals("schemaVersion"))
+                if (property.NameEquals("schemaVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     schemaVersion = property.Value.GetInt32();
                     continue;
                 }
             }
-            return new ManifestWrapper(Optional.ToNullable(schemaVersion), mediaType.Value, Optional.ToList(manifests), config.Value, Optional.ToList(layers), annotations.Value, architecture.Value, name.Value, tag.Value, Optional.ToList(fsLayers), Optional.ToList(history), Optional.ToList(signatures));
+            return new ManifestWrapper(
+                schemaVersion,
+                mediaType,
+                manifests ?? new ChangeTrackingList<ManifestListAttributes>(),
+                config,
+                layers ?? new ChangeTrackingList<OciDescriptor>(),
+                annotations,
+                architecture,
+                name,
+                tag,
+                fsLayers ?? new ChangeTrackingList<FsLayer>(),
+                history ?? new ChangeTrackingList<History>(),
+                signatures ?? new ChangeTrackingList<ImageSignature>());
         }
     }
 }

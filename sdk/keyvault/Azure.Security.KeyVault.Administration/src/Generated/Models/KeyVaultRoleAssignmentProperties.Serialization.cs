@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Security.KeyVault.Administration
 {
@@ -14,33 +13,36 @@ namespace Azure.Security.KeyVault.Administration
     {
         internal static KeyVaultRoleAssignmentProperties DeserializeKeyVaultRoleAssignmentProperties(JsonElement element)
         {
-            Optional<KeyVaultRoleScope> scope = default;
-            Optional<string> roleDefinitionId = default;
-            Optional<string> principalId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            KeyVaultRoleScope? scope = default;
+            string roleDefinitionId = default;
+            string principalId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("scope"))
+                if (property.NameEquals("scope"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     scope = new KeyVaultRoleScope(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("roleDefinitionId"))
+                if (property.NameEquals("roleDefinitionId"u8))
                 {
                     roleDefinitionId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("principalId"))
+                if (property.NameEquals("principalId"u8))
                 {
                     principalId = property.Value.GetString();
                     continue;
                 }
             }
-            return new KeyVaultRoleAssignmentProperties(Optional.ToNullable(scope), roleDefinitionId.Value, principalId.Value);
+            return new KeyVaultRoleAssignmentProperties(scope, roleDefinitionId, principalId);
         }
     }
 }

@@ -5,121 +5,204 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Media.Models
 {
-    public partial class PresentationTimeRange : IUtf8JsonSerializable
+    public partial class PresentationTimeRange : IUtf8JsonSerializable, IJsonModel<PresentationTimeRange>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<PresentationTimeRange>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<PresentationTimeRange>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<PresentationTimeRange>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PresentationTimeRange)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(StartTimestamp))
             {
-                writer.WritePropertyName("startTimestamp");
+                writer.WritePropertyName("startTimestamp"u8);
                 writer.WriteNumberValue(StartTimestamp.Value);
             }
             if (Optional.IsDefined(EndTimestamp))
             {
-                writer.WritePropertyName("endTimestamp");
+                writer.WritePropertyName("endTimestamp"u8);
                 writer.WriteNumberValue(EndTimestamp.Value);
             }
             if (Optional.IsDefined(PresentationWindowDuration))
             {
-                writer.WritePropertyName("presentationWindowDuration");
+                writer.WritePropertyName("presentationWindowDuration"u8);
                 writer.WriteNumberValue(PresentationWindowDuration.Value);
             }
             if (Optional.IsDefined(LiveBackoffDuration))
             {
-                writer.WritePropertyName("liveBackoffDuration");
+                writer.WritePropertyName("liveBackoffDuration"u8);
                 writer.WriteNumberValue(LiveBackoffDuration.Value);
             }
             if (Optional.IsDefined(Timescale))
             {
-                writer.WritePropertyName("timescale");
+                writer.WritePropertyName("timescale"u8);
                 writer.WriteNumberValue(Timescale.Value);
             }
             if (Optional.IsDefined(ForceEndTimestamp))
             {
-                writer.WritePropertyName("forceEndTimestamp");
+                writer.WritePropertyName("forceEndTimestamp"u8);
                 writer.WriteBooleanValue(ForceEndTimestamp.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static PresentationTimeRange DeserializePresentationTimeRange(JsonElement element)
+        PresentationTimeRange IJsonModel<PresentationTimeRange>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<long> startTimestamp = default;
-            Optional<long> endTimestamp = default;
-            Optional<long> presentationWindowDuration = default;
-            Optional<long> liveBackoffDuration = default;
-            Optional<long> timescale = default;
-            Optional<bool> forceEndTimestamp = default;
+            var format = options.Format == "W" ? ((IPersistableModel<PresentationTimeRange>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PresentationTimeRange)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePresentationTimeRange(document.RootElement, options);
+        }
+
+        internal static PresentationTimeRange DeserializePresentationTimeRange(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            long? startTimestamp = default;
+            long? endTimestamp = default;
+            long? presentationWindowDuration = default;
+            long? liveBackoffDuration = default;
+            long? timescale = default;
+            bool? forceEndTimestamp = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("startTimestamp"))
+                if (property.NameEquals("startTimestamp"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     startTimestamp = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("endTimestamp"))
+                if (property.NameEquals("endTimestamp"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     endTimestamp = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("presentationWindowDuration"))
+                if (property.NameEquals("presentationWindowDuration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     presentationWindowDuration = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("liveBackoffDuration"))
+                if (property.NameEquals("liveBackoffDuration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     liveBackoffDuration = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("timescale"))
+                if (property.NameEquals("timescale"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     timescale = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("forceEndTimestamp"))
+                if (property.NameEquals("forceEndTimestamp"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     forceEndTimestamp = property.Value.GetBoolean();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new PresentationTimeRange(Optional.ToNullable(startTimestamp), Optional.ToNullable(endTimestamp), Optional.ToNullable(presentationWindowDuration), Optional.ToNullable(liveBackoffDuration), Optional.ToNullable(timescale), Optional.ToNullable(forceEndTimestamp));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new PresentationTimeRange(
+                startTimestamp,
+                endTimestamp,
+                presentationWindowDuration,
+                liveBackoffDuration,
+                timescale,
+                forceEndTimestamp,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<PresentationTimeRange>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PresentationTimeRange>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(PresentationTimeRange)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        PresentationTimeRange IPersistableModel<PresentationTimeRange>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PresentationTimeRange>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializePresentationTimeRange(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PresentationTimeRange)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<PresentationTimeRange>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

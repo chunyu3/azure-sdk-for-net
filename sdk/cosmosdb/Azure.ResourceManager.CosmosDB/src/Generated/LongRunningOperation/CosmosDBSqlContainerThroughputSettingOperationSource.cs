@@ -9,9 +9,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.CosmosDB
 {
@@ -35,18 +33,18 @@ namespace Azure.ResourceManager.CosmosDB
         CosmosDBSqlContainerThroughputSettingResource IOperationSource<CosmosDBSqlContainerThroughputSettingResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
             using var document = JsonDocument.Parse(response.ContentStream);
-            var data = ScrubId(ThroughputSettingsData.DeserializeThroughputSettingsData(document.RootElement));
+            var data = ScrubId(ThroughputSettingData.DeserializeThroughputSettingData(document.RootElement));
             return new CosmosDBSqlContainerThroughputSettingResource(_client, data);
         }
 
         async ValueTask<CosmosDBSqlContainerThroughputSettingResource> IOperationSource<CosmosDBSqlContainerThroughputSettingResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
             using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = ScrubId(ThroughputSettingsData.DeserializeThroughputSettingsData(document.RootElement));
+            var data = ScrubId(ThroughputSettingData.DeserializeThroughputSettingData(document.RootElement));
             return new CosmosDBSqlContainerThroughputSettingResource(_client, data);
         }
 
-        private ThroughputSettingsData ScrubId(ThroughputSettingsData data)
+        private ThroughputSettingData ScrubId(ThroughputSettingData data)
         {
             if (data.Id.ResourceType == CosmosDBSqlContainerThroughputSettingResource.ResourceType)
                 return data;
@@ -58,14 +56,16 @@ namespace Azure.ResourceManager.CosmosDB
                 GetName("databaseName", data.Id),
                 GetName("containerName", data.Id));
 
-            return new ThroughputSettingsData(
+            return new ThroughputSettingData(
                 newId,
                 newId.Name,
                 newId.ResourceType,
                 data.SystemData,
                 data.Tags,
                 data.Location,
-                data.Resource);
+                data.Resource,
+                data.Identity,
+                null);
         }
 
         private string GetName(string param, ResourceIdentifier id)

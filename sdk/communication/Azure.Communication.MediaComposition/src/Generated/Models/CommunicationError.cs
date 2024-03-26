@@ -7,34 +7,27 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
-namespace Azure.Communication.MediaComposition
+namespace Azure.Communication.MediaComposition.Models
 {
     /// <summary> The Communication Services error. </summary>
     internal partial class CommunicationError
     {
-        /// <summary> Initializes a new instance of CommunicationError. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommunicationError"/>. </summary>
         /// <param name="code"> The error code. </param>
         /// <param name="message"> The error message. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="code"/> or <paramref name="message"/> is null. </exception>
-        internal CommunicationError(string code, string message)
+        public CommunicationError(string code, string message)
         {
-            if (code == null)
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-            if (message == null)
-            {
-                throw new ArgumentNullException(nameof(message));
-            }
+            Argument.AssertNotNull(code, nameof(code));
+            Argument.AssertNotNull(message, nameof(message));
 
             Code = code;
             Message = message;
             Details = new ChangeTrackingList<CommunicationError>();
         }
 
-        /// <summary> Initializes a new instance of CommunicationError. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommunicationError"/>. </summary>
         /// <param name="code"> The error code. </param>
         /// <param name="message"> The error message. </param>
         /// <param name="target"> The error target. </param>
@@ -50,9 +43,9 @@ namespace Azure.Communication.MediaComposition
         }
 
         /// <summary> The error code. </summary>
-        public string Code { get; }
+        public string Code { get; set; }
         /// <summary> The error message. </summary>
-        public string Message { get; }
+        public string Message { get; set; }
         /// <summary> The error target. </summary>
         public string Target { get; }
         /// <summary> Further details about specific errors that led to this error. </summary>

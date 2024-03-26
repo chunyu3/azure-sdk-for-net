@@ -7,20 +7,51 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.Compute.Models
 {
     /// <summary> Describes a cloud service Extension. </summary>
     public partial class CloudServiceExtension
     {
-        /// <summary> Initializes a new instance of CloudServiceExtension. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="CloudServiceExtension"/>. </summary>
         public CloudServiceExtension()
         {
             RolesAppliedTo = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of CloudServiceExtension. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudServiceExtension"/>. </summary>
         /// <param name="name"> The name of the extension. </param>
         /// <param name="publisher"> The name of the extension handler publisher. </param>
         /// <param name="cloudServiceExtensionPropertiesType"> Specifies the type of the extension. </param>
@@ -37,8 +68,9 @@ namespace Azure.ResourceManager.Compute.Models
         /// it is up to handler implementation whether to re-run it or not
         /// </param>
         /// <param name="provisioningState"> The provisioning state, which only appears in the response. </param>
-        /// <param name="rolesAppliedTo"> Optional list of roles to apply this extension. If property is not specified or &apos;*&apos; is specified, extension is applied to all roles in the cloud service. </param>
-        internal CloudServiceExtension(string name, string publisher, string cloudServiceExtensionPropertiesType, string typeHandlerVersion, bool? autoUpgradeMinorVersion, BinaryData settings, BinaryData protectedSettings, CloudServiceVaultAndSecretReference protectedSettingsFromKeyVault, string forceUpdateTag, string provisioningState, IList<string> rolesAppliedTo)
+        /// <param name="rolesAppliedTo"> Optional list of roles to apply this extension. If property is not specified or '*' is specified, extension is applied to all roles in the cloud service. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal CloudServiceExtension(string name, string publisher, string cloudServiceExtensionPropertiesType, string typeHandlerVersion, bool? autoUpgradeMinorVersion, BinaryData settings, BinaryData protectedSettings, CloudServiceVaultAndSecretReference protectedSettingsFromKeyVault, string forceUpdateTag, string provisioningState, IList<string> rolesAppliedTo, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Publisher = publisher;
@@ -51,6 +83,7 @@ namespace Azure.ResourceManager.Compute.Models
             ForceUpdateTag = forceUpdateTag;
             ProvisioningState = provisioningState;
             RolesAppliedTo = rolesAppliedTo;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The name of the extension. </summary>
@@ -63,9 +96,67 @@ namespace Azure.ResourceManager.Compute.Models
         public string TypeHandlerVersion { get; set; }
         /// <summary> Explicitly specify whether platform can automatically upgrade typeHandlerVersion to higher minor versions when they become available. </summary>
         public bool? AutoUpgradeMinorVersion { get; set; }
-        /// <summary> Public settings for the extension. For JSON extensions, this is the JSON settings for the extension. For XML Extension (like RDP), this is the XML setting for the extension. </summary>
+        /// <summary>
+        /// Public settings for the extension. For JSON extensions, this is the JSON settings for the extension. For XML Extension (like RDP), this is the XML setting for the extension.
+        /// <para>
+        /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public BinaryData Settings { get; set; }
-        /// <summary> Protected settings for the extension which are encrypted before sent to the role instance. </summary>
+        /// <summary>
+        /// Protected settings for the extension which are encrypted before sent to the role instance.
+        /// <para>
+        /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public BinaryData ProtectedSettings { get; set; }
         /// <summary> Protected settings for the extension, referenced using KeyVault which are encrypted before sent to the role instance. </summary>
         public CloudServiceVaultAndSecretReference ProtectedSettingsFromKeyVault { get; set; }
@@ -79,7 +170,7 @@ namespace Azure.ResourceManager.Compute.Models
         public string ForceUpdateTag { get; set; }
         /// <summary> The provisioning state, which only appears in the response. </summary>
         public string ProvisioningState { get; }
-        /// <summary> Optional list of roles to apply this extension. If property is not specified or &apos;*&apos; is specified, extension is applied to all roles in the cloud service. </summary>
+        /// <summary> Optional list of roles to apply this extension. If property is not specified or '*' is specified, extension is applied to all roles in the cloud service. </summary>
         public IList<string> RolesAppliedTo { get; }
     }
 }

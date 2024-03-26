@@ -5,73 +5,119 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Storage.Models
 {
-    public partial class BlobInventoryPolicyDefinition : IUtf8JsonSerializable
+    public partial class BlobInventoryPolicyDefinition : IUtf8JsonSerializable, IJsonModel<BlobInventoryPolicyDefinition>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<BlobInventoryPolicyDefinition>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<BlobInventoryPolicyDefinition>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobInventoryPolicyDefinition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobInventoryPolicyDefinition)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Filters))
             {
-                writer.WritePropertyName("filters");
-                writer.WriteObjectValue(Filters);
+                writer.WritePropertyName("filters"u8);
+                writer.WriteObjectValue<BlobInventoryPolicyFilter>(Filters, options);
             }
-            writer.WritePropertyName("format");
+            writer.WritePropertyName("format"u8);
             writer.WriteStringValue(Format.ToString());
-            writer.WritePropertyName("schedule");
+            writer.WritePropertyName("schedule"u8);
             writer.WriteStringValue(Schedule.ToString());
-            writer.WritePropertyName("objectType");
+            writer.WritePropertyName("objectType"u8);
             writer.WriteStringValue(ObjectType.ToString());
-            writer.WritePropertyName("schemaFields");
+            writer.WritePropertyName("schemaFields"u8);
             writer.WriteStartArray();
             foreach (var item in SchemaFields)
             {
                 writer.WriteStringValue(item);
             }
             writer.WriteEndArray();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static BlobInventoryPolicyDefinition DeserializeBlobInventoryPolicyDefinition(JsonElement element)
+        BlobInventoryPolicyDefinition IJsonModel<BlobInventoryPolicyDefinition>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<BlobInventoryPolicyFilter> filters = default;
-            Format format = default;
-            Schedule schedule = default;
-            ObjectType objectType = default;
+            var format = options.Format == "W" ? ((IPersistableModel<BlobInventoryPolicyDefinition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobInventoryPolicyDefinition)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeBlobInventoryPolicyDefinition(document.RootElement, options);
+        }
+
+        internal static BlobInventoryPolicyDefinition DeserializeBlobInventoryPolicyDefinition(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            BlobInventoryPolicyFilter filters = default;
+            BlobInventoryPolicyFormat format = default;
+            BlobInventoryPolicySchedule schedule = default;
+            BlobInventoryPolicyObjectType objectType = default;
             IList<string> schemaFields = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("filters"))
+                if (property.NameEquals("filters"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    filters = BlobInventoryPolicyFilter.DeserializeBlobInventoryPolicyFilter(property.Value);
+                    filters = BlobInventoryPolicyFilter.DeserializeBlobInventoryPolicyFilter(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("format"))
+                if (property.NameEquals("format"u8))
                 {
-                    format = new Format(property.Value.GetString());
+                    format = new BlobInventoryPolicyFormat(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("schedule"))
+                if (property.NameEquals("schedule"u8))
                 {
-                    schedule = new Schedule(property.Value.GetString());
+                    schedule = new BlobInventoryPolicySchedule(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("objectType"))
+                if (property.NameEquals("objectType"u8))
                 {
-                    objectType = new ObjectType(property.Value.GetString());
+                    objectType = new BlobInventoryPolicyObjectType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("schemaFields"))
+                if (property.NameEquals("schemaFields"u8))
                 {
                     List<string> array = new List<string>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -81,8 +127,149 @@ namespace Azure.ResourceManager.Storage.Models
                     schemaFields = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new BlobInventoryPolicyDefinition(filters.Value, format, schedule, objectType, schemaFields);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new BlobInventoryPolicyDefinition(
+                filters,
+                format,
+                schedule,
+                objectType,
+                schemaFields,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Filters), out propertyOverride);
+            if (Optional.IsDefined(Filters) || hasPropertyOverride)
+            {
+                builder.Append("  filters: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Filters, options, 2, false, "  filters: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Format), out propertyOverride);
+            builder.Append("  format: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{Format.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Schedule), out propertyOverride);
+            builder.Append("  schedule: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{Schedule.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ObjectType), out propertyOverride);
+            builder.Append("  objectType: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{ObjectType.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SchemaFields), out propertyOverride);
+            if (Optional.IsCollectionDefined(SchemaFields) || hasPropertyOverride)
+            {
+                if (SchemaFields.Any() || hasPropertyOverride)
+                {
+                    builder.Append("  schemaFields: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in SchemaFields)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<BlobInventoryPolicyDefinition>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobInventoryPolicyDefinition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(BlobInventoryPolicyDefinition)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        BlobInventoryPolicyDefinition IPersistableModel<BlobInventoryPolicyDefinition>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobInventoryPolicyDefinition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeBlobInventoryPolicyDefinition(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(BlobInventoryPolicyDefinition)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<BlobInventoryPolicyDefinition>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

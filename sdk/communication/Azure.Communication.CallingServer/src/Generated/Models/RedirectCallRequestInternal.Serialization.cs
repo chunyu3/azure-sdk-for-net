@@ -15,10 +15,10 @@ namespace Azure.Communication.CallingServer
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("incomingCallContext");
+            writer.WritePropertyName("incomingCallContext"u8);
             writer.WriteStringValue(IncomingCallContext);
-            writer.WritePropertyName("target");
-            writer.WriteObjectValue(Target);
+            writer.WritePropertyName("target"u8);
+            writer.WriteObjectValue<CommunicationIdentifierModel>(Target);
             writer.WriteEndObject();
         }
     }

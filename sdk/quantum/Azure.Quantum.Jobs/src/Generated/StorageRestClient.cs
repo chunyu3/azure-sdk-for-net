@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Quantum.Jobs.Models;
@@ -64,7 +63,7 @@ namespace Azure.Quantum.Jobs
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(blobDetails);
+            content.JsonWriter.WriteObjectValue<BlobDetails>(blobDetails);
             request.Content = content;
             return message;
         }
@@ -92,7 +91,7 @@ namespace Azure.Quantum.Jobs
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -119,7 +118,7 @@ namespace Azure.Quantum.Jobs
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

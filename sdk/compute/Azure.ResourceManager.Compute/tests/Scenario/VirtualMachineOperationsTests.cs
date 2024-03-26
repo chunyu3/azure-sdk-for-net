@@ -9,10 +9,11 @@ using NUnit.Framework;
 
 namespace Azure.ResourceManager.Compute.Tests
 {
+    [ClientTestFixture(true, "2022-08-01", "2021-04-01", "2020-06-01", "2022-11-01", "2023-03-01", "2023-07-01", "2023-09-01")]
     public class VirtualMachineOperationsTests : VirtualMachineTestBase
     {
-        public VirtualMachineOperationsTests(bool isAsync)
-            : base(isAsync)//, RecordedTestMode.Record)
+        public VirtualMachineOperationsTests(bool isAsync, string apiVersion)
+            : base(isAsync, VirtualMachineResource.ResourceType, apiVersion)//, RecordedTestMode.Record)
         {
         }
 
@@ -42,16 +43,11 @@ namespace Azure.ResourceManager.Compute.Tests
         {
             var vmName = Recording.GenerateAssetName("testVM-");
             var vm = await CreateVirtualMachineAsync(vmName);
-            //// Create a PPG here and add this PPG to this virtual machine using Update
-            //var ppgName = Recording.GenerateAssetName("testPPG-");
-            //var ppgData = new ProximityPlacementGroupData(DefaultLocation) { };
-            //var ppgLRO = await _resourceGroup.GetProximityPlacementGroups().CreateOrUpdateAsync(ppgName, ppgData);
-            //var ppg = ppgLRO.Value;
             // update PPG requires the VM to be deallocated
             await vm.DeallocateAsync(WaitUntil.Completed);
             var update = new VirtualMachinePatch()
             {
-                HardwareProfile = new HardwareProfile
+                HardwareProfile = new()
                 {
                     VmSize = VirtualMachineSizeType.StandardF1
                 }

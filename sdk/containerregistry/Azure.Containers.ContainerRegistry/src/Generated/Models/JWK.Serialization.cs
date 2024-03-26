@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -14,27 +13,30 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static JWK DeserializeJWK(JsonElement element)
         {
-            Optional<JWKHeader> jwk = default;
-            Optional<string> alg = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            JWKHeader jwk = default;
+            string alg = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("jwk"))
+                if (property.NameEquals("jwk"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     jwk = JWKHeader.DeserializeJWKHeader(property.Value);
                     continue;
                 }
-                if (property.NameEquals("alg"))
+                if (property.NameEquals("alg"u8))
                 {
                     alg = property.Value.GetString();
                     continue;
                 }
             }
-            return new JWK(jwk.Value, alg.Value);
+            return new JWK(jwk, alg);
         }
     }
 }

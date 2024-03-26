@@ -7,7 +7,6 @@
 
 using System;
 using System.Text.Json;
-using Azure.Communication;
 using Azure.Core;
 
 namespace Azure.Communication.Chat
@@ -17,16 +16,16 @@ namespace Azure.Communication.Chat
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("communicationIdentifier");
-            writer.WriteObjectValue(CommunicationIdentifier);
+            writer.WritePropertyName("communicationIdentifier"u8);
+            writer.WriteObjectValue<CommunicationIdentifierModel>(CommunicationIdentifier);
             if (Optional.IsDefined(DisplayName))
             {
-                writer.WritePropertyName("displayName");
+                writer.WritePropertyName("displayName"u8);
                 writer.WriteStringValue(DisplayName);
             }
             if (Optional.IsDefined(ShareHistoryTime))
             {
-                writer.WritePropertyName("shareHistoryTime");
+                writer.WritePropertyName("shareHistoryTime"u8);
                 writer.WriteStringValue(ShareHistoryTime.Value, "O");
             }
             writer.WriteEndObject();
@@ -34,33 +33,36 @@ namespace Azure.Communication.Chat
 
         internal static ChatParticipantInternal DeserializeChatParticipantInternal(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             CommunicationIdentifierModel communicationIdentifier = default;
-            Optional<string> displayName = default;
-            Optional<DateTimeOffset> shareHistoryTime = default;
+            string displayName = default;
+            DateTimeOffset? shareHistoryTime = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("communicationIdentifier"))
+                if (property.NameEquals("communicationIdentifier"u8))
                 {
                     communicationIdentifier = CommunicationIdentifierModel.DeserializeCommunicationIdentifierModel(property.Value);
                     continue;
                 }
-                if (property.NameEquals("displayName"))
+                if (property.NameEquals("displayName"u8))
                 {
                     displayName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("shareHistoryTime"))
+                if (property.NameEquals("shareHistoryTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     shareHistoryTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
             }
-            return new ChatParticipantInternal(communicationIdentifier, displayName.Value, Optional.ToNullable(shareHistoryTime));
+            return new ChatParticipantInternal(communicationIdentifier, displayName, shareHistoryTime);
         }
     }
 }

@@ -26,12 +26,12 @@ namespace Azure.ResourceManager.Reservations.Tests
         [RecordedTest]
         public async Task TestAppliedReservationList()
         {
-            var response = await Subscription.GetAppliedReservationListAsync();
+            var response = await Subscription.GetAppliedReservationsAsync();
 
             Assert.AreEqual(200, response.GetRawResponse().Status);
             Assert.IsNotNull(response.Value.ReservationOrderIds);
             Assert.IsNotNull(response.Value.ReservationOrderIds.Value);
-            Assert.AreEqual(314, response.Value.ReservationOrderIds.Value.Count);
+            Assert.AreEqual(127, response.Value.ReservationOrderIds.Value.Count);
         }
     }
 }

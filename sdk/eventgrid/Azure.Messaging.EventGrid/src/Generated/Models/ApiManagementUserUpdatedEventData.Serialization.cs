@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -17,16 +16,20 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static ApiManagementUserUpdatedEventData DeserializeApiManagementUserUpdatedEventData(JsonElement element)
         {
-            Optional<string> resourceUri = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string resourceUri = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("resourceUri"))
+                if (property.NameEquals("resourceUri"u8))
                 {
                     resourceUri = property.Value.GetString();
                     continue;
                 }
             }
-            return new ApiManagementUserUpdatedEventData(resourceUri.Value);
+            return new ApiManagementUserUpdatedEventData(resourceUri);
         }
 
         internal partial class ApiManagementUserUpdatedEventDataConverter : JsonConverter<ApiManagementUserUpdatedEventData>

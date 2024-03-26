@@ -6,30 +6,26 @@
 #nullable disable
 
 using System;
-using Azure.AI.TextAnalytics;
 
 namespace Azure.AI.TextAnalytics.Models
 {
     /// <summary> The CustomEntityRecognitionLROResult. </summary>
     internal partial class CustomEntityRecognitionLROResult : AnalyzeTextLROResult
     {
-        /// <summary> Initializes a new instance of CustomEntityRecognitionLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="CustomEntityRecognitionLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="results"></param>
         /// <exception cref="ArgumentNullException"> <paramref name="results"/> is null. </exception>
         public CustomEntityRecognitionLROResult(DateTimeOffset lastUpdateDateTime, TextAnalyticsOperationStatus status, CustomEntitiesResult results) : base(lastUpdateDateTime, status)
         {
-            if (results == null)
-            {
-                throw new ArgumentNullException(nameof(results));
-            }
+            Argument.AssertNotNull(results, nameof(results));
 
             Results = results;
             Kind = AnalyzeTextLROResultsKind.CustomEntityRecognitionLROResults;
         }
 
-        /// <summary> Initializes a new instance of CustomEntityRecognitionLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="CustomEntityRecognitionLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="kind"> Enumeration of supported Text Analysis long-running operation task results. </param>

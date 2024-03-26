@@ -9,10 +9,8 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.AlertsManagement.Models;
 using Azure.ResourceManager.Resources;
 
@@ -20,14 +18,16 @@ namespace Azure.ResourceManager.AlertsManagement
 {
     /// <summary>
     /// A Class representing a ServiceAlert along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="ServiceAlertResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetServiceAlertResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetServiceAlert method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="ServiceAlertResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetServiceAlertResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetServiceAlert method.
     /// </summary>
     public partial class ServiceAlertResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="ServiceAlertResource"/> instance. </summary>
-        public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string alertId)
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="alertId"> The alertId. </param>
+        public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, Guid alertId)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}";
             return new ResourceIdentifier(resourceId);
@@ -37,12 +37,15 @@ namespace Azure.ResourceManager.AlertsManagement
         private readonly AlertsRestOperations _serviceAlertAlertsRestClient;
         private readonly ServiceAlertData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.AlertsManagement/alerts";
+
         /// <summary> Initializes a new instance of the <see cref="ServiceAlertResource"/> class for mocking. </summary>
         protected ServiceAlertResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "ServiceAlertResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="ServiceAlertResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal ServiceAlertResource(ArmClient client, ServiceAlertData data) : this(client, data.Id)
@@ -63,9 +66,6 @@ namespace Azure.ResourceManager.AlertsManagement
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.AlertsManagement/alerts";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -90,8 +90,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get information related to a specific alert
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}
-        /// Operation Id: Alerts_GetById
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetById</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<ServiceAlertResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -100,7 +116,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = await _serviceAlertAlertsRestClient.GetByIdAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _serviceAlertAlertsRestClient.GetByIdAsync(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new ServiceAlertResource(Client, response.Value), response.GetRawResponse());
@@ -114,8 +130,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get information related to a specific alert
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}
-        /// Operation Id: Alerts_GetById
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetById</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<ServiceAlertResource> Get(CancellationToken cancellationToken = default)
@@ -124,7 +156,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = _serviceAlertAlertsRestClient.GetById(Id.SubscriptionId, Id.Name, cancellationToken);
+                var response = _serviceAlertAlertsRestClient.GetById(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new ServiceAlertResource(Client, response.Value), response.GetRawResponse());
@@ -138,19 +170,35 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Change the state of an alert.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/changestate
-        /// Operation Id: Alerts_ChangeState
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/changestate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_ChangeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="newState"> New state of the alert. </param>
         /// <param name="comment"> reason of change alert state. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual async Task<Response<ServiceAlertResource>> ChangeStateAsync(AlertState newState, string comment = null, CancellationToken cancellationToken = default)
+        public virtual async Task<Response<ServiceAlertResource>> ChangeStateAsync(ServiceAlertState newState, string comment = null, CancellationToken cancellationToken = default)
         {
             using var scope = _serviceAlertAlertsClientDiagnostics.CreateScope("ServiceAlertResource.ChangeState");
             scope.Start();
             try
             {
-                var response = await _serviceAlertAlertsRestClient.ChangeStateAsync(Id.SubscriptionId, Id.Name, newState, comment, cancellationToken).ConfigureAwait(false);
+                var response = await _serviceAlertAlertsRestClient.ChangeStateAsync(Id.SubscriptionId, Guid.Parse(Id.Name), newState, comment, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new ServiceAlertResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -162,19 +210,35 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Change the state of an alert.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/changestate
-        /// Operation Id: Alerts_ChangeState
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/changestate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_ChangeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="newState"> New state of the alert. </param>
         /// <param name="comment"> reason of change alert state. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual Response<ServiceAlertResource> ChangeState(AlertState newState, string comment = null, CancellationToken cancellationToken = default)
+        public virtual Response<ServiceAlertResource> ChangeState(ServiceAlertState newState, string comment = null, CancellationToken cancellationToken = default)
         {
             using var scope = _serviceAlertAlertsClientDiagnostics.CreateScope("ServiceAlertResource.ChangeState");
             scope.Start();
             try
             {
-                var response = _serviceAlertAlertsRestClient.ChangeState(Id.SubscriptionId, Id.Name, newState, comment, cancellationToken);
+                var response = _serviceAlertAlertsRestClient.ChangeState(Id.SubscriptionId, Guid.Parse(Id.Name), newState, comment, cancellationToken);
                 return Response.FromValue(new ServiceAlertResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -186,8 +250,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get the history of an alert, which captures any monitor condition changes (Fired/Resolved) and alert state changes (New/Acknowledged/Closed).
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/history
-        /// Operation Id: Alerts_GetHistory
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/history</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetHistory</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<ServiceAlertModification>> GetHistoryAsync(CancellationToken cancellationToken = default)
@@ -196,7 +276,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = await _serviceAlertAlertsRestClient.GetHistoryAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _serviceAlertAlertsRestClient.GetHistoryAsync(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken).ConfigureAwait(false);
                 return response;
             }
             catch (Exception e)
@@ -208,8 +288,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get the history of an alert, which captures any monitor condition changes (Fired/Resolved) and alert state changes (New/Acknowledged/Closed).
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/history
-        /// Operation Id: Alerts_GetHistory
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/alerts/{alertId}/history</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetHistory</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ServiceAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<ServiceAlertModification> GetHistory(CancellationToken cancellationToken = default)
@@ -218,7 +314,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = _serviceAlertAlertsRestClient.GetHistory(Id.SubscriptionId, Id.Name, cancellationToken);
+                var response = _serviceAlertAlertsRestClient.GetHistory(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken);
                 return response;
             }
             catch (Exception e)

@@ -15,11 +15,13 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("endpoint");
-            writer.WriteObjectValue(Endpoint);
+            writer.WritePropertyName("endpoint"u8);
+            writer.WriteObjectValue<EndpointBase>(Endpoint);
+            writer.WritePropertyName("methodName"u8);
+            writer.WriteStringValue(MethodName);
             if (Optional.IsDefined(ApiVersion))
             {
-                writer.WritePropertyName("@apiVersion");
+                writer.WritePropertyName("@apiVersion"u8);
                 writer.WriteStringValue(ApiVersion);
             }
             writer.WriteEndObject();
@@ -27,28 +29,32 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static OnvifDeviceGetRequest DeserializeOnvifDeviceGetRequest(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             EndpointBase endpoint = default;
             string methodName = default;
-            Optional<string> apiVersion = default;
+            string apiVersion = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("endpoint"))
+                if (property.NameEquals("endpoint"u8))
                 {
                     endpoint = EndpointBase.DeserializeEndpointBase(property.Value);
                     continue;
                 }
-                if (property.NameEquals("methodName"))
+                if (property.NameEquals("methodName"u8))
                 {
                     methodName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("@apiVersion"))
+                if (property.NameEquals("@apiVersion"u8))
                 {
                     apiVersion = property.Value.GetString();
                     continue;
                 }
             }
-            return new OnvifDeviceGetRequest(methodName, apiVersion.Value, endpoint);
+            return new OnvifDeviceGetRequest(methodName, apiVersion, endpoint);
         }
     }
 }

@@ -20,74 +20,76 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(LinkedService))
             {
-                writer.WritePropertyName("linkedService");
-                writer.WriteObjectValue(LinkedService);
+                writer.WritePropertyName("linkedService"u8);
+                writer.WriteObjectValue<LinkedServiceReference>(LinkedService);
             }
             if (Optional.IsDefined(FileSystem))
             {
-                writer.WritePropertyName("fileSystem");
+                writer.WritePropertyName("fileSystem"u8);
                 writer.WriteStringValue(FileSystem);
             }
             if (Optional.IsDefined(FolderPath))
             {
-                writer.WritePropertyName("folderPath");
+                writer.WritePropertyName("folderPath"u8);
                 writer.WriteStringValue(FolderPath);
             }
             if (Optional.IsDefined(SasToken))
             {
-                writer.WritePropertyName("sasToken");
-                writer.WriteObjectValue(SasToken);
+                writer.WritePropertyName("sasToken"u8);
+                writer.WriteObjectValue<SecureString>(SasToken);
             }
             writer.WriteEndObject();
         }
 
         internal static LinkConnectionLandingZone DeserializeLinkConnectionLandingZone(JsonElement element)
         {
-            Optional<LinkedServiceReference> linkedService = default;
-            Optional<string> fileSystem = default;
-            Optional<string> folderPath = default;
-            Optional<SecureString> sasToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            LinkedServiceReference linkedService = default;
+            string fileSystem = default;
+            string folderPath = default;
+            SecureString sasToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("linkedService"))
+                if (property.NameEquals("linkedService"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     linkedService = LinkedServiceReference.DeserializeLinkedServiceReference(property.Value);
                     continue;
                 }
-                if (property.NameEquals("fileSystem"))
+                if (property.NameEquals("fileSystem"u8))
                 {
                     fileSystem = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("folderPath"))
+                if (property.NameEquals("folderPath"u8))
                 {
                     folderPath = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sasToken"))
+                if (property.NameEquals("sasToken"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sasToken = SecureString.DeserializeSecureString(property.Value);
                     continue;
                 }
             }
-            return new LinkConnectionLandingZone(linkedService.Value, fileSystem.Value, folderPath.Value, sasToken.Value);
+            return new LinkConnectionLandingZone(linkedService, fileSystem, folderPath, sasToken);
         }
 
         internal partial class LinkConnectionLandingZoneConverter : JsonConverter<LinkConnectionLandingZone>
         {
             public override void Write(Utf8JsonWriter writer, LinkConnectionLandingZone model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LinkConnectionLandingZone>(model);
             }
             public override LinkConnectionLandingZone Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

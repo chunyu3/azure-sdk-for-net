@@ -17,45 +17,47 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Scale))
             {
-                writer.WritePropertyName("scale");
-                writer.WriteObjectValue(Scale);
+                writer.WritePropertyName("scale"u8);
+                writer.WriteObjectValue<ImageScale>(Scale);
             }
             if (Optional.IsDefined(Format))
             {
-                writer.WritePropertyName("format");
-                writer.WriteObjectValue(Format);
+                writer.WritePropertyName("format"u8);
+                writer.WriteObjectValue<ImageFormatProperties>(Format);
             }
             writer.WriteEndObject();
         }
 
         internal static ImageProperties DeserializeImageProperties(JsonElement element)
         {
-            Optional<ImageScale> scale = default;
-            Optional<ImageFormatProperties> format = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ImageScale scale = default;
+            ImageFormatProperties format = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("scale"))
+                if (property.NameEquals("scale"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     scale = ImageScale.DeserializeImageScale(property.Value);
                     continue;
                 }
-                if (property.NameEquals("format"))
+                if (property.NameEquals("format"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     format = ImageFormatProperties.DeserializeImageFormatProperties(property.Value);
                     continue;
                 }
             }
-            return new ImageProperties(scale.Value, format.Value);
+            return new ImageProperties(scale, format);
         }
     }
 }

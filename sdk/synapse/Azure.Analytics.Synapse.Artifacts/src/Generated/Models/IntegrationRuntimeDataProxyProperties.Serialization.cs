@@ -20,17 +20,17 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ConnectVia))
             {
-                writer.WritePropertyName("connectVia");
-                writer.WriteObjectValue(ConnectVia);
+                writer.WritePropertyName("connectVia"u8);
+                writer.WriteObjectValue<EntityReference>(ConnectVia);
             }
             if (Optional.IsDefined(StagingLinkedService))
             {
-                writer.WritePropertyName("stagingLinkedService");
-                writer.WriteObjectValue(StagingLinkedService);
+                writer.WritePropertyName("stagingLinkedService"u8);
+                writer.WriteObjectValue<EntityReference>(StagingLinkedService);
             }
             if (Optional.IsDefined(Path))
             {
-                writer.WritePropertyName("path");
+                writer.WritePropertyName("path"u8);
                 writer.WriteStringValue(Path);
             }
             writer.WriteEndObject();
@@ -38,45 +38,47 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static IntegrationRuntimeDataProxyProperties DeserializeIntegrationRuntimeDataProxyProperties(JsonElement element)
         {
-            Optional<EntityReference> connectVia = default;
-            Optional<EntityReference> stagingLinkedService = default;
-            Optional<string> path = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            EntityReference connectVia = default;
+            EntityReference stagingLinkedService = default;
+            string path = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("connectVia"))
+                if (property.NameEquals("connectVia"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     connectVia = EntityReference.DeserializeEntityReference(property.Value);
                     continue;
                 }
-                if (property.NameEquals("stagingLinkedService"))
+                if (property.NameEquals("stagingLinkedService"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     stagingLinkedService = EntityReference.DeserializeEntityReference(property.Value);
                     continue;
                 }
-                if (property.NameEquals("path"))
+                if (property.NameEquals("path"u8))
                 {
                     path = property.Value.GetString();
                     continue;
                 }
             }
-            return new IntegrationRuntimeDataProxyProperties(connectVia.Value, stagingLinkedService.Value, path.Value);
+            return new IntegrationRuntimeDataProxyProperties(connectVia, stagingLinkedService, path);
         }
 
         internal partial class IntegrationRuntimeDataProxyPropertiesConverter : JsonConverter<IntegrationRuntimeDataProxyProperties>
         {
             public override void Write(Utf8JsonWriter writer, IntegrationRuntimeDataProxyProperties model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<IntegrationRuntimeDataProxyProperties>(model);
             }
             public override IntegrationRuntimeDataProxyProperties Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

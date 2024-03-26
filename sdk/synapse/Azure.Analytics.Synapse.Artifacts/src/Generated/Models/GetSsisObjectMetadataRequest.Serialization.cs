@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(MetadataPath))
             {
-                writer.WritePropertyName("metadataPath");
+                writer.WritePropertyName("metadataPath"u8);
                 writer.WriteStringValue(MetadataPath);
             }
             writer.WriteEndObject();
@@ -28,23 +28,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static GetSsisObjectMetadataRequest DeserializeGetSsisObjectMetadataRequest(JsonElement element)
         {
-            Optional<string> metadataPath = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string metadataPath = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("metadataPath"))
+                if (property.NameEquals("metadataPath"u8))
                 {
                     metadataPath = property.Value.GetString();
                     continue;
                 }
             }
-            return new GetSsisObjectMetadataRequest(metadataPath.Value);
+            return new GetSsisObjectMetadataRequest(metadataPath);
         }
 
         internal partial class GetSsisObjectMetadataRequestConverter : JsonConverter<GetSsisObjectMetadataRequest>
         {
             public override void Write(Utf8JsonWriter writer, GetSsisObjectMetadataRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<GetSsisObjectMetadataRequest>(model);
             }
             public override GetSsisObjectMetadataRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

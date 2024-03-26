@@ -7,27 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> AmazonRdsForOracle database. </summary>
-    public partial class AmazonRdsForOracleLinkedService : LinkedService
+    public partial class AmazonRdsForOracleLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of AmazonRdsForOracleLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForOracleLinkedService"/>. </summary>
         /// <param name="connectionString"> The connection string. Type: string, SecureString or AzureKeyVaultSecretReference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="connectionString"/> is null. </exception>
-        public AmazonRdsForOracleLinkedService(BinaryData connectionString)
+        public AmazonRdsForOracleLinkedService(DataFactoryElement<string> connectionString)
         {
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
+            Argument.AssertNotNull(connectionString, nameof(connectionString));
 
             ConnectionString = connectionString;
             LinkedServiceType = "AmazonRdsForOracle";
         }
 
-        /// <summary> Initializes a new instance of AmazonRdsForOracleLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForOracleLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -35,13 +33,9 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="connectionString"> The connection string. Type: string, SecureString or AzureKeyVaultSecretReference. </param>
-        /// <param name="password">
-        /// The Azure key vault secret reference of password in connection string.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal AmazonRdsForOracleLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData connectionString, SecretBase password, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="password"> The Azure key vault secret reference of password in connection string. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal AmazonRdsForOracleLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> connectionString, DataFactorySecret password, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             ConnectionString = connectionString;
             Password = password;
@@ -49,15 +43,16 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "AmazonRdsForOracle";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForOracleLinkedService"/> for deserialization. </summary>
+        internal AmazonRdsForOracleLinkedService()
+        {
+        }
+
         /// <summary> The connection string. Type: string, SecureString or AzureKeyVaultSecretReference. </summary>
-        public BinaryData ConnectionString { get; set; }
-        /// <summary>
-        /// The Azure key vault secret reference of password in connection string.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> ConnectionString { get; set; }
+        /// <summary> The Azure key vault secret reference of password in connection string. </summary>
+        public DataFactorySecret Password { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

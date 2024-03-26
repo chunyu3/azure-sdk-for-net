@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Authorization.Models;
@@ -129,7 +129,7 @@ namespace Azure.ResourceManager.Authorization
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<RoleManagementPolicyAssignmentData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -188,70 +188,6 @@ namespace Azure.ResourceManager.Authorization
                         value = RoleManagementPolicyAssignmentData.DeserializeRoleManagementPolicyAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        internal HttpMessage CreateDeleteRequest(string scope, string roleManagementPolicyAssignmentName)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Delete;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/", false);
-            uri.AppendPath(scope, false);
-            uri.AppendPath("/providers/Microsoft.Authorization/roleManagementPolicyAssignments/", false);
-            uri.AppendPath(roleManagementPolicyAssignmentName, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            _userAgent.Apply(message);
-            return message;
-        }
-
-        /// <summary> Delete a role management policy assignment. </summary>
-        /// <param name="scope"> The scope of the role management policy assignment to delete. </param>
-        /// <param name="roleManagementPolicyAssignmentName"> The name of format {guid_guid} the role management policy assignment to delete. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="roleManagementPolicyAssignmentName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="roleManagementPolicyAssignmentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> DeleteAsync(string scope, string roleManagementPolicyAssignmentName, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(scope, nameof(scope));
-            Argument.AssertNotNullOrEmpty(roleManagementPolicyAssignmentName, nameof(roleManagementPolicyAssignmentName));
-
-            using var message = CreateDeleteRequest(scope, roleManagementPolicyAssignmentName);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 204:
-                    return message.Response;
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Delete a role management policy assignment. </summary>
-        /// <param name="scope"> The scope of the role management policy assignment to delete. </param>
-        /// <param name="roleManagementPolicyAssignmentName"> The name of format {guid_guid} the role management policy assignment to delete. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="roleManagementPolicyAssignmentName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="roleManagementPolicyAssignmentName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Delete(string scope, string roleManagementPolicyAssignmentName, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(scope, nameof(scope));
-            Argument.AssertNotNullOrEmpty(roleManagementPolicyAssignmentName, nameof(roleManagementPolicyAssignmentName));
-
-            using var message = CreateDeleteRequest(scope, roleManagementPolicyAssignmentName);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 204:
-                    return message.Response;
                 default:
                     throw new RequestFailedException(message.Response);
             }

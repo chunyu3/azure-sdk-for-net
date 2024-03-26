@@ -15,13 +15,13 @@ namespace Azure.AI.TextAnalytics.Legacy
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("analysisInput");
-            writer.WriteObjectValue(AnalysisInput);
-            writer.WritePropertyName("tasks");
-            writer.WriteObjectValue(Tasks);
+            writer.WritePropertyName("analysisInput"u8);
+            writer.WriteObjectValue<MultiLanguageBatchInput>(AnalysisInput);
+            writer.WritePropertyName("tasks"u8);
+            writer.WriteObjectValue<JobManifestTasks>(Tasks);
             if (Optional.IsDefined(DisplayName))
             {
-                writer.WritePropertyName("displayName");
+                writer.WritePropertyName("displayName"u8);
                 writer.WriteStringValue(DisplayName);
             }
             writer.WriteEndObject();

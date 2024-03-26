@@ -14,40 +14,76 @@ namespace Azure.ResourceManager.Media.Models
     /// <summary> The properties of the Content Key Policy. </summary>
     public partial class ContentKeyPolicyProperties
     {
-        /// <summary> Initializes a new instance of ContentKeyPolicyProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyProperties"/>. </summary>
         /// <param name="options"> The Key Policy options. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="options"/> is null. </exception>
         internal ContentKeyPolicyProperties(IEnumerable<ContentKeyPolicyOption> options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
+            Argument.AssertNotNull(options, nameof(options));
 
             Options = options.ToList();
         }
 
-        /// <summary> Initializes a new instance of ContentKeyPolicyProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyProperties"/>. </summary>
         /// <param name="policyId"> The legacy Policy ID. </param>
-        /// <param name="created"> The creation date of the Policy. </param>
-        /// <param name="lastModified"> The last modified date of the Policy. </param>
+        /// <param name="createdOn"> The creation date of the Policy. </param>
+        /// <param name="lastModifiedOn"> The last modified date of the Policy. </param>
         /// <param name="description"> A description for the Policy. </param>
         /// <param name="options"> The Key Policy options. </param>
-        internal ContentKeyPolicyProperties(Guid? policyId, DateTimeOffset? created, DateTimeOffset? lastModified, string description, IReadOnlyList<ContentKeyPolicyOption> options)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ContentKeyPolicyProperties(Guid? policyId, DateTimeOffset? createdOn, DateTimeOffset? lastModifiedOn, string description, IReadOnlyList<ContentKeyPolicyOption> options, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             PolicyId = policyId;
-            Created = created;
-            LastModified = lastModified;
+            CreatedOn = createdOn;
+            LastModifiedOn = lastModifiedOn;
             Description = description;
             Options = options;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyProperties"/> for deserialization. </summary>
+        internal ContentKeyPolicyProperties()
+        {
         }
 
         /// <summary> The legacy Policy ID. </summary>
         public Guid? PolicyId { get; }
         /// <summary> The creation date of the Policy. </summary>
-        public DateTimeOffset? Created { get; }
+        public DateTimeOffset? CreatedOn { get; }
         /// <summary> The last modified date of the Policy. </summary>
-        public DateTimeOffset? LastModified { get; }
+        public DateTimeOffset? LastModifiedOn { get; }
         /// <summary> A description for the Policy. </summary>
         public string Description { get; }
         /// <summary> The Key Policy options. </summary>

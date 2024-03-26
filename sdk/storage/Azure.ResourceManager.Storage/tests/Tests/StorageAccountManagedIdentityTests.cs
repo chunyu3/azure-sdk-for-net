@@ -8,12 +8,11 @@ using Azure.Core.TestFramework;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class StorageAccountManagedIdentityTests : StorageTestBase
+    public class StorageAccountManagedIdentityTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private const string namePrefix = "teststoragemgmt";
@@ -54,7 +53,7 @@ namespace Azure.ResourceManager.Storage.Tests
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssigned);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -75,7 +74,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -96,7 +95,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssignedUserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -114,7 +113,7 @@ namespace Azure.ResourceManager.Storage.Tests
             StorageAccountCollection storageAccountCollection = _resourceGroup.GetStorageAccounts();
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS));
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs));
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -146,7 +145,7 @@ namespace Azure.ResourceManager.Storage.Tests
             StorageAccountCollection storageAccountCollection = _resourceGroup.GetStorageAccounts();
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS));
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs));
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -181,7 +180,7 @@ namespace Azure.ResourceManager.Storage.Tests
             StorageAccountCollection storageAccountCollection = _resourceGroup.GetStorageAccounts();
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS));
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs));
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -217,7 +216,7 @@ namespace Azure.ResourceManager.Storage.Tests
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssigned);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -254,7 +253,7 @@ namespace Azure.ResourceManager.Storage.Tests
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssigned);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -293,7 +292,7 @@ namespace Azure.ResourceManager.Storage.Tests
 
             string accountName = await CreateValidAccountNameAsync(namePrefix);
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssigned);
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -334,7 +333,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -373,7 +372,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -412,7 +411,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -452,7 +451,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -497,7 +496,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.UserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -540,7 +539,7 @@ namespace Azure.ResourceManager.Storage.Tests
             identity.UserAssignedIdentities.Add(userAssignedIdentity1.Id, new UserAssignedIdentity());
             var userAssignedIdentity2 = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity2.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -582,7 +581,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssignedUserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -621,7 +620,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssignedUserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);
@@ -659,7 +658,7 @@ namespace Azure.ResourceManager.Storage.Tests
             var identity = new ManagedServiceIdentity(ManagedServiceIdentityType.SystemAssignedUserAssigned);
             var userAssignedIdentity = await CreateUserAssignedIdentityAsync();
             identity.UserAssignedIdentities.Add(userAssignedIdentity.Id, new UserAssignedIdentity());
-            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLRS), identity: identity);
+            var param = GetDefaultStorageAccountParameters(sku: new StorageSku(StorageSkuName.StandardLrs), identity: identity);
             StorageAccountResource account1 = (await storageAccountCollection.CreateOrUpdateAsync(WaitUntil.Completed, accountName, param)).Value;
             Assert.AreEqual(accountName, account1.Id.Name);
             VerifyAccountProperties(account1, false);

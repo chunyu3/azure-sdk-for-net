@@ -1,6 +1,6 @@
 # Release History
 
-## 1.2.0-beta.1 (Unreleased)
+## 1.3.0-beta.3 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,32 @@
 ### Bugs Fixed
 
 ### Other Changes
+- Enable national cloud support for US Gov and China clouds
+- `MetricsBatchQueryClient` renamed to `MetricsClient`
+- `QueryBatch` renamed to `QueryResources` in `MetricsClient`
+- `MetricsBatchResult` renamed to `MetricsQueryResourcesResult` in `MetricsClient`
+- Added `MetricsClientBuilderExtensions` methods
+
+## 1.3.0-beta.2 (2023-12-05)
+
+### Other Changes
+- Internal updates to generated code.
+
+## 1.3.0-beta.1 (2023-10-18)
+
+### Features Added
+- Added the `MetricsBatchQueryClient` client to support batch querying of metrics.
+- Added `QueryBatch` and `QueryBatchAsync` methods to `MetricsBatchQueryClient`
+
+## 1.2.0 (2023-05-22)
+
+### Bugs Fixed
+- `QueryResourceAsync<T>` method was not returning the correct value.
+
+## 1.2.0-beta.1 (2023-05-09)
+### Features Added
+- Added Client Builder Extension methods for `LogsQueryClient` and `MetricsQueryClient`
+- Added the `QueryResource` method to `LogsQueryClient` to allow users to query Azure resources directly without the context of a workspace.
 
 ## 1.1.0 (2022-01-25)
 

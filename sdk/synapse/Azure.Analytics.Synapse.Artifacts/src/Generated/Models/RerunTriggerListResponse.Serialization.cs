@@ -19,11 +19,11 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("value");
+            writer.WritePropertyName("value"u8);
             writer.WriteStartArray();
             foreach (var item in Value)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<RerunTriggerResource>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
@@ -31,11 +31,15 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static RerunTriggerListResponse DeserializeRerunTriggerListResponse(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IList<RerunTriggerResource> value = default;
-            Optional<string> nextLink = default;
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     List<RerunTriggerResource> array = new List<RerunTriggerResource>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -45,20 +49,20 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("nextLink"))
+                if (property.NameEquals("nextLink"u8))
                 {
                     nextLink = property.Value.GetString();
                     continue;
                 }
             }
-            return new RerunTriggerListResponse(value, nextLink.Value);
+            return new RerunTriggerListResponse(value, nextLink);
         }
 
         internal partial class RerunTriggerListResponseConverter : JsonConverter<RerunTriggerListResponse>
         {
             public override void Write(Utf8JsonWriter writer, RerunTriggerListResponse model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<RerunTriggerListResponse>(model);
             }
             public override RerunTriggerListResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

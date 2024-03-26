@@ -23,35 +23,39 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static Resource DeserializeResource(JsonElement element)
         {
-            Optional<string> id = default;
-            Optional<string> name = default;
-            Optional<string> type = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string id = default;
+            string name = default;
+            string type = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
             }
-            return new Resource(id.Value, name.Value, type.Value);
+            return new Resource(id, name, type);
         }
 
         internal partial class ResourceConverter : JsonConverter<Resource>
         {
             public override void Write(Utf8JsonWriter writer, Resource model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<Resource>(model);
             }
             public override Resource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

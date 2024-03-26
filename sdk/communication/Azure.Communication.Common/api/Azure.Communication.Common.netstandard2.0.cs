@@ -28,6 +28,8 @@ namespace Azure.Communication
         public override bool Equals(object obj) { throw null; }
         public static Azure.Communication.CommunicationIdentifier FromRawId(string rawId) { throw null; }
         public override int GetHashCode() { throw null; }
+        public static bool operator ==(Azure.Communication.CommunicationIdentifier left, Azure.Communication.CommunicationIdentifier right) { throw null; }
+        public static bool operator !=(Azure.Communication.CommunicationIdentifier left, Azure.Communication.CommunicationIdentifier right) { throw null; }
     }
     public sealed partial class CommunicationTokenCredential : System.IDisposable
     {
@@ -47,6 +49,15 @@ namespace Azure.Communication
     {
         public CommunicationUserIdentifier(string id) { }
         public string Id { get { throw null; } }
+        public override string RawId { get { throw null; } }
+        public override bool Equals(Azure.Communication.CommunicationIdentifier other) { throw null; }
+        public override string ToString() { throw null; }
+    }
+    public partial class MicrosoftTeamsAppIdentifier : Azure.Communication.CommunicationIdentifier
+    {
+        public MicrosoftTeamsAppIdentifier(string appId, Azure.Communication.CommunicationCloudEnvironment? cloud = default(Azure.Communication.CommunicationCloudEnvironment?)) { }
+        public string AppId { get { throw null; } }
+        public Azure.Communication.CommunicationCloudEnvironment Cloud { get { throw null; } }
         public override string RawId { get { throw null; } }
         public override bool Equals(Azure.Communication.CommunicationIdentifier other) { throw null; }
         public override string ToString() { throw null; }

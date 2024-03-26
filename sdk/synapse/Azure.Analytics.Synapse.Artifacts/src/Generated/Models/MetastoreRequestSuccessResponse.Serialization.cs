@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Analytics.Synapse.Artifacts.Models
 {
@@ -17,21 +16,24 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
     {
         internal static MetastoreRequestSuccessResponse DeserializeMetastoreRequestSuccessResponse(JsonElement element)
         {
-            Optional<ResourceStatus> status = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceStatus? status = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     status = new ResourceStatus(property.Value.GetString());
                     continue;
                 }
             }
-            return new MetastoreRequestSuccessResponse(Optional.ToNullable(status));
+            return new MetastoreRequestSuccessResponse(status);
         }
 
         internal partial class MetastoreRequestSuccessResponseConverter : JsonConverter<MetastoreRequestSuccessResponse>

@@ -16,21 +16,21 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("baseDirectoryPath");
+            writer.WritePropertyName("baseDirectoryPath"u8);
             writer.WriteStringValue(BaseDirectoryPath);
-            writer.WritePropertyName("fileNamePattern");
+            writer.WritePropertyName("fileNamePattern"u8);
             writer.WriteStringValue(FileNamePattern);
-            writer.WritePropertyName("maximumSizeMiB");
+            writer.WritePropertyName("maximumSizeMiB"u8);
             writer.WriteStringValue(MaximumSizeMiB);
-            writer.WritePropertyName("@type");
+            writer.WritePropertyName("@type"u8);
             writer.WriteStringValue(Type);
-            writer.WritePropertyName("name");
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
-            writer.WritePropertyName("inputs");
+            writer.WritePropertyName("inputs"u8);
             writer.WriteStartArray();
             foreach (var item in Inputs)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<NodeInput>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
@@ -38,6 +38,10 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static FileSink DeserializeFileSink(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string baseDirectoryPath = default;
             string fileNamePattern = default;
             string maximumSizeMiB = default;
@@ -46,32 +50,32 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             IList<NodeInput> inputs = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("baseDirectoryPath"))
+                if (property.NameEquals("baseDirectoryPath"u8))
                 {
                     baseDirectoryPath = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("fileNamePattern"))
+                if (property.NameEquals("fileNamePattern"u8))
                 {
                     fileNamePattern = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("maximumSizeMiB"))
+                if (property.NameEquals("maximumSizeMiB"u8))
                 {
                     maximumSizeMiB = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("@type"))
+                if (property.NameEquals("@type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("inputs"))
+                if (property.NameEquals("inputs"u8))
                 {
                     List<NodeInput> array = new List<NodeInput>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -82,7 +86,13 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     continue;
                 }
             }
-            return new FileSink(type, name, inputs, baseDirectoryPath, fileNamePattern, maximumSizeMiB);
+            return new FileSink(
+                type,
+                name,
+                inputs,
+                baseDirectoryPath,
+                fileNamePattern,
+                maximumSizeMiB);
         }
     }
 }

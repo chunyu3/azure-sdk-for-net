@@ -19,55 +19,57 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(Serializer))
             {
-                writer.WritePropertyName("serializer");
-                writer.WriteObjectValue(Serializer);
+                writer.WritePropertyName("serializer"u8);
+                writer.WriteObjectValue<object>(Serializer);
             }
             if (Optional.IsDefined(Deserializer))
             {
-                writer.WritePropertyName("deserializer");
-                writer.WriteObjectValue(Deserializer);
+                writer.WritePropertyName("deserializer"u8);
+                writer.WriteObjectValue<object>(Deserializer);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static OrcFormat DeserializeOrcFormat(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<object> serializer = default;
-            Optional<object> deserializer = default;
+            object serializer = default;
+            object deserializer = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("serializer"))
+                if (property.NameEquals("serializer"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     serializer = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("deserializer"))
+                if (property.NameEquals("deserializer"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     deserializer = property.Value.GetObject();
@@ -76,14 +78,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new OrcFormat(type, serializer.Value, deserializer.Value, additionalProperties);
+            return new OrcFormat(type, serializer, deserializer, additionalProperties);
         }
 
         internal partial class OrcFormatConverter : JsonConverter<OrcFormat>
         {
             public override void Write(Utf8JsonWriter writer, OrcFormat model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<OrcFormat>(model);
             }
             public override OrcFormat Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

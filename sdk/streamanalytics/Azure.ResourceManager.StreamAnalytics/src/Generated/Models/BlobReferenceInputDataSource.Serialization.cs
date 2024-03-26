@@ -5,107 +5,152 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.StreamAnalytics.Models
 {
-    public partial class BlobReferenceInputDataSource : IUtf8JsonSerializable
+    public partial class BlobReferenceInputDataSource : IUtf8JsonSerializable, IJsonModel<BlobReferenceInputDataSource>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<BlobReferenceInputDataSource>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<BlobReferenceInputDataSource>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobReferenceInputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobReferenceInputDataSource)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(ReferenceInputDataSourceType);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(StorageAccounts))
             {
-                writer.WritePropertyName("storageAccounts");
+                writer.WritePropertyName("storageAccounts"u8);
                 writer.WriteStartArray();
                 foreach (var item in StorageAccounts)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<StreamAnalyticsStorageAccount>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(Container))
             {
-                writer.WritePropertyName("container");
+                writer.WritePropertyName("container"u8);
                 writer.WriteStringValue(Container);
             }
             if (Optional.IsDefined(PathPattern))
             {
-                writer.WritePropertyName("pathPattern");
+                writer.WritePropertyName("pathPattern"u8);
                 writer.WriteStringValue(PathPattern);
             }
             if (Optional.IsDefined(DateFormat))
             {
-                writer.WritePropertyName("dateFormat");
+                writer.WritePropertyName("dateFormat"u8);
                 writer.WriteStringValue(DateFormat);
             }
             if (Optional.IsDefined(TimeFormat))
             {
-                writer.WritePropertyName("timeFormat");
+                writer.WritePropertyName("timeFormat"u8);
                 writer.WriteStringValue(TimeFormat);
             }
             if (Optional.IsDefined(AuthenticationMode))
             {
-                writer.WritePropertyName("authenticationMode");
+                writer.WritePropertyName("authenticationMode"u8);
                 writer.WriteStringValue(AuthenticationMode.Value.ToString());
             }
             if (Optional.IsDefined(BlobName))
             {
-                writer.WritePropertyName("blobName");
+                writer.WritePropertyName("blobName"u8);
                 writer.WriteStringValue(BlobName);
             }
             if (Optional.IsDefined(DeltaPathPattern))
             {
-                writer.WritePropertyName("deltaPathPattern");
+                writer.WritePropertyName("deltaPathPattern"u8);
                 writer.WriteStringValue(DeltaPathPattern);
             }
             if (Optional.IsDefined(SourcePartitionCount))
             {
-                writer.WritePropertyName("sourcePartitionCount");
+                writer.WritePropertyName("sourcePartitionCount"u8);
                 writer.WriteNumberValue(SourcePartitionCount.Value);
             }
-            if (Optional.IsDefined(FullSnapshotRefreshRate))
+            if (Optional.IsDefined(FullSnapshotRefreshInterval))
             {
-                writer.WritePropertyName("fullSnapshotRefreshRate");
-                writer.WriteStringValue(FullSnapshotRefreshRate);
+                writer.WritePropertyName("fullSnapshotRefreshRate"u8);
+                writer.WriteStringValue(FullSnapshotRefreshInterval.Value, "T");
             }
-            if (Optional.IsDefined(DeltaSnapshotRefreshRate))
+            if (Optional.IsDefined(DeltaSnapshotRefreshInterval))
             {
-                writer.WritePropertyName("deltaSnapshotRefreshRate");
-                writer.WriteStringValue(DeltaSnapshotRefreshRate);
+                writer.WritePropertyName("deltaSnapshotRefreshRate"u8);
+                writer.WriteStringValue(DeltaSnapshotRefreshInterval.Value, "T");
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static BlobReferenceInputDataSource DeserializeBlobReferenceInputDataSource(JsonElement element)
+        BlobReferenceInputDataSource IJsonModel<BlobReferenceInputDataSource>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobReferenceInputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobReferenceInputDataSource)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeBlobReferenceInputDataSource(document.RootElement, options);
+        }
+
+        internal static BlobReferenceInputDataSource DeserializeBlobReferenceInputDataSource(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<IList<StorageAccount>> storageAccounts = default;
-            Optional<string> container = default;
-            Optional<string> pathPattern = default;
-            Optional<string> dateFormat = default;
-            Optional<string> timeFormat = default;
-            Optional<AuthenticationMode> authenticationMode = default;
-            Optional<string> blobName = default;
-            Optional<string> deltaPathPattern = default;
-            Optional<int> sourcePartitionCount = default;
-            Optional<string> fullSnapshotRefreshRate = default;
-            Optional<string> deltaSnapshotRefreshRate = default;
+            IList<StreamAnalyticsStorageAccount> storageAccounts = default;
+            string container = default;
+            string pathPattern = default;
+            string dateFormat = default;
+            string timeFormat = default;
+            StreamAnalyticsAuthenticationMode? authenticationMode = default;
+            string blobName = default;
+            string deltaPathPattern = default;
+            int? sourcePartitionCount = default;
+            TimeSpan? fullSnapshotRefreshRate = default;
+            TimeSpan? deltaSnapshotRefreshRate = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -114,86 +159,140 @@ namespace Azure.ResourceManager.StreamAnalytics.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("storageAccounts"))
+                        if (property0.NameEquals("storageAccounts"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            List<StorageAccount> array = new List<StorageAccount>();
+                            List<StreamAnalyticsStorageAccount> array = new List<StreamAnalyticsStorageAccount>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(StorageAccount.DeserializeStorageAccount(item));
+                                array.Add(StreamAnalyticsStorageAccount.DeserializeStreamAnalyticsStorageAccount(item, options));
                             }
                             storageAccounts = array;
                             continue;
                         }
-                        if (property0.NameEquals("container"))
+                        if (property0.NameEquals("container"u8))
                         {
                             container = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("pathPattern"))
+                        if (property0.NameEquals("pathPattern"u8))
                         {
                             pathPattern = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("dateFormat"))
+                        if (property0.NameEquals("dateFormat"u8))
                         {
                             dateFormat = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("timeFormat"))
+                        if (property0.NameEquals("timeFormat"u8))
                         {
                             timeFormat = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("authenticationMode"))
+                        if (property0.NameEquals("authenticationMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            authenticationMode = new AuthenticationMode(property0.Value.GetString());
+                            authenticationMode = new StreamAnalyticsAuthenticationMode(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("blobName"))
+                        if (property0.NameEquals("blobName"u8))
                         {
                             blobName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("deltaPathPattern"))
+                        if (property0.NameEquals("deltaPathPattern"u8))
                         {
                             deltaPathPattern = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("sourcePartitionCount"))
+                        if (property0.NameEquals("sourcePartitionCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             sourcePartitionCount = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("fullSnapshotRefreshRate"))
+                        if (property0.NameEquals("fullSnapshotRefreshRate"u8))
                         {
-                            fullSnapshotRefreshRate = property0.Value.GetString();
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            fullSnapshotRefreshRate = property0.Value.GetTimeSpan("T");
                             continue;
                         }
-                        if (property0.NameEquals("deltaSnapshotRefreshRate"))
+                        if (property0.NameEquals("deltaSnapshotRefreshRate"u8))
                         {
-                            deltaSnapshotRefreshRate = property0.Value.GetString();
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            deltaSnapshotRefreshRate = property0.Value.GetTimeSpan("T");
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new BlobReferenceInputDataSource(type, Optional.ToList(storageAccounts), container.Value, pathPattern.Value, dateFormat.Value, timeFormat.Value, Optional.ToNullable(authenticationMode), blobName.Value, deltaPathPattern.Value, Optional.ToNullable(sourcePartitionCount), fullSnapshotRefreshRate.Value, deltaSnapshotRefreshRate.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new BlobReferenceInputDataSource(
+                type,
+                serializedAdditionalRawData,
+                storageAccounts ?? new ChangeTrackingList<StreamAnalyticsStorageAccount>(),
+                container,
+                pathPattern,
+                dateFormat,
+                timeFormat,
+                authenticationMode,
+                blobName,
+                deltaPathPattern,
+                sourcePartitionCount,
+                fullSnapshotRefreshRate,
+                deltaSnapshotRefreshRate);
         }
+
+        BinaryData IPersistableModel<BlobReferenceInputDataSource>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobReferenceInputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(BlobReferenceInputDataSource)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        BlobReferenceInputDataSource IPersistableModel<BlobReferenceInputDataSource>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobReferenceInputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeBlobReferenceInputDataSource(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(BlobReferenceInputDataSource)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<BlobReferenceInputDataSource>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

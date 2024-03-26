@@ -6,8 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
 {
@@ -15,21 +13,24 @@ namespace Azure.AI.TextAnalytics.Models
     {
         internal static AnalyzeTextJobStatistics DeserializeAnalyzeTextJobStatistics(JsonElement element)
         {
-            Optional<TextDocumentBatchStatistics> statistics = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            TextDocumentBatchStatistics statistics = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("statistics"))
+                if (property.NameEquals("statistics"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     statistics = TextDocumentBatchStatistics.DeserializeTextDocumentBatchStatistics(property.Value);
                     continue;
                 }
             }
-            return new AnalyzeTextJobStatistics(statistics.Value);
+            return new AnalyzeTextJobStatistics(statistics);
         }
     }
 }

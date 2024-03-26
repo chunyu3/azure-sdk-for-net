@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Core.Shared;
 using Azure.Messaging.EventHubs.Amqp;
 using Azure.Messaging.EventHubs.Authorization;
 using Azure.Messaging.EventHubs.Core;
@@ -37,6 +38,12 @@ namespace Azure.Messaging.EventHubs.Tests
             yield return new object[] { new EventHubsRetryOptions { MaximumRetries = 3, Delay = TimeSpan.FromMilliseconds(1), MaximumDelay = TimeSpan.FromMilliseconds(10), Mode = EventHubsRetryMode.Fixed } };
             yield return new object[] { new EventHubsRetryOptions { MaximumRetries = 0, Delay = TimeSpan.FromMilliseconds(1), MaximumDelay = TimeSpan.FromMilliseconds(10), Mode = EventHubsRetryMode.Fixed } };
         }
+
+        /// <summary>
+        ///   Mock client diagnostics instance to pass through to EventDataBatch constructor.
+        /// </summary>
+        ///
+        private static MessagingClientDiagnostics MockClientDiagnostics { get; } = new("mock", "mock", "mock", "mock", "mock");
 
         /// <summary>
         ///   Verifies functionality of the constructor.
@@ -1180,7 +1187,7 @@ namespace Azure.Messaging.EventHubs.Tests
         [TestCase(null)]
         [TestCase("")]
         [TestCase("someKey")]
-        public async Task SendEnumerableCreatesTheAmqpMessageFromTheEnumerable(string partitonKey)
+        public async Task SendEnumerableCreatesTheAmqpMessageFromTheEnumerable(string partitionKey)
         {
             var amqpMessages = default(IReadOnlyCollection<AmqpMessage>);
             var events = new List<EventData> { new EventData(new byte[] { 0x15 }) };
@@ -1200,13 +1207,13 @@ namespace Azure.Messaging.EventHubs.Tests
                 .Callback<IReadOnlyCollection<AmqpMessage>, string, CancellationToken>((messages, key, token) => amqpMessages = messages)
                 .Returns(Task.CompletedTask);
 
-            await producer.Object.SendAsync(events, new SendEventOptions { PartitionKey = partitonKey }, CancellationToken.None);
+            await producer.Object.SendAsync(events, new SendEventOptions { PartitionKey = partitionKey }, CancellationToken.None);
 
             Assert.That(amqpMessages, Is.Not.Null, "The AMQP messages should have been set.");
             Assert.That(amqpMessages.Count, Is.EqualTo(events.Count), "An AMQP message should exist for each source event.");
 
-            using var batchMessage = converter.CreateBatchFromEvents(events, partitonKey);
-            using var amqpSourceMessage = converter.CreateBatchFromMessages(amqpMessages);
+            using var batchMessage = converter.CreateBatchFromEvents(events, partitionKey);
+            using var amqpSourceMessage = converter.CreateBatchFromMessages(amqpMessages, partitionKey);
 
             Assert.That(amqpSourceMessage.SerializedMessageSize, Is.EqualTo(batchMessage.SerializedMessageSize), "The serialized size of the messages should match.");
         }
@@ -1475,7 +1482,7 @@ namespace Azure.Messaging.EventHubs.Tests
             using TransportEventBatch batch = await producer.Object.CreateBatchAsync(options, default);
 
             await producer.Object.CloseAsync(CancellationToken.None);
-            Assert.That(async () => await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", new SendEventOptions()), CancellationToken.None), Throws.InstanceOf<EventHubsException>().And.Property(nameof(EventHubsException.Reason)).EqualTo(EventHubsException.FailureReason.ClientClosed));
+            Assert.That(async () => await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", new SendEventOptions(), MockClientDiagnostics), CancellationToken.None), Throws.InstanceOf<EventHubsException>().And.Property(nameof(EventHubsException.Reason)).EqualTo(EventHubsException.FailureReason.ClientClosed));
         }
 
         /// <summary>
@@ -1542,7 +1549,7 @@ namespace Azure.Messaging.EventHubs.Tests
                 .Verifiable();
 
             using TransportEventBatch batch = await producer.Object.CreateBatchAsync(options, default);
-            await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", options), CancellationToken.None);
+            await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", options, MockClientDiagnostics), CancellationToken.None);
 
             producer.VerifyAll();
         }
@@ -1556,11 +1563,11 @@ namespace Azure.Messaging.EventHubs.Tests
         [TestCase(null)]
         [TestCase("")]
         [TestCase("someKey")]
-        public async Task SendBatchCreatesTheAmqpMessageFromTheBatch(string partitonKey)
+        public async Task SendBatchCreatesTheAmqpMessageFromTheBatch(string partitionKey)
         {
             var amqpMessages = default(IReadOnlyCollection<AmqpMessage>);
             var expectedMaximumSize = 512;
-            var options = new CreateBatchOptions { PartitionKey = partitonKey };
+            var options = new CreateBatchOptions { PartitionKey = partitionKey };
             var retryPolicy = new BasicRetryPolicy(new EventHubsRetryOptions { TryTimeout = TimeSpan.FromSeconds(17) });
             var converter = new AmqpMessageConverter();
 
@@ -1591,7 +1598,7 @@ namespace Azure.Messaging.EventHubs.Tests
 
             using TransportEventBatch transportBatch = await producer.Object.CreateBatchAsync(options, default);
 
-            using var batch = new EventDataBatch(transportBatch, "ns", "eh", options);
+            using var batch = new EventDataBatch(transportBatch, "ns", "eh", options, MockClientDiagnostics);
             batch.TryAdd(new EventData(new byte[] { 0x15 }));
 
             var messages = batch.AsReadOnlyCollection<AmqpMessage>();
@@ -1600,8 +1607,8 @@ namespace Azure.Messaging.EventHubs.Tests
             Assert.That(amqpMessages, Is.Not.Null, "The AMQP messages should have been set.");
             Assert.That(amqpMessages.Count, Is.EqualTo(messages.Count), "An AMQP message should exist for each source event.");
 
-            using var batchMessage = converter.CreateBatchFromMessages(messages, partitonKey);
-            using var amqpSourceMessage = converter.CreateBatchFromMessages(amqpMessages);
+            using var batchMessage = converter.CreateBatchFromMessages(messages, partitionKey);
+            using var amqpSourceMessage = converter.CreateBatchFromMessages(amqpMessages, partitionKey);
 
             Assert.That(amqpSourceMessage.SerializedMessageSize, Is.EqualTo(batchMessage.SerializedMessageSize), "The serialized size of the messages should match.");
         }
@@ -1644,7 +1651,7 @@ namespace Azure.Messaging.EventHubs.Tests
 
             using TransportEventBatch transportBatch = await producer.Object.CreateBatchAsync(options, default);
 
-            using var batch = new EventDataBatch(transportBatch, "ns", "eh", options);
+            using var batch = new EventDataBatch(transportBatch, "ns", "eh", options, MockClientDiagnostics);
             batch.TryAdd(new EventData(new byte[] { 0x15 }));
 
             await producer.Object.SendAsync(batch, CancellationToken.None);
@@ -1685,7 +1692,7 @@ namespace Azure.Messaging.EventHubs.Tests
             using CancellationTokenSource cancellationSource = new CancellationTokenSource();
 
             cancellationSource.Cancel();
-            Assert.That(async () => await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", options), cancellationSource.Token), Throws.InstanceOf<TaskCanceledException>());
+            Assert.That(async () => await producer.Object.SendAsync(new EventDataBatch(batch, "ns", "eh", options, MockClientDiagnostics), cancellationSource.Token), Throws.InstanceOf<TaskCanceledException>());
         }
 
         /// <summary>

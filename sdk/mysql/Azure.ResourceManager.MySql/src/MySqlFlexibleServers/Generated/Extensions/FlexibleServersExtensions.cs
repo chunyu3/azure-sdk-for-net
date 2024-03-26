@@ -8,9 +8,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
-using Azure.ResourceManager;
+using Azure.ResourceManager.MySql.FlexibleServers.Mocking;
 using Azure.ResourceManager.MySql.FlexibleServers.Models;
 using Azure.ResourceManager.Resources;
 
@@ -19,328 +18,867 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
     /// <summary> A class to add extension methods to Azure.ResourceManager.MySql.FlexibleServers. </summary>
     public static partial class FlexibleServersExtensions
     {
-        private static TenantResourceExtensionClient GetExtensionClient(TenantResource tenantResource)
+        private static MockableMySqlFlexibleServersArmClient GetMockableMySqlFlexibleServersArmClient(ArmClient client)
         {
-            return tenantResource.GetCachedClient((client) =>
-            {
-                return new TenantResourceExtensionClient(client, tenantResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableMySqlFlexibleServersArmClient(client0));
+        }
+
+        private static MockableMySqlFlexibleServersResourceGroupResource GetMockableMySqlFlexibleServersResourceGroupResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableMySqlFlexibleServersResourceGroupResource(client, resource.Id));
+        }
+
+        private static MockableMySqlFlexibleServersSubscriptionResource GetMockableMySqlFlexibleServersSubscriptionResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableMySqlFlexibleServersSubscriptionResource(client, resource.Id));
+        }
+
+        private static MockableMySqlFlexibleServersTenantResource GetMockableMySqlFlexibleServersTenantResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableMySqlFlexibleServersTenantResource(client, resource.Id));
         }
 
         /// <summary>
-        /// Get private DNS zone suffix in the cloud.
-        /// Request Path: /providers/Microsoft.DBforMySQL/getPrivateDnsZoneSuffix
-        /// Operation Id: GetPrivateDnsZoneSuffix_Execute
+        /// Gets an object representing a <see cref="MySqlFlexibleServerAadAdministratorResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerAadAdministratorResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerAadAdministratorResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerAadAdministratorResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public static async Task<Response<GetPrivateDnsZoneSuffixResponse>> ExecuteGetPrivateDnsZoneSuffixAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerAadAdministratorResource"/> object. </returns>
+        public static MySqlFlexibleServerAadAdministratorResource GetMySqlFlexibleServerAadAdministratorResource(this ArmClient client, ResourceIdentifier id)
         {
-            return await GetExtensionClient(tenantResource).ExecuteGetPrivateDnsZoneSuffixAsync(cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerAadAdministratorResource(id);
         }
 
         /// <summary>
-        /// Get private DNS zone suffix in the cloud.
-        /// Request Path: /providers/Microsoft.DBforMySQL/getPrivateDnsZoneSuffix
-        /// Operation Id: GetPrivateDnsZoneSuffix_Execute
+        /// Gets an object representing a <see cref="MySqlFlexibleServerBackupResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerBackupResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerBackupResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerBackupResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public static Response<GetPrivateDnsZoneSuffixResponse> ExecuteGetPrivateDnsZoneSuffix(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerBackupResource"/> object. </returns>
+        public static MySqlFlexibleServerBackupResource GetMySqlFlexibleServerBackupResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(tenantResource).ExecuteGetPrivateDnsZoneSuffix(cancellationToken);
-        }
+            Argument.AssertNotNull(client, nameof(client));
 
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
-        {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerBackupResource(id);
         }
 
         /// <summary>
-        /// List all the servers in a given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/flexibleServers
-        /// Operation Id: Servers_List
+        /// Gets an object representing a <see cref="MySqlFlexibleServerBackupV2Resource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerBackupV2Resource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerBackupV2Resource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerBackupV2Resource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerBackupV2Resource"/> object. </returns>
+        public static MySqlFlexibleServerBackupV2Resource GetMySqlFlexibleServerBackupV2Resource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerBackupV2Resource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServerConfigurationResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerConfigurationResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerConfigurationResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerConfigurationResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerConfigurationResource"/> object. </returns>
+        public static MySqlFlexibleServerConfigurationResource GetMySqlFlexibleServerConfigurationResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerConfigurationResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServerDatabaseResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerDatabaseResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerDatabaseResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerDatabaseResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerDatabaseResource"/> object. </returns>
+        public static MySqlFlexibleServerDatabaseResource GetMySqlFlexibleServerDatabaseResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerDatabaseResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServerFirewallRuleResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerFirewallRuleResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerFirewallRuleResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerFirewallRuleResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerFirewallRuleResource"/> object. </returns>
+        public static MySqlFlexibleServerFirewallRuleResource GetMySqlFlexibleServerFirewallRuleResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerFirewallRuleResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServerResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerResource"/> object. </returns>
+        public static MySqlFlexibleServerResource GetMySqlFlexibleServerResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing an <see cref="AdvancedThreatProtectionResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="AdvancedThreatProtectionResource.CreateResourceIdentifier" /> to create an <see cref="AdvancedThreatProtectionResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetAdvancedThreatProtectionResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="AdvancedThreatProtectionResource"/> object. </returns>
+        public static AdvancedThreatProtectionResource GetAdvancedThreatProtectionResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetAdvancedThreatProtectionResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServersCapabilityResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServersCapabilityResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServersCapabilityResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServersCapabilityResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServersCapabilityResource"/> object. </returns>
+        public static MySqlFlexibleServersCapabilityResource GetMySqlFlexibleServersCapabilityResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServersCapabilityResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="MySqlFlexibleServerMaintenanceResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="MySqlFlexibleServerMaintenanceResource.CreateResourceIdentifier" /> to create a <see cref="MySqlFlexibleServerMaintenanceResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersArmClient.GetMySqlFlexibleServerMaintenanceResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="MySqlFlexibleServerMaintenanceResource"/> object. </returns>
+        public static MySqlFlexibleServerMaintenanceResource GetMySqlFlexibleServerMaintenanceResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableMySqlFlexibleServersArmClient(client).GetMySqlFlexibleServerMaintenanceResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of MySqlFlexibleServerResources in the ResourceGroupResource.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersResourceGroupResource.GetMySqlFlexibleServers()"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of MySqlFlexibleServerResources and their operations over a MySqlFlexibleServerResource. </returns>
+        public static MySqlFlexibleServerCollection GetMySqlFlexibleServers(this ResourceGroupResource resourceGroupResource)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableMySqlFlexibleServersResourceGroupResource(resourceGroupResource).GetMySqlFlexibleServers();
+        }
+
+        /// <summary>
+        /// Gets information about a server.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Servers_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServerResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersResourceGroupResource.GetMySqlFlexibleServerAsync(string,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> or <paramref name="serverName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<MySqlFlexibleServerResource>> GetMySqlFlexibleServerAsync(this ResourceGroupResource resourceGroupResource, string serverName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableMySqlFlexibleServersResourceGroupResource(resourceGroupResource).GetMySqlFlexibleServerAsync(serverName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets information about a server.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Servers_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServerResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersResourceGroupResource.GetMySqlFlexibleServer(string,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> or <paramref name="serverName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static Response<MySqlFlexibleServerResource> GetMySqlFlexibleServer(this ResourceGroupResource resourceGroupResource, string serverName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableMySqlFlexibleServersResourceGroupResource(resourceGroupResource).GetMySqlFlexibleServer(serverName, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a collection of MySqlFlexibleServersCapabilityResources in the SubscriptionResource.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetMySqlFlexibleServersCapabilities(AzureLocation)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ServerResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<ServerResource> GetServersAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="locationName"> The name of the location. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> An object representing collection of MySqlFlexibleServersCapabilityResources and their operations over a MySqlFlexibleServersCapabilityResource. </returns>
+        public static MySqlFlexibleServersCapabilityCollection GetMySqlFlexibleServersCapabilities(this SubscriptionResource subscriptionResource, AzureLocation locationName)
         {
-            return GetExtensionClient(subscriptionResource).GetServersAsync(cancellationToken);
-        }
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        /// <summary>
-        /// List all the servers in a given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/flexibleServers
-        /// Operation Id: Servers_List
-        /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ServerResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<ServerResource> GetServers(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
-        {
-            return GetExtensionClient(subscriptionResource).GetServers(cancellationToken);
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetMySqlFlexibleServersCapabilities(locationName);
         }
 
         /// <summary>
         /// Get capabilities at specified location in a given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilities
-        /// Operation Id: LocationBasedCapabilities_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilitySets/{capabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>LocationBasedCapabilitySet_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServersCapabilityResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetMySqlFlexibleServersCapabilityAsync(AzureLocation,string,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
+        /// <param name="capabilitySetName"> Name of capability set. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> is null. </exception>
-        /// <returns> An async collection of <see cref="CapabilityProperties" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<CapabilityProperties> GetLocationBasedCapabilitiesAsync(this SubscriptionResource subscriptionResource, string locationName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="capabilitySetName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="capabilitySetName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<MySqlFlexibleServersCapabilityResource>> GetMySqlFlexibleServersCapabilityAsync(this SubscriptionResource subscriptionResource, AzureLocation locationName, string capabilitySetName, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return GetExtensionClient(subscriptionResource).GetLocationBasedCapabilitiesAsync(locationName, cancellationToken);
+            return await GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetMySqlFlexibleServersCapabilityAsync(locationName, capabilitySetName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get capabilities at specified location in a given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilities
-        /// Operation Id: LocationBasedCapabilities_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilitySets/{capabilitySetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>LocationBasedCapabilitySet_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServersCapabilityResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetMySqlFlexibleServersCapability(AzureLocation,string,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="locationName"> The name of the location. </param>
+        /// <param name="capabilitySetName"> Name of capability set. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="capabilitySetName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="capabilitySetName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static Response<MySqlFlexibleServersCapabilityResource> GetMySqlFlexibleServersCapability(this SubscriptionResource subscriptionResource, AzureLocation locationName, string capabilitySetName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetMySqlFlexibleServersCapability(locationName, capabilitySetName, cancellationToken);
+        }
+
+        /// <summary>
+        /// List all the servers in a given subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/flexibleServers</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Servers_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServerResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetMySqlFlexibleServers(CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> An async collection of <see cref="MySqlFlexibleServerResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<MySqlFlexibleServerResource> GetMySqlFlexibleServersAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetMySqlFlexibleServersAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// List all the servers in a given subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/flexibleServers</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Servers_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MySqlFlexibleServerResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetMySqlFlexibleServers(CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="MySqlFlexibleServerResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<MySqlFlexibleServerResource> GetMySqlFlexibleServers(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetMySqlFlexibleServers(cancellationToken);
+        }
+
+        /// <summary>
+        /// Get capabilities at specified location in a given subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilities</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>LocationBasedCapabilities_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetLocationBasedCapabilities(AzureLocation,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> is null. </exception>
-        /// <returns> A collection of <see cref="CapabilityProperties" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<CapabilityProperties> GetLocationBasedCapabilities(this SubscriptionResource subscriptionResource, string locationName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> An async collection of <see cref="MySqlFlexibleServerCapabilityProperties"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<MySqlFlexibleServerCapabilityProperties> GetLocationBasedCapabilitiesAsync(this SubscriptionResource subscriptionResource, AzureLocation locationName, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return GetExtensionClient(subscriptionResource).GetLocationBasedCapabilities(locationName, cancellationToken);
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetLocationBasedCapabilitiesAsync(locationName, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get capabilities at specified location in a given subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/capabilities</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>LocationBasedCapabilities_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetLocationBasedCapabilities(AzureLocation,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="locationName"> The name of the location. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="MySqlFlexibleServerCapabilityProperties"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<MySqlFlexibleServerCapabilityProperties> GetLocationBasedCapabilities(this SubscriptionResource subscriptionResource, AzureLocation locationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetLocationBasedCapabilities(locationName, cancellationToken);
         }
 
         /// <summary>
         /// Get virtual network subnet usage for a given vNet resource id.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkVirtualNetworkSubnetUsage
-        /// Operation Id: CheckVirtualNetworkSubnetUsage_Execute
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkVirtualNetworkSubnetUsage</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckVirtualNetworkSubnetUsage_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.ExecuteCheckVirtualNetworkSubnetUsage(AzureLocation,MySqlFlexibleServerVirtualNetworkSubnetUsageParameter,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
-        /// <param name="virtualNetworkSubnetUsageParameter"> The required parameters for creating or updating a server. </param>
+        /// <param name="mySqlFlexibleServerVirtualNetworkSubnetUsageParameter"> The required parameters for creating or updating a server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> or <paramref name="virtualNetworkSubnetUsageParameter"/> is null. </exception>
-        public static async Task<Response<VirtualNetworkSubnetUsageResult>> ExecuteCheckVirtualNetworkSubnetUsageAsync(this SubscriptionResource subscriptionResource, string locationName, VirtualNetworkSubnetUsageParameter virtualNetworkSubnetUsageParameter, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="mySqlFlexibleServerVirtualNetworkSubnetUsageParameter"/> is null. </exception>
+        public static async Task<Response<MySqlFlexibleServerVirtualNetworkSubnetUsageResult>> ExecuteCheckVirtualNetworkSubnetUsageAsync(this SubscriptionResource subscriptionResource, AzureLocation locationName, MySqlFlexibleServerVirtualNetworkSubnetUsageParameter mySqlFlexibleServerVirtualNetworkSubnetUsageParameter, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
-            Argument.AssertNotNull(virtualNetworkSubnetUsageParameter, nameof(virtualNetworkSubnetUsageParameter));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return await GetExtensionClient(subscriptionResource).ExecuteCheckVirtualNetworkSubnetUsageAsync(locationName, virtualNetworkSubnetUsageParameter, cancellationToken).ConfigureAwait(false);
+            return await GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).ExecuteCheckVirtualNetworkSubnetUsageAsync(locationName, mySqlFlexibleServerVirtualNetworkSubnetUsageParameter, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get virtual network subnet usage for a given vNet resource id.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkVirtualNetworkSubnetUsage
-        /// Operation Id: CheckVirtualNetworkSubnetUsage_Execute
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkVirtualNetworkSubnetUsage</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckVirtualNetworkSubnetUsage_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.ExecuteCheckVirtualNetworkSubnetUsage(AzureLocation,MySqlFlexibleServerVirtualNetworkSubnetUsageParameter,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
-        /// <param name="virtualNetworkSubnetUsageParameter"> The required parameters for creating or updating a server. </param>
+        /// <param name="mySqlFlexibleServerVirtualNetworkSubnetUsageParameter"> The required parameters for creating or updating a server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> or <paramref name="virtualNetworkSubnetUsageParameter"/> is null. </exception>
-        public static Response<VirtualNetworkSubnetUsageResult> ExecuteCheckVirtualNetworkSubnetUsage(this SubscriptionResource subscriptionResource, string locationName, VirtualNetworkSubnetUsageParameter virtualNetworkSubnetUsageParameter, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="mySqlFlexibleServerVirtualNetworkSubnetUsageParameter"/> is null. </exception>
+        public static Response<MySqlFlexibleServerVirtualNetworkSubnetUsageResult> ExecuteCheckVirtualNetworkSubnetUsage(this SubscriptionResource subscriptionResource, AzureLocation locationName, MySqlFlexibleServerVirtualNetworkSubnetUsageParameter mySqlFlexibleServerVirtualNetworkSubnetUsageParameter, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
-            Argument.AssertNotNull(virtualNetworkSubnetUsageParameter, nameof(virtualNetworkSubnetUsageParameter));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return GetExtensionClient(subscriptionResource).ExecuteCheckVirtualNetworkSubnetUsage(locationName, virtualNetworkSubnetUsageParameter, cancellationToken);
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).ExecuteCheckVirtualNetworkSubnetUsage(locationName, mySqlFlexibleServerVirtualNetworkSubnetUsageParameter, cancellationToken);
         }
 
         /// <summary>
         /// Check the availability of name for server
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkNameAvailability
-        /// Operation Id: CheckNameAvailability_Execute
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkNameAvailability</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckNameAvailability_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.CheckMySqlFlexibleServerNameAvailability(AzureLocation,MySqlFlexibleServerNameAvailabilityContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
         /// <param name="content"> The required parameters for checking if server name is available. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> or <paramref name="content"/> is null. </exception>
-        public static async Task<Response<NameAvailability>> ExecuteCheckNameAvailabilityAsync(this SubscriptionResource subscriptionResource, string locationName, NameAvailabilityContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="content"/> is null. </exception>
+        public static async Task<Response<MySqlFlexibleServerNameAvailabilityResult>> CheckMySqlFlexibleServerNameAvailabilityAsync(this SubscriptionResource subscriptionResource, AzureLocation locationName, MySqlFlexibleServerNameAvailabilityContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
-            Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return await GetExtensionClient(subscriptionResource).ExecuteCheckNameAvailabilityAsync(locationName, content, cancellationToken).ConfigureAwait(false);
+            return await GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).CheckMySqlFlexibleServerNameAvailabilityAsync(locationName, content, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Check the availability of name for server
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkNameAvailability
-        /// Operation Id: CheckNameAvailability_Execute
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/checkNameAvailability</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckNameAvailability_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.CheckMySqlFlexibleServerNameAvailability(AzureLocation,MySqlFlexibleServerNameAvailabilityContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
         /// <param name="locationName"> The name of the location. </param>
         /// <param name="content"> The required parameters for checking if server name is available. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="locationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="locationName"/> or <paramref name="content"/> is null. </exception>
-        public static Response<NameAvailability> ExecuteCheckNameAvailability(this SubscriptionResource subscriptionResource, string locationName, NameAvailabilityContent content, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="content"/> is null. </exception>
+        public static Response<MySqlFlexibleServerNameAvailabilityResult> CheckMySqlFlexibleServerNameAvailability(this SubscriptionResource subscriptionResource, AzureLocation locationName, MySqlFlexibleServerNameAvailabilityContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNullOrEmpty(locationName, nameof(locationName));
-            Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-            return GetExtensionClient(subscriptionResource).ExecuteCheckNameAvailability(locationName, content, cancellationToken);
-        }
-
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
-        {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
-        }
-
-        /// <summary> Gets a collection of ServerResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <returns> An object representing collection of ServerResources and their operations over a ServerResource. </returns>
-        public static ServerCollection GetServers(this ResourceGroupResource resourceGroupResource)
-        {
-            return GetExtensionClient(resourceGroupResource).GetServers();
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).CheckMySqlFlexibleServerNameAvailability(locationName, content, cancellationToken);
         }
 
         /// <summary>
-        /// Gets information about a server.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}
-        /// Operation Id: Servers_Get
+        /// Check the availability of name for server
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/checkNameAvailability</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckNameAvailabilityWithoutLocation_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.CheckMySqlFlexibleServerNameAvailabilityWithoutLocation(MySqlFlexibleServerNameAvailabilityContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="content"> The required parameters for checking if server name is available. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="serverName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static async Task<Response<ServerResource>> GetServerAsync(this ResourceGroupResource resourceGroupResource, string serverName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="content"/> is null. </exception>
+        public static async Task<Response<MySqlFlexibleServerNameAvailabilityResult>> CheckMySqlFlexibleServerNameAvailabilityWithoutLocationAsync(this SubscriptionResource subscriptionResource, MySqlFlexibleServerNameAvailabilityContent content, CancellationToken cancellationToken = default)
         {
-            return await resourceGroupResource.GetServers().GetAsync(serverName, cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).CheckMySqlFlexibleServerNameAvailabilityWithoutLocationAsync(content, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Gets information about a server.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DBforMySQL/flexibleServers/{serverName}
-        /// Operation Id: Servers_Get
+        /// Check the availability of name for server
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/checkNameAvailability</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CheckNameAvailabilityWithoutLocation_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.CheckMySqlFlexibleServerNameAvailabilityWithoutLocation(MySqlFlexibleServerNameAvailabilityContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="content"> The required parameters for checking if server name is available. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="serverName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static Response<ServerResource> GetServer(this ResourceGroupResource resourceGroupResource, string serverName, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="content"/> is null. </exception>
+        public static Response<MySqlFlexibleServerNameAvailabilityResult> CheckMySqlFlexibleServerNameAvailabilityWithoutLocation(this SubscriptionResource subscriptionResource, MySqlFlexibleServerNameAvailabilityContent content, CancellationToken cancellationToken = default)
         {
-            return resourceGroupResource.GetServers().Get(serverName, cancellationToken);
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).CheckMySqlFlexibleServerNameAvailabilityWithoutLocation(content, cancellationToken);
         }
 
-        #region ServerResource
         /// <summary>
-        /// Gets an object representing a <see cref="ServerResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="ServerResource.CreateResourceIdentifier" /> to create a <see cref="ServerResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// Get the operation result for a long running operation.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/operationResults/{operationId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OperationResults_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetOperationResult(AzureLocation,string,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="ServerResource" /> object. </returns>
-        public static ServerResource GetServerResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="locationName"> The name of the location. </param>
+        /// <param name="operationId"> The operation Id. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="operationId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="operationId"/> is null. </exception>
+        public static async Task<Response<OperationStatusExtendedResult>> GetOperationResultAsync(this SubscriptionResource subscriptionResource, AzureLocation locationName, string operationId, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                ServerResource.ValidateResourceId(id);
-                return new ServerResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        #region ServerBackupResource
-        /// <summary>
-        /// Gets an object representing a <see cref="ServerBackupResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="ServerBackupResource.CreateResourceIdentifier" /> to create a <see cref="ServerBackupResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="ServerBackupResource" /> object. </returns>
-        public static ServerBackupResource GetServerBackupResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                ServerBackupResource.ValidateResourceId(id);
-                return new ServerBackupResource(client, id);
-            }
-            );
+            return await GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetOperationResultAsync(locationName, operationId, cancellationToken).ConfigureAwait(false);
         }
-        #endregion
 
-        #region FirewallRuleResource
         /// <summary>
-        /// Gets an object representing a <see cref="FirewallRuleResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="FirewallRuleResource.CreateResourceIdentifier" /> to create a <see cref="FirewallRuleResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// Get the operation result for a long running operation.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.DBforMySQL/locations/{locationName}/operationResults/{operationId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OperationResults_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersSubscriptionResource.GetOperationResult(AzureLocation,string,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="FirewallRuleResource" /> object. </returns>
-        public static FirewallRuleResource GetFirewallRuleResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="locationName"> The name of the location. </param>
+        /// <param name="operationId"> The operation Id. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="operationId"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> or <paramref name="operationId"/> is null. </exception>
+        public static Response<OperationStatusExtendedResult> GetOperationResult(this SubscriptionResource subscriptionResource, AzureLocation locationName, string operationId, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                FirewallRuleResource.ValidateResourceId(id);
-                return new FirewallRuleResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        #region DatabaseResource
-        /// <summary>
-        /// Gets an object representing a <see cref="DatabaseResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="DatabaseResource.CreateResourceIdentifier" /> to create a <see cref="DatabaseResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="DatabaseResource" /> object. </returns>
-        public static DatabaseResource GetDatabaseResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                DatabaseResource.ValidateResourceId(id);
-                return new DatabaseResource(client, id);
-            }
-            );
+            return GetMockableMySqlFlexibleServersSubscriptionResource(subscriptionResource).GetOperationResult(locationName, operationId, cancellationToken);
         }
-        #endregion
 
-        #region ConfigurationResource
         /// <summary>
-        /// Gets an object representing a <see cref="ConfigurationResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="ConfigurationResource.CreateResourceIdentifier" /> to create a <see cref="ConfigurationResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// Get private DNS zone suffix in the cloud.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.DBforMySQL/getPrivateDnsZoneSuffix</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GetPrivateDnsZoneSuffix_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersTenantResource.ExecuteGetPrivateDnsZoneSuffix(CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="ConfigurationResource" /> object. </returns>
-        public static ConfigurationResource GetConfigurationResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="tenantResource"/> is null. </exception>
+        public static async Task<Response<MySqlFlexibleServerPrivateDnsZoneSuffixResponse>> ExecuteGetPrivateDnsZoneSuffixAsync(this TenantResource tenantResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                ConfigurationResource.ValidateResourceId(id);
-                return new ConfigurationResource(client, id);
-            }
-            );
+            Argument.AssertNotNull(tenantResource, nameof(tenantResource));
+
+            return await GetMockableMySqlFlexibleServersTenantResource(tenantResource).ExecuteGetPrivateDnsZoneSuffixAsync(cancellationToken).ConfigureAwait(false);
         }
-        #endregion
+
+        /// <summary>
+        /// Get private DNS zone suffix in the cloud.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.DBforMySQL/getPrivateDnsZoneSuffix</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GetPrivateDnsZoneSuffix_Execute</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-12-01-preview</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableMySqlFlexibleServersTenantResource.ExecuteGetPrivateDnsZoneSuffix(CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="tenantResource"/> is null. </exception>
+        public static Response<MySqlFlexibleServerPrivateDnsZoneSuffixResponse> ExecuteGetPrivateDnsZoneSuffix(this TenantResource tenantResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(tenantResource, nameof(tenantResource));
+
+            return GetMockableMySqlFlexibleServersTenantResource(tenantResource).ExecuteGetPrivateDnsZoneSuffix(cancellationToken);
+        }
     }
 }

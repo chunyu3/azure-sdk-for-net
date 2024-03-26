@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(DelayInMinutes))
             {
-                writer.WritePropertyName("delayInMinutes");
+                writer.WritePropertyName("delayInMinutes"u8);
                 writer.WriteNumberValue(DelayInMinutes.Value);
             }
             if (Optional.IsDefined(Enabled))
             {
-                writer.WritePropertyName("enabled");
+                writer.WritePropertyName("enabled"u8);
                 writer.WriteBooleanValue(Enabled.Value);
             }
             writer.WriteEndObject();
@@ -33,39 +33,41 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static AutoPauseProperties DeserializeAutoPauseProperties(JsonElement element)
         {
-            Optional<int> delayInMinutes = default;
-            Optional<bool> enabled = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? delayInMinutes = default;
+            bool? enabled = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("delayInMinutes"))
+                if (property.NameEquals("delayInMinutes"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     delayInMinutes = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("enabled"))
+                if (property.NameEquals("enabled"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabled = property.Value.GetBoolean();
                     continue;
                 }
             }
-            return new AutoPauseProperties(Optional.ToNullable(delayInMinutes), Optional.ToNullable(enabled));
+            return new AutoPauseProperties(delayInMinutes, enabled);
         }
 
         internal partial class AutoPausePropertiesConverter : JsonConverter<AutoPauseProperties>
         {
             public override void Write(Utf8JsonWriter writer, AutoPauseProperties model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AutoPauseProperties>(model);
             }
             public override AutoPauseProperties Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

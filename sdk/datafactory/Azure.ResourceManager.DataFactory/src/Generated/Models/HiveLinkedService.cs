@@ -7,36 +7,34 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Hive Server linked service. </summary>
-    public partial class HiveLinkedService : LinkedService
+    public partial class HiveLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of HiveLinkedService. </summary>
-        /// <param name="host"> IP address or host name of the Hive server, separated by &apos;;&apos; for multiple hosts (only when serviceDiscoveryMode is enable). </param>
+        /// <summary> Initializes a new instance of <see cref="HiveLinkedService"/>. </summary>
+        /// <param name="host"> IP address or host name of the Hive server, separated by ';' for multiple hosts (only when serviceDiscoveryMode is enable). </param>
         /// <param name="authenticationType"> The authentication method used to access the Hive server. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="host"/> is null. </exception>
-        public HiveLinkedService(BinaryData host, HiveAuthenticationType authenticationType)
+        public HiveLinkedService(DataFactoryElement<string> host, HiveAuthenticationType authenticationType)
         {
-            if (host == null)
-            {
-                throw new ArgumentNullException(nameof(host));
-            }
+            Argument.AssertNotNull(host, nameof(host));
 
             Host = host;
             AuthenticationType = authenticationType;
             LinkedServiceType = "Hive";
         }
 
-        /// <summary> Initializes a new instance of HiveLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="HiveLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
         /// <param name="parameters"> Parameters for linked service. </param>
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="host"> IP address or host name of the Hive server, separated by &apos;;&apos; for multiple hosts (only when serviceDiscoveryMode is enable). </param>
+        /// <param name="host"> IP address or host name of the Hive server, separated by ';' for multiple hosts (only when serviceDiscoveryMode is enable). </param>
         /// <param name="port"> The TCP port that the Hive server uses to listen for client connections. </param>
         /// <param name="serverType"> The type of Hive server. </param>
         /// <param name="thriftTransportProtocol"> The transport protocol to use in the Thrift layer. </param>
@@ -45,19 +43,15 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="zooKeeperNameSpace"> The namespace on ZooKeeper under which Hive Server 2 nodes are added. </param>
         /// <param name="useNativeQuery"> Specifies whether the driver uses native HiveQL queries,or converts them into an equivalent form in HiveQL. </param>
         /// <param name="username"> The user name that you use to access Hive Server. </param>
-        /// <param name="password">
-        /// The password corresponding to the user name that you provided in the Username field
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="password"> The password corresponding to the user name that you provided in the Username field. </param>
         /// <param name="httpPath"> The partial URL corresponding to the Hive server. </param>
         /// <param name="enableSsl"> Specifies whether the connections to the server are encrypted using SSL. The default value is false. </param>
         /// <param name="trustedCertPath"> The full path of the .pem file containing trusted CA certificates for verifying the server when connecting over SSL. This property can only be set when using SSL on self-hosted IR. The default value is the cacerts.pem file installed with the IR. </param>
         /// <param name="useSystemTrustStore"> Specifies whether to use a CA certificate from the system trust store or from a specified PEM file. The default value is false. </param>
         /// <param name="allowHostNameCNMismatch"> Specifies whether to require a CA-issued SSL certificate name to match the host name of the server when connecting over SSL. The default value is false. </param>
         /// <param name="allowSelfSignedServerCert"> Specifies whether to allow self-signed certificates from the server. The default value is false. </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal HiveLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData host, BinaryData port, HiveServerType? serverType, HiveThriftTransportProtocol? thriftTransportProtocol, HiveAuthenticationType authenticationType, BinaryData serviceDiscoveryMode, BinaryData zooKeeperNameSpace, BinaryData useNativeQuery, BinaryData username, SecretBase password, BinaryData httpPath, BinaryData enableSsl, BinaryData trustedCertPath, BinaryData useSystemTrustStore, BinaryData allowHostNameCNMismatch, BinaryData allowSelfSignedServerCert, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal HiveLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> host, DataFactoryElement<int> port, HiveServerType? serverType, HiveThriftTransportProtocol? thriftTransportProtocol, HiveAuthenticationType authenticationType, DataFactoryElement<bool> serviceDiscoveryMode, DataFactoryElement<string> zooKeeperNameSpace, DataFactoryElement<bool> useNativeQuery, DataFactoryElement<string> username, DataFactorySecret password, DataFactoryElement<string> httpPath, DataFactoryElement<bool> enableSsl, DataFactoryElement<string> trustedCertPath, DataFactoryElement<bool> useSystemTrustStore, DataFactoryElement<bool> allowHostNameCNMismatch, DataFactoryElement<bool> allowSelfSignedServerCert, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Host = host;
             Port = port;
@@ -79,10 +73,15 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "Hive";
         }
 
-        /// <summary> IP address or host name of the Hive server, separated by &apos;;&apos; for multiple hosts (only when serviceDiscoveryMode is enable). </summary>
-        public BinaryData Host { get; set; }
+        /// <summary> Initializes a new instance of <see cref="HiveLinkedService"/> for deserialization. </summary>
+        internal HiveLinkedService()
+        {
+        }
+
+        /// <summary> IP address or host name of the Hive server, separated by ';' for multiple hosts (only when serviceDiscoveryMode is enable). </summary>
+        public DataFactoryElement<string> Host { get; set; }
         /// <summary> The TCP port that the Hive server uses to listen for client connections. </summary>
-        public BinaryData Port { get; set; }
+        public DataFactoryElement<int> Port { get; set; }
         /// <summary> The type of Hive server. </summary>
         public HiveServerType? ServerType { get; set; }
         /// <summary> The transport protocol to use in the Thrift layer. </summary>
@@ -90,32 +89,28 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <summary> The authentication method used to access the Hive server. </summary>
         public HiveAuthenticationType AuthenticationType { get; set; }
         /// <summary> true to indicate using the ZooKeeper service, false not. </summary>
-        public BinaryData ServiceDiscoveryMode { get; set; }
+        public DataFactoryElement<bool> ServiceDiscoveryMode { get; set; }
         /// <summary> The namespace on ZooKeeper under which Hive Server 2 nodes are added. </summary>
-        public BinaryData ZooKeeperNameSpace { get; set; }
+        public DataFactoryElement<string> ZooKeeperNameSpace { get; set; }
         /// <summary> Specifies whether the driver uses native HiveQL queries,or converts them into an equivalent form in HiveQL. </summary>
-        public BinaryData UseNativeQuery { get; set; }
+        public DataFactoryElement<bool> UseNativeQuery { get; set; }
         /// <summary> The user name that you use to access Hive Server. </summary>
-        public BinaryData Username { get; set; }
-        /// <summary>
-        /// The password corresponding to the user name that you provided in the Username field
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
+        public DataFactoryElement<string> Username { get; set; }
+        /// <summary> The password corresponding to the user name that you provided in the Username field. </summary>
+        public DataFactorySecret Password { get; set; }
         /// <summary> The partial URL corresponding to the Hive server. </summary>
-        public BinaryData HttpPath { get; set; }
+        public DataFactoryElement<string> HttpPath { get; set; }
         /// <summary> Specifies whether the connections to the server are encrypted using SSL. The default value is false. </summary>
-        public BinaryData EnableSsl { get; set; }
+        public DataFactoryElement<bool> EnableSsl { get; set; }
         /// <summary> The full path of the .pem file containing trusted CA certificates for verifying the server when connecting over SSL. This property can only be set when using SSL on self-hosted IR. The default value is the cacerts.pem file installed with the IR. </summary>
-        public BinaryData TrustedCertPath { get; set; }
+        public DataFactoryElement<string> TrustedCertPath { get; set; }
         /// <summary> Specifies whether to use a CA certificate from the system trust store or from a specified PEM file. The default value is false. </summary>
-        public BinaryData UseSystemTrustStore { get; set; }
+        public DataFactoryElement<bool> UseSystemTrustStore { get; set; }
         /// <summary> Specifies whether to require a CA-issued SSL certificate name to match the host name of the server when connecting over SSL. The default value is false. </summary>
-        public BinaryData AllowHostNameCNMismatch { get; set; }
+        public DataFactoryElement<bool> AllowHostNameCNMismatch { get; set; }
         /// <summary> Specifies whether to allow self-signed certificates from the server. The default value is false. </summary>
-        public BinaryData AllowSelfSignedServerCert { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<bool> AllowSelfSignedServerCert { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

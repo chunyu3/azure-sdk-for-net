@@ -7,31 +7,32 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The location of azure blob dataset. </summary>
     public partial class AzureBlobStorageLocation : DatasetLocation
     {
-        /// <summary> Initializes a new instance of AzureBlobStorageLocation. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureBlobStorageLocation"/>. </summary>
         public AzureBlobStorageLocation()
         {
             DatasetLocationType = "AzureBlobStorageLocation";
         }
 
-        /// <summary> Initializes a new instance of AzureBlobStorageLocation. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureBlobStorageLocation"/>. </summary>
         /// <param name="datasetLocationType"> Type of dataset storage location. </param>
         /// <param name="folderPath"> Specify the folder path of dataset. Type: string (or Expression with resultType string). </param>
         /// <param name="fileName"> Specify the file name of dataset. Type: string (or Expression with resultType string). </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="container"> Specify the container of azure blob. Type: string (or Expression with resultType string). </param>
-        internal AzureBlobStorageLocation(string datasetLocationType, BinaryData folderPath, BinaryData fileName, IDictionary<string, BinaryData> additionalProperties, BinaryData container) : base(datasetLocationType, folderPath, fileName, additionalProperties)
+        internal AzureBlobStorageLocation(string datasetLocationType, DataFactoryElement<string> folderPath, DataFactoryElement<string> fileName, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> container) : base(datasetLocationType, folderPath, fileName, additionalProperties)
         {
             Container = container;
             DatasetLocationType = datasetLocationType ?? "AzureBlobStorageLocation";
         }
 
         /// <summary> Specify the container of azure blob. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Container { get; set; }
+        public DataFactoryElement<string> Container { get; set; }
     }
 }

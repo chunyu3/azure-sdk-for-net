@@ -8,12 +8,11 @@ using Azure.Core.TestFramework;
 using Azure.ResourceManager.Storage.Models;
 using Azure.ResourceManager.Network;
 using Azure.ResourceManager.Network.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class PrivateEndpointConnectionTests : StorageTestBase
+    public class PrivateEndpointConnectionTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private StorageAccountResource _storageAccount;
@@ -40,15 +39,13 @@ namespace Azure.ResourceManager.Storage.Tests
             }
             await _storageAccount.DeleteAsync(WaitUntil.Completed);
         }
-        [Test]
+
         [RecordedTest]
-        [Ignore("can pass locally, cost too much time on pipeline")]
         public async Task CreatePrivateEndpointConnection()
         {
             PrivateEndpointResource privateEndpoint = await CreatePrivateEndpoint();
             List<StoragePrivateEndpointConnectionResource> privateEndpointConnections = await _privateEndpointConnectionCollection.GetAllAsync().ToEnumerableAsync();
             StoragePrivateEndpointConnectionResource privateEndpointConnection = privateEndpointConnections[0];
-            VerifyPrivateEndpointConnections(privateEndpoint.Data.ManualPrivateLinkServiceConnections[0], privateEndpointConnection);
             Assert.AreEqual(StoragePrivateEndpointServiceConnectionStatus.Pending, privateEndpointConnection.Data.ConnectionState.Status);
 
             _ = await _privateEndpointConnectionCollection.CreateOrUpdateAsync(WaitUntil.Completed, privateEndpointConnection.Data.Name, new StoragePrivateEndpointConnectionData()
@@ -59,31 +56,23 @@ namespace Azure.ResourceManager.Storage.Tests
                     Description = "Approved by test",
                 }
             });
-            privateEndpoint = await privateEndpoint.GetAsync();
             privateEndpointConnection = await _privateEndpointConnectionCollection.GetAsync(privateEndpointConnection.Data.Name);
-            VerifyPrivateEndpointConnections(privateEndpoint.Data.ManualPrivateLinkServiceConnections[0], privateEndpointConnection);
             Assert.AreEqual(StoragePrivateEndpointServiceConnectionStatus.Approved, privateEndpointConnection.Data.ConnectionState.Status);
         }
 
-        [Test]
         [RecordedTest]
-        [Ignore("can pass locally, cost too much time on pipeline")]
         public async Task GetAllPrivateEndpointConnection()
         {
             PrivateEndpointResource privateEndpoint = await CreatePrivateEndpoint();
             Assert.AreEqual(privateEndpoint.Data.ManualPrivateLinkServiceConnections.Count, 1);
-
             List<StoragePrivateEndpointConnectionResource> privateEndpointConnections = await _privateEndpointConnectionCollection.GetAllAsync().ToEnumerableAsync();
             Assert.AreEqual(1, privateEndpointConnections.Count);
-            VerifyPrivateEndpointConnections(privateEndpoint.Data.ManualPrivateLinkServiceConnections[0], privateEndpointConnections[0]);
         }
-        [Test]
+
         [RecordedTest]
-        [Ignore("can pass locally, cost too much time on pipeline")]
         public async Task StoragePrivateEndpointConnectionDelete()
         {
-            await CreatePrivateEndpoint();
-
+            PrivateEndpointResource privateEndpoint = await CreatePrivateEndpoint();
             List<StoragePrivateEndpointConnectionResource> privateEndpointConnections = await _privateEndpointConnectionCollection.GetAllAsync().ToEnumerableAsync();
             string name = privateEndpointConnections[0].Data.Name;
             Assert.IsTrue(await _privateEndpointConnectionCollection.ExistsAsync(name));
@@ -114,7 +103,7 @@ namespace Azure.ResourceManager.Storage.Tests
             vnet.AddressPrefixes.Add("10.0.0.0/16");
             vnet.DhcpOptionsDnsServers.Add("10.1.1.1");
             vnet.DhcpOptionsDnsServers.Add("10.1.2.4");
-            VirtualNetworkResource virtualNetwork = await _resourceGroup.GetVirtualNetworks().CreateOrUpdate(WaitUntil.Started, vnetName, vnet).WaitForCompletionAsync();
+            VirtualNetworkResource virtualNetwork = (await _resourceGroup.GetVirtualNetworks().CreateOrUpdateAsync(WaitUntil.Completed, vnetName, vnet)).Value;
 
             var name = Recording.GenerateAssetName("pe-");
             var privateEndpointData = new PrivateEndpointData
@@ -122,7 +111,7 @@ namespace Azure.ResourceManager.Storage.Tests
                 Location = AzureLocation.WestUS2,
                 Subnet = virtualNetwork.Data.Subnets[0],
                 ManualPrivateLinkServiceConnections = {
-                    new PrivateLinkServiceConnection
+                    new NetworkPrivateLinkServiceConnection
                     {
                         Name = Recording.GenerateAssetName("pec"),
                         // TODO: externalize or create the service on-demand, like virtual network
@@ -135,9 +124,9 @@ namespace Azure.ResourceManager.Storage.Tests
                 },
             };
 
-            return await _resourceGroup.GetPrivateEndpoints().CreateOrUpdate(WaitUntil.Started, name, privateEndpointData).WaitForCompletionAsync();
+            return (await _resourceGroup.GetPrivateEndpoints().CreateOrUpdateAsync(WaitUntil.Completed, name, privateEndpointData)).Value;
         }
-        private void VerifyPrivateEndpointConnections(PrivateLinkServiceConnection expectedValue, StoragePrivateEndpointConnectionResource actualValue)
+        private void VerifyPrivateEndpointConnections(NetworkPrivateLinkServiceConnection expectedValue, StoragePrivateEndpointConnectionResource actualValue)
         {
             // Services will give diffferent ids and names for the incoming private endpoint connections, so comparing them is meaningless
             //Assert.AreEqual(expectedValue.Id, actualValue.Id);

@@ -18,25 +18,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
-            writer.WritePropertyName("value");
-            writer.WriteObjectValue(Value);
+            writer.WritePropertyName("value"u8);
+            writer.WriteObjectValue<object>(Value);
             writer.WriteEndObject();
         }
 
         internal static UserProperty DeserializeUserProperty(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
             object value = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     value = property.Value.GetObject();
                     continue;
@@ -49,7 +53,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, UserProperty model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<UserProperty>(model);
             }
             public override UserProperty Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

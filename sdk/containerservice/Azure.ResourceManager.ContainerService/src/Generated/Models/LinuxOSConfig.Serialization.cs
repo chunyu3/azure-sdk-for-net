@@ -5,79 +5,159 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    public partial class LinuxOSConfig : IUtf8JsonSerializable
+    public partial class LinuxOSConfig : IUtf8JsonSerializable, IJsonModel<LinuxOSConfig>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<LinuxOSConfig>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<LinuxOSConfig>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<LinuxOSConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LinuxOSConfig)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Sysctls))
             {
-                writer.WritePropertyName("sysctls");
-                writer.WriteObjectValue(Sysctls);
+                writer.WritePropertyName("sysctls"u8);
+                writer.WriteObjectValue<SysctlConfig>(Sysctls, options);
             }
             if (Optional.IsDefined(TransparentHugePageEnabled))
             {
-                writer.WritePropertyName("transparentHugePageEnabled");
+                writer.WritePropertyName("transparentHugePageEnabled"u8);
                 writer.WriteStringValue(TransparentHugePageEnabled);
             }
             if (Optional.IsDefined(TransparentHugePageDefrag))
             {
-                writer.WritePropertyName("transparentHugePageDefrag");
+                writer.WritePropertyName("transparentHugePageDefrag"u8);
                 writer.WriteStringValue(TransparentHugePageDefrag);
             }
-            if (Optional.IsDefined(SwapFileSizeMB))
+            if (Optional.IsDefined(SwapFileSizeInMB))
             {
-                writer.WritePropertyName("swapFileSizeMB");
-                writer.WriteNumberValue(SwapFileSizeMB.Value);
+                writer.WritePropertyName("swapFileSizeMB"u8);
+                writer.WriteNumberValue(SwapFileSizeInMB.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static LinuxOSConfig DeserializeLinuxOSConfig(JsonElement element)
+        LinuxOSConfig IJsonModel<LinuxOSConfig>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<SysctlConfig> sysctls = default;
-            Optional<string> transparentHugePageEnabled = default;
-            Optional<string> transparentHugePageDefrag = default;
-            Optional<int> swapFileSizeMB = default;
+            var format = options.Format == "W" ? ((IPersistableModel<LinuxOSConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LinuxOSConfig)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeLinuxOSConfig(document.RootElement, options);
+        }
+
+        internal static LinuxOSConfig DeserializeLinuxOSConfig(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            SysctlConfig sysctls = default;
+            string transparentHugePageEnabled = default;
+            string transparentHugePageDefrag = default;
+            int? swapFileSizeMB = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sysctls"))
+                if (property.NameEquals("sysctls"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    sysctls = SysctlConfig.DeserializeSysctlConfig(property.Value);
+                    sysctls = SysctlConfig.DeserializeSysctlConfig(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("transparentHugePageEnabled"))
+                if (property.NameEquals("transparentHugePageEnabled"u8))
                 {
                     transparentHugePageEnabled = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("transparentHugePageDefrag"))
+                if (property.NameEquals("transparentHugePageDefrag"u8))
                 {
                     transparentHugePageDefrag = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("swapFileSizeMB"))
+                if (property.NameEquals("swapFileSizeMB"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     swapFileSizeMB = property.Value.GetInt32();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new LinuxOSConfig(sysctls.Value, transparentHugePageEnabled.Value, transparentHugePageDefrag.Value, Optional.ToNullable(swapFileSizeMB));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new LinuxOSConfig(sysctls, transparentHugePageEnabled, transparentHugePageDefrag, swapFileSizeMB, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<LinuxOSConfig>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<LinuxOSConfig>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(LinuxOSConfig)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        LinuxOSConfig IPersistableModel<LinuxOSConfig>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<LinuxOSConfig>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeLinuxOSConfig(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(LinuxOSConfig)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<LinuxOSConfig>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

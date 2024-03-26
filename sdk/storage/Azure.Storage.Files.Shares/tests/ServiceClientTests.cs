@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
+using Azure.Identity;
 using Azure.Storage.Files.Shares.Models;
 using Azure.Storage.Sas;
 using Azure.Storage.Test;
@@ -92,10 +93,10 @@ namespace Azure.Storage.Files.Shares.Tests
             // Arrange
             ShareServiceClient service = InstrumentClient(
                 new ShareServiceClient(
-                    s_invalidUri,
+                    new Uri(TestConfigDefault.FileServiceEndpoint),
                     new StorageSharedKeyCredential(
                         TestConfigDefault.AccountName,
-                        TestConfigDefault.AccountKey),
+                        TestConstants.InvalidAccountKey),
                     GetOptions()));
 
             // Act
@@ -104,9 +105,9 @@ namespace Azure.Storage.Files.Shares.Tests
                 e => Assert.AreEqual(ShareErrorCode.AuthenticationFailed.ToString(), e.ErrorCode));
         }
 
+        [Ignore("https://github.com/Azure/azure-sdk-for-net/issues/25266")]
         [RecordedTest]
         [NonParallelizable]
-        [Ignore("https://github.com/Azure/azure-sdk-for-net/issues/15505")]
         public async Task SetPropertiesAsync()
         {
             // Arrange
@@ -136,6 +137,7 @@ namespace Azure.Storage.Files.Shares.Tests
         [RecordedTest]
         [ServiceVersion(Min = ShareClientOptions.ServiceVersion.V2019_12_12)]
         [NonParallelizable]
+        [Category("NonVirtualized")]
         public async Task GetSetServicePropertiesAsync_SmbMultiChannel()
         {
             // Arrange
@@ -170,10 +172,10 @@ namespace Azure.Storage.Files.Shares.Tests
             Response<ShareServiceProperties> properties = await service.GetPropertiesAsync();
             ShareServiceClient fakeService = InstrumentClient(
                 new ShareServiceClient(
-                    new Uri("https://error.file.core.windows.net"),
+                    new Uri(TestConfigDefault.FileServiceEndpoint),
                     new StorageSharedKeyCredential(
                         TestConfigDefault.AccountName,
-                        TestConfigDefault.AccountKey),
+                        TestConstants.InvalidAccountKey),
                     GetOptions()));
 
             // Act
@@ -206,6 +208,7 @@ namespace Azure.Storage.Files.Shares.Tests
         }
 
         [RecordedTest]
+        [Category("NonVirtualized")]
         [ServiceVersion(Min = ShareClientOptions.ServiceVersion.V2021_02_12)]
         public async Task ListSharesSegmentAsync_Premium()
         {
@@ -316,10 +319,10 @@ namespace Azure.Storage.Files.Shares.Tests
             // Arrange
             ShareServiceClient service = InstrumentClient(
                 new ShareServiceClient(
-                    new Uri("https://error.file.core.windows.net"),
+                    new Uri(TestConfigDefault.FileServiceEndpoint),
                     new StorageSharedKeyCredential(
                         TestConfigDefault.AccountName,
-                        TestConfigDefault.AccountKey),
+                        TestConstants.InvalidAccountKey),
                     GetOptions()));
 
             // Act

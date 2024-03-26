@@ -1,8 +1,140 @@
 # Release History
 
-## 1.0.0-beta.3 (Unreleased)
+## 1.1.0-beta.5 (Unreleased)
 
 ### Features Added
+
+- Enable the new model serialization by using the System.ClientModel, refer this [document](https://aka.ms/azsdk/net/mrw) for more details.
+
+### Breaking Changes
+
+### Bugs Fixed
+
+-Add `200` to the response code of the `SyncFunctionTriggers`
+
+### Other Changes
+
+## 1.1.0-beta.4 (2023-11-30)
+
+### Features Added
+
+- Enable mocking for extension methods, refer this [document](https://aka.ms/azsdk/net/mocking) for more details.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.9.0.
+
+## 1.1.0-beta.3 (2023-09-14)
+
+### Bugs Fixed
+
+- Due to `HealthCheckUri` not being a valid URI, add a new property `HealthCheckUriString` to replace it in order to fix the URI format issue.
+
+## 1.1.0-beta.2 (2023-09-06)
+
+### Bugs Fixed
+
+- Fixed an issue that exception throws when `Uri` type field is empty during deserialization of `WebAppBackupData`.
+- Fixed an issue that exception throws when `Uri` type field is empty during deserialization of `WebSiteInstanceStatusData`.
+- Fixed an issue that exception throws when `Uri` type field is empty during deserialization of `AppServiceTableStorageApplicationLogsConfig`.
+
+## 1.1.0-beta.1 (2023-05-31)
+
+### Features Added
+
+- Enable the model factory feature for model mocking, more information can be found [here](https://azure.github.io/azure-sdk/dotnet_introduction.html#dotnet-mocking-factory-builder).
+- Added `AppCertificateData.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppCertificateData.Thumbprint` has been hidden but is still available.
+- Added `AppServiceVirtualNetworkData.CertThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppServiceVirtualNetworkData.CertThumbprint` has been hidden but is still available.
+- Added `HostNameBindingData.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `HostNameBindingData.Thumbprint` has been hidden but is still available.
+- Added `AppCertificatePatch.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppCertificatePatch.Thumbprint` has been hidden but is still available.
+- Added `AppServiceAadRegistration.ClientSecretCertificateThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppServiceAadRegistration.ClientSecretCertificateThumbprint` has been hidden but is still available.
+- Added `AppServiceCertificateDetails.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppServiceCertificateDetails.Thumbprint` has been hidden but is still available.
+- Added `AppServiceVirtualNetworkProperties.CertThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `AppServiceVirtualNetworkProperties.CertThumbprint` has been hidden but is still available.
+- Added `HostNameSslState.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `HostNameSslState.Thumbprint` has been hidden but is still available.
+- Added `SiteAuthSettings.ClientSecretCertificateThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `SiteAuthSettings.ClientSecretCertificateThumbprint` has been hidden but is still available.
+- Added `PublicCertificateData.ThumbprintString` to return the hexadecimal string representation of the SHA-1 hash of the certificate.
+  `PublicCertificateData.Thumbprint` has been hidden but is still available.
+
+### Other Changes
+
+- Upgraded dependent Azure.Core to 1.32.0.
+- Upgraded dependent Azure.ResourceManager to 1.6.0.
+
+## 1.0.2 (2023-04-27)
+
+### Bugs Fixed
+
+- Fixed issue #34745. Introduced new property `RelayArmId` in `HybridConnectionData` class to replace the property `RelayArmUri` with a wrong type `Uri`.
+- Fixed issue #35146. BadRequest when calling CreateOrUpdateFunctionSecretAsync
+
+### Other Changes in API
+
+Added property 'ResourceIdentifier RelayArmId' in type Azure.ResourceManager.AppService.HybridConnectionData
+Added property 'WebAppKeyInfoProperties Properties' in type Azure.ResourceManager.AppService.Models.WebAppKeyInfo
+Added type 'Azure.ResourceManager.AppService.Models.WebAppKeyInfoProperties'
+Obsoleted property 'Uri RelayArmUri' in type Azure.ResourceManager.AppService.HybridConnectionData
+Obsoleted property 'String Name' in type Azure.ResourceManager.AppService.Models.WebAppKeyInfo
+Obsoleted property 'String Value' in type Azure.ResourceManager.AppService.Models.WebAppKeyInfo
+
+### Azure SDK Dependency Changes
+
+Upgraded Azure.Core from 1.28.0 to 1.31.0
+
+## 1.0.1 (2023-02-20)
+
+### Bugs Fixed
+
+- Fixed serialization issue when service returns empty string for `KeyVaultId` in `AppCertificateData` and `AppCertificatePatch`.
+
+### Other Changes
+
+- Upgraded dependent `Azure.Core` to `1.28.0`.
+- Upgraded dependent `Azure.ResourceManager` to `1.4.0`.
+
+## 1.0.0 (2022-09-29)
+
+This release is the first stable release of the AppService Management library.
+
+### Breaking Changes
+
+Polishing since last public beta release:
+- Corrected the format of all `IPAddress` type properties / parameters.
+- Corrected the format of all `AzureLocation` type properties / parameters.
+- Optimized the name of some models and functions.
+
+### Other Changes
+
+- Upgraded dependent Azure.ResourceManager to 1.3.1.
+- Optimized the implementation of methods related to tag operations.
+
+## 1.0.0-beta.4 (2022-08-29)
+
+### Breaking Changes
+
+Polishing since last public beta release:
+- Prepended `AppService` prefix to all single / simple model names.
+- Corrected the format of all `ResourceIdentifier` type properties / parameters.
+- Corrected the format of all `AzureLocation` type properties / parameters.
+- Corrected all acronyms that not follow [.Net Naming Guidelines](https://docs.microsoft.com/dotnet/standard/design-guidelines/naming-guidelines).
+- Corrected enumeration name by following [Naming Enumerations Rule](https://docs.microsoft.com/dotnet/standard/design-guidelines/names-of-classes-structs-and-interfaces#naming-enumerations).
+- Corrected the suffix of `DateTimeOffset` properties / parameters.
+- Corrected the name of interval / duration properties / parameters that end with units.
+- Optimized the name of some models and functions.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.3.0
+
+## 1.0.0-beta.3 (2022-07-12)
 
 ### Breaking Changes
 
@@ -130,10 +262,6 @@
 - Type `AppServiceResource` was removed.
 - Type `ProxyOnlyResource` was removed.
 
-### Bugs Fixed
-
-### Other Changes
-
 ## 1.0.0-beta.2 (2022-04-08)
 
 ### Breaking Changes
@@ -147,14 +275,24 @@
 
 ## 1.0.0-beta.1 (2022-03-31)
 
-- Support MSAL.NET, Azure.Identity is out of box for supporting MSAL.NET
-- Support [OpenTelemetry](https://opentelemetry.io/) for distributed tracing
-- HTTP pipeline with custom policies
-- Better error-handling
-- Support uniform telemetry across all languages
+### Breaking Changes
 
-> NOTE: For more information about unified authentication, please refer to [Azure Identity documentation for .NET](https://docs.microsoft.com//dotnet/api/overview/azure/identity-readme?view=azure-dotnet)
+New design of track 2 initial commit.
 
-This package follows the [Azure SDK Design Guidelines for .NET](https://azure.github.io/azure-sdk/dotnet_introduction.html) which provide a number of core capabilities that are shared amongst all Azure SDKs, including the intuitive Azure Identity library, an HTTP Pipeline with custom policies, error-handling, distributed tracing, and much more.
+### Package Name
 
-This is a Public Preview version, so expect incompatible changes in subsequent releases as we improve the product. To provide feedback, please submit an issue in our [Azure SDK for .NET GitHub repo](https://github.com/Azure/azure-sdk-for-net/issues).
+The package name has been changed from `Microsoft.Azure.Management.Websites` to `Azure.ResourceManager.AppService`.
+
+### General New Features
+
+This package follows the [new Azure SDK guidelines](https://azure.github.io/azure-sdk/general_introduction.html), and provides many core capabilities:
+
+    - Support MSAL.NET, Azure.Identity is out of box for supporting MSAL.NET.
+    - Support [OpenTelemetry](https://opentelemetry.io/) for distributed tracing.
+    - HTTP pipeline with custom policies.
+    - Better error-handling.
+    - Support uniform telemetry across all languages.
+
+This package is a Public Preview version, so expect incompatible changes in subsequent releases as we improve the product. To provide feedback, submit an issue in our [Azure SDK for .NET GitHub repo](https://github.com/Azure/azure-sdk-for-net/issues).
+
+> NOTE: For more information about unified authentication, please refer to [Microsoft Azure Identity documentation for .NET](https://docs.microsoft.com//dotnet/api/overview/azure/identity-readme?view=azure-dotnet).

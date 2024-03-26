@@ -18,13 +18,17 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             writer.WriteEndObject();
         }
 
         internal static SecretBase DeserializeSecretBase(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("type", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
@@ -33,23 +37,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     case "SecureString": return SecureString.DeserializeSecureString(element);
                 }
             }
-            string type = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals("type"))
-                {
-                    type = property.Value.GetString();
-                    continue;
-                }
-            }
-            return new SecretBase(type);
+            return UnknownSecretBase.DeserializeUnknownSecretBase(element);
         }
 
         internal partial class SecretBaseConverter : JsonConverter<SecretBase>
         {
             public override void Write(Utf8JsonWriter writer, SecretBase model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SecretBase>(model);
             }
             public override SecretBase Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.AI.FormRecognizer.DocumentAnalysis
@@ -17,11 +16,15 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
         public DateTimeOffset CreatedOn { get; }
 
         /// <summary>
-        /// A list of user-defined key-value tag attributes associated with the model.
+        /// Date and time (UTC) when the document model will expire.
         /// </summary>
-        public IReadOnlyDictionary<string, string> Tags { get; }
+        [CodeGenMember("ExpirationDateTime")]
+        public DateTimeOffset? ExpiresOn { get; }
 
-        /// <summary> API version used to create this model. </summary>
-        internal string ApiVersion { get; }
+        /// <summary>
+        /// Service version used to create this document model.
+        /// </summary>
+        [CodeGenMember("ApiVersion")]
+        public string ServiceVersion { get; }
     }
 }

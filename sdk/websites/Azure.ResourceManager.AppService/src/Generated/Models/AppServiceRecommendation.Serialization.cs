@@ -6,83 +6,124 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class AppServiceRecommendation : IUtf8JsonSerializable
+    public partial class AppServiceRecommendation : IUtf8JsonSerializable, IJsonModel<AppServiceRecommendation>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AppServiceRecommendation>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AppServiceRecommendation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceRecommendation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AppServiceRecommendation)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Kind))
             {
-                writer.WritePropertyName("kind");
+                writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
             }
-            writer.WritePropertyName("properties");
-            writer.WriteStartObject();
-            if (Optional.IsDefined(CreationOn))
+            if (options.Format != "W")
             {
-                writer.WritePropertyName("creationTime");
-                writer.WriteStringValue(CreationOn.Value, "O");
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(ResourceType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SystemData))
+            {
+                writer.WritePropertyName("systemData"u8);
+                JsonSerializer.Serialize(writer, SystemData);
+            }
+            writer.WritePropertyName("properties"u8);
+            writer.WriteStartObject();
+            if (Optional.IsDefined(CreatedOn))
+            {
+                writer.WritePropertyName("creationTime"u8);
+                writer.WriteStringValue(CreatedOn.Value, "O");
             }
             if (Optional.IsDefined(RecommendationId))
             {
-                writer.WritePropertyName("recommendationId");
+                writer.WritePropertyName("recommendationId"u8);
                 writer.WriteStringValue(RecommendationId.Value);
             }
             if (Optional.IsDefined(ResourceId))
             {
-                writer.WritePropertyName("resourceId");
+                writer.WritePropertyName("resourceId"u8);
                 writer.WriteStringValue(ResourceId);
             }
             if (Optional.IsDefined(ResourceScope))
             {
-                writer.WritePropertyName("resourceScope");
+                writer.WritePropertyName("resourceScope"u8);
                 writer.WriteStringValue(ResourceScope.Value.ToString());
             }
             if (Optional.IsDefined(RuleName))
             {
-                writer.WritePropertyName("ruleName");
+                writer.WritePropertyName("ruleName"u8);
                 writer.WriteStringValue(RuleName);
             }
             if (Optional.IsDefined(DisplayName))
             {
-                writer.WritePropertyName("displayName");
+                writer.WritePropertyName("displayName"u8);
                 writer.WriteStringValue(DisplayName);
             }
             if (Optional.IsDefined(Message))
             {
-                writer.WritePropertyName("message");
+                writer.WritePropertyName("message"u8);
                 writer.WriteStringValue(Message);
             }
             if (Optional.IsDefined(Level))
             {
-                writer.WritePropertyName("level");
+                writer.WritePropertyName("level"u8);
                 writer.WriteStringValue(Level.Value.ToSerialString());
             }
             if (Optional.IsDefined(Channels))
             {
-                writer.WritePropertyName("channels");
+                writer.WritePropertyName("channels"u8);
                 writer.WriteStringValue(Channels.Value.ToSerialString());
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(CategoryTags))
+            {
+                writer.WritePropertyName("categoryTags"u8);
+                writer.WriteStartArray();
+                foreach (var item in CategoryTags)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
             }
             if (Optional.IsDefined(ActionName))
             {
-                writer.WritePropertyName("actionName");
+                writer.WritePropertyName("actionName"u8);
                 writer.WriteStringValue(ActionName);
             }
             if (Optional.IsDefined(Enabled))
             {
-                writer.WritePropertyName("enabled");
+                writer.WritePropertyName("enabled"u8);
                 writer.WriteNumberValue(Enabled.Value);
             }
             if (Optional.IsCollectionDefined(States))
             {
-                writer.WritePropertyName("states");
+                writer.WritePropertyName("states"u8);
                 writer.WriteStartArray();
                 foreach (var item in States)
                 {
@@ -92,121 +133,155 @@ namespace Azure.ResourceManager.AppService.Models
             }
             if (Optional.IsDefined(StartOn))
             {
-                writer.WritePropertyName("startTime");
+                writer.WritePropertyName("startTime"u8);
                 writer.WriteStringValue(StartOn.Value, "O");
             }
             if (Optional.IsDefined(EndOn))
             {
-                writer.WritePropertyName("endTime");
+                writer.WritePropertyName("endTime"u8);
                 writer.WriteStringValue(EndOn.Value, "O");
             }
             if (Optional.IsDefined(NextNotificationOn))
             {
-                writer.WritePropertyName("nextNotificationTime");
+                writer.WritePropertyName("nextNotificationTime"u8);
                 writer.WriteStringValue(NextNotificationOn.Value, "O");
             }
             if (Optional.IsDefined(NotificationExpirationOn))
             {
-                writer.WritePropertyName("notificationExpirationTime");
+                writer.WritePropertyName("notificationExpirationTime"u8);
                 writer.WriteStringValue(NotificationExpirationOn.Value, "O");
             }
             if (Optional.IsDefined(NotifiedOn))
             {
-                writer.WritePropertyName("notifiedTime");
+                writer.WritePropertyName("notifiedTime"u8);
                 writer.WriteStringValue(NotifiedOn.Value, "O");
             }
             if (Optional.IsDefined(Score))
             {
-                writer.WritePropertyName("score");
+                writer.WritePropertyName("score"u8);
                 writer.WriteNumberValue(Score.Value);
             }
             if (Optional.IsDefined(IsDynamic))
             {
-                writer.WritePropertyName("isDynamic");
+                writer.WritePropertyName("isDynamic"u8);
                 writer.WriteBooleanValue(IsDynamic.Value);
             }
             if (Optional.IsDefined(ExtensionName))
             {
-                writer.WritePropertyName("extensionName");
+                writer.WritePropertyName("extensionName"u8);
                 writer.WriteStringValue(ExtensionName);
             }
             if (Optional.IsDefined(BladeName))
             {
-                writer.WritePropertyName("bladeName");
+                writer.WritePropertyName("bladeName"u8);
                 writer.WriteStringValue(BladeName);
             }
             if (Optional.IsDefined(ForwardLink))
             {
-                writer.WritePropertyName("forwardLink");
+                writer.WritePropertyName("forwardLink"u8);
                 writer.WriteStringValue(ForwardLink);
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static AppServiceRecommendation DeserializeAppServiceRecommendation(JsonElement element)
+        AppServiceRecommendation IJsonModel<AppServiceRecommendation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> kind = default;
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceRecommendation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AppServiceRecommendation)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAppServiceRecommendation(document.RootElement, options);
+        }
+
+        internal static AppServiceRecommendation DeserializeAppServiceRecommendation(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<DateTimeOffset> creationTime = default;
-            Optional<Guid> recommendationId = default;
-            Optional<string> resourceId = default;
-            Optional<ResourceScopeType> resourceScope = default;
-            Optional<string> ruleName = default;
-            Optional<string> displayName = default;
-            Optional<string> message = default;
-            Optional<NotificationLevel> level = default;
-            Optional<Channel> channels = default;
-            Optional<IReadOnlyList<string>> categoryTags = default;
-            Optional<string> actionName = default;
-            Optional<int> enabled = default;
-            Optional<IList<string>> states = default;
-            Optional<DateTimeOffset> startTime = default;
-            Optional<DateTimeOffset> endTime = default;
-            Optional<DateTimeOffset> nextNotificationTime = default;
-            Optional<DateTimeOffset> notificationExpirationTime = default;
-            Optional<DateTimeOffset> notifiedTime = default;
-            Optional<double> score = default;
-            Optional<bool> isDynamic = default;
-            Optional<string> extensionName = default;
-            Optional<string> bladeName = default;
-            Optional<string> forwardLink = default;
+            SystemData systemData = default;
+            DateTimeOffset? creationTime = default;
+            Guid? recommendationId = default;
+            ResourceIdentifier resourceId = default;
+            ResourceScopeType? resourceScope = default;
+            string ruleName = default;
+            string displayName = default;
+            string message = default;
+            NotificationLevel? level = default;
+            RecommendationChannel? channels = default;
+            IReadOnlyList<string> categoryTags = default;
+            string actionName = default;
+            int? enabled = default;
+            IList<string> states = default;
+            DateTimeOffset? startTime = default;
+            DateTimeOffset? endTime = default;
+            DateTimeOffset? nextNotificationTime = default;
+            DateTimeOffset? notificationExpirationTime = default;
+            DateTimeOffset? notifiedTime = default;
+            double? score = default;
+            bool? isDynamic = default;
+            string extensionName = default;
+            string bladeName = default;
+            string forwardLink = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.ToString());
+                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -215,81 +290,79 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("creationTime"))
+                        if (property0.NameEquals("creationTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             creationTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("recommendationId"))
+                        if (property0.NameEquals("recommendationId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             recommendationId = property0.Value.GetGuid();
                             continue;
                         }
-                        if (property0.NameEquals("resourceId"))
-                        {
-                            resourceId = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("resourceScope"))
+                        if (property0.NameEquals("resourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
+                                continue;
+                            }
+                            resourceId = new ResourceIdentifier(property0.Value.GetString());
+                            continue;
+                        }
+                        if (property0.NameEquals("resourceScope"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
                                 continue;
                             }
                             resourceScope = new ResourceScopeType(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("ruleName"))
+                        if (property0.NameEquals("ruleName"u8))
                         {
                             ruleName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("displayName"))
+                        if (property0.NameEquals("displayName"u8))
                         {
                             displayName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("message"))
+                        if (property0.NameEquals("message"u8))
                         {
                             message = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("level"))
+                        if (property0.NameEquals("level"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             level = property0.Value.GetString().ToNotificationLevel();
                             continue;
                         }
-                        if (property0.NameEquals("channels"))
+                        if (property0.NameEquals("channels"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            channels = property0.Value.GetString().ToChannel();
+                            channels = property0.Value.GetString().ToRecommendationChannel();
                             continue;
                         }
-                        if (property0.NameEquals("categoryTags"))
+                        if (property0.NameEquals("categoryTags"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -300,26 +373,24 @@ namespace Azure.ResourceManager.AppService.Models
                             categoryTags = array;
                             continue;
                         }
-                        if (property0.NameEquals("actionName"))
+                        if (property0.NameEquals("actionName"u8))
                         {
                             actionName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("enabled"))
+                        if (property0.NameEquals("enabled"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             enabled = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("states"))
+                        if (property0.NameEquals("states"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -330,87 +401,80 @@ namespace Azure.ResourceManager.AppService.Models
                             states = array;
                             continue;
                         }
-                        if (property0.NameEquals("startTime"))
+                        if (property0.NameEquals("startTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             startTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("endTime"))
+                        if (property0.NameEquals("endTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             endTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("nextNotificationTime"))
+                        if (property0.NameEquals("nextNotificationTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             nextNotificationTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("notificationExpirationTime"))
+                        if (property0.NameEquals("notificationExpirationTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             notificationExpirationTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("notifiedTime"))
+                        if (property0.NameEquals("notifiedTime"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             notifiedTime = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("score"))
+                        if (property0.NameEquals("score"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             score = property0.Value.GetDouble();
                             continue;
                         }
-                        if (property0.NameEquals("isDynamic"))
+                        if (property0.NameEquals("isDynamic"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             isDynamic = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("extensionName"))
+                        if (property0.NameEquals("extensionName"u8))
                         {
                             extensionName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("bladeName"))
+                        if (property0.NameEquals("bladeName"u8))
                         {
                             bladeName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("forwardLink"))
+                        if (property0.NameEquals("forwardLink"u8))
                         {
                             forwardLink = property0.Value.GetString();
                             continue;
@@ -418,8 +482,592 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AppServiceRecommendation(id, name, type, systemData.Value, Optional.ToNullable(creationTime), Optional.ToNullable(recommendationId), resourceId.Value, Optional.ToNullable(resourceScope), ruleName.Value, displayName.Value, message.Value, Optional.ToNullable(level), Optional.ToNullable(channels), Optional.ToList(categoryTags), actionName.Value, Optional.ToNullable(enabled), Optional.ToList(states), Optional.ToNullable(startTime), Optional.ToNullable(endTime), Optional.ToNullable(nextNotificationTime), Optional.ToNullable(notificationExpirationTime), Optional.ToNullable(notifiedTime), Optional.ToNullable(score), Optional.ToNullable(isDynamic), extensionName.Value, bladeName.Value, forwardLink.Value, kind.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AppServiceRecommendation(
+                id,
+                name,
+                type,
+                systemData,
+                creationTime,
+                recommendationId,
+                resourceId,
+                resourceScope,
+                ruleName,
+                displayName,
+                message,
+                level,
+                channels,
+                categoryTags ?? new ChangeTrackingList<string>(),
+                actionName,
+                enabled,
+                states ?? new ChangeTrackingList<string>(),
+                startTime,
+                endTime,
+                nextNotificationTime,
+                notificationExpirationTime,
+                notifiedTime,
+                score,
+                isDynamic,
+                extensionName,
+                bladeName,
+                forwardLink,
+                kind,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (Optional.IsDefined(Name) || hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (Optional.IsDefined(Kind) || hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Kind.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Kind}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Kind}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (Optional.IsDefined(Id) || hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (Optional.IsDefined(SystemData) || hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CreatedOn), out propertyOverride);
+            if (Optional.IsDefined(CreatedOn) || hasPropertyOverride)
+            {
+                builder.Append("    creationTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(CreatedOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RecommendationId), out propertyOverride);
+            if (Optional.IsDefined(RecommendationId) || hasPropertyOverride)
+            {
+                builder.Append("    recommendationId: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{RecommendationId.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ResourceId), out propertyOverride);
+            if (Optional.IsDefined(ResourceId) || hasPropertyOverride)
+            {
+                builder.Append("    resourceId: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ResourceScope), out propertyOverride);
+            if (Optional.IsDefined(ResourceScope) || hasPropertyOverride)
+            {
+                builder.Append("    resourceScope: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ResourceScope.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RuleName), out propertyOverride);
+            if (Optional.IsDefined(RuleName) || hasPropertyOverride)
+            {
+                builder.Append("    ruleName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (RuleName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{RuleName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{RuleName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DisplayName), out propertyOverride);
+            if (Optional.IsDefined(DisplayName) || hasPropertyOverride)
+            {
+                builder.Append("    displayName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (DisplayName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DisplayName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DisplayName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Message), out propertyOverride);
+            if (Optional.IsDefined(Message) || hasPropertyOverride)
+            {
+                builder.Append("    message: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Message.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Message}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Message}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Level), out propertyOverride);
+            if (Optional.IsDefined(Level) || hasPropertyOverride)
+            {
+                builder.Append("    level: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Level.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Channels), out propertyOverride);
+            if (Optional.IsDefined(Channels) || hasPropertyOverride)
+            {
+                builder.Append("    channels: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Channels.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CategoryTags), out propertyOverride);
+            if (Optional.IsCollectionDefined(CategoryTags) || hasPropertyOverride)
+            {
+                if (CategoryTags.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    categoryTags: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in CategoryTags)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionName), out propertyOverride);
+            if (Optional.IsDefined(ActionName) || hasPropertyOverride)
+            {
+                builder.Append("    actionName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ActionName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ActionName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ActionName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Enabled), out propertyOverride);
+            if (Optional.IsDefined(Enabled) || hasPropertyOverride)
+            {
+                builder.Append("    enabled: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{Enabled.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(States), out propertyOverride);
+            if (Optional.IsCollectionDefined(States) || hasPropertyOverride)
+            {
+                if (States.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    states: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in States)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(StartOn), out propertyOverride);
+            if (Optional.IsDefined(StartOn) || hasPropertyOverride)
+            {
+                builder.Append("    startTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(StartOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EndOn), out propertyOverride);
+            if (Optional.IsDefined(EndOn) || hasPropertyOverride)
+            {
+                builder.Append("    endTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(EndOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NextNotificationOn), out propertyOverride);
+            if (Optional.IsDefined(NextNotificationOn) || hasPropertyOverride)
+            {
+                builder.Append("    nextNotificationTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(NextNotificationOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NotificationExpirationOn), out propertyOverride);
+            if (Optional.IsDefined(NotificationExpirationOn) || hasPropertyOverride)
+            {
+                builder.Append("    notificationExpirationTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(NotificationExpirationOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NotifiedOn), out propertyOverride);
+            if (Optional.IsDefined(NotifiedOn) || hasPropertyOverride)
+            {
+                builder.Append("    notifiedTime: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedDateTimeString = TypeFormatters.ToString(NotifiedOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Score), out propertyOverride);
+            if (Optional.IsDefined(Score) || hasPropertyOverride)
+            {
+                builder.Append("    score: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Score.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsDynamic), out propertyOverride);
+            if (Optional.IsDefined(IsDynamic) || hasPropertyOverride)
+            {
+                builder.Append("    isDynamic: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = IsDynamic.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ExtensionName), out propertyOverride);
+            if (Optional.IsDefined(ExtensionName) || hasPropertyOverride)
+            {
+                builder.Append("    extensionName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ExtensionName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ExtensionName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ExtensionName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(BladeName), out propertyOverride);
+            if (Optional.IsDefined(BladeName) || hasPropertyOverride)
+            {
+                builder.Append("    bladeName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (BladeName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{BladeName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{BladeName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ForwardLink), out propertyOverride);
+            if (Optional.IsDefined(ForwardLink) || hasPropertyOverride)
+            {
+                builder.Append("    forwardLink: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ForwardLink.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ForwardLink}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ForwardLink}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<AppServiceRecommendation>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceRecommendation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(AppServiceRecommendation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AppServiceRecommendation IPersistableModel<AppServiceRecommendation>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceRecommendation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAppServiceRecommendation(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AppServiceRecommendation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AppServiceRecommendation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

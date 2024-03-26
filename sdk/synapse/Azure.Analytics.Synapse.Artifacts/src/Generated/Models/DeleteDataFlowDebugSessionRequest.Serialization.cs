@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(SessionId))
             {
-                writer.WritePropertyName("sessionId");
+                writer.WritePropertyName("sessionId"u8);
                 writer.WriteStringValue(SessionId);
             }
             if (Optional.IsDefined(DataFlowName))
             {
-                writer.WritePropertyName("dataFlowName");
+                writer.WritePropertyName("dataFlowName"u8);
                 writer.WriteStringValue(DataFlowName);
             }
             writer.WriteEndObject();
@@ -35,7 +35,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, DeleteDataFlowDebugSessionRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DeleteDataFlowDebugSessionRequest>(model);
             }
             public override DeleteDataFlowDebugSessionRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

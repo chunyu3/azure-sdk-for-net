@@ -7,32 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Azure Table storage dataset. </summary>
-    public partial class AzureTableDataset : Dataset
+    public partial class AzureTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of AzureTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <param name="tableName"> The table name of the Azure Table storage. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> or <paramref name="tableName"/> is null. </exception>
-        public AzureTableDataset(LinkedServiceReference linkedServiceName, BinaryData tableName) : base(linkedServiceName)
+        public AzureTableDataset(DataFactoryLinkedServiceReference linkedServiceName, DataFactoryElement<string> tableName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
-            if (tableName == null)
-            {
-                throw new ArgumentNullException(nameof(tableName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
+            Argument.AssertNotNull(tableName, nameof(tableName));
 
             TableName = tableName;
             DatasetType = "AzureTable";
         }
 
-        /// <summary> Initializes a new instance of AzureTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -43,13 +38,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="tableName"> The table name of the Azure Table storage. Type: string (or Expression with resultType string). </param>
-        internal AzureTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal AzureTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             TableName = tableName;
             DatasetType = datasetType ?? "AzureTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AzureTableDataset"/> for deserialization. </summary>
+        internal AzureTableDataset()
+        {
+        }
+
         /// <summary> The table name of the Azure Table storage. Type: string (or Expression with resultType string). </summary>
-        public BinaryData TableName { get; set; }
+        public DataFactoryElement<string> TableName { get; set; }
     }
 }

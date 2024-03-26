@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(FeatureName))
             {
-                writer.WritePropertyName("featureName");
+                writer.WritePropertyName("featureName"u8);
                 writer.WriteStringValue(FeatureName);
             }
             if (Optional.IsDefined(FeatureType))
             {
-                writer.WritePropertyName("featureType");
+                writer.WritePropertyName("featureType"u8);
                 writer.WriteStringValue(FeatureType);
             }
             writer.WriteEndObject();
@@ -33,29 +33,33 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static ExposureControlRequest DeserializeExposureControlRequest(JsonElement element)
         {
-            Optional<string> featureName = default;
-            Optional<string> featureType = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string featureName = default;
+            string featureType = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("featureName"))
+                if (property.NameEquals("featureName"u8))
                 {
                     featureName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("featureType"))
+                if (property.NameEquals("featureType"u8))
                 {
                     featureType = property.Value.GetString();
                     continue;
                 }
             }
-            return new ExposureControlRequest(featureName.Value, featureType.Value);
+            return new ExposureControlRequest(featureName, featureType);
         }
 
         internal partial class ExposureControlRequestConverter : JsonConverter<ExposureControlRequest>
         {
             public override void Write(Utf8JsonWriter writer, ExposureControlRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ExposureControlRequest>(model);
             }
             public override ExposureControlRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

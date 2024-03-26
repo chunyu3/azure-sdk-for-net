@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Enabled))
             {
-                writer.WritePropertyName("enabled");
+                writer.WritePropertyName("enabled"u8);
                 writer.WriteBooleanValue(Enabled.Value);
             }
             writer.WriteEndObject();
@@ -28,28 +28,31 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static DynamicExecutorAllocation DeserializeDynamicExecutorAllocation(JsonElement element)
         {
-            Optional<bool> enabled = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? enabled = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("enabled"))
+                if (property.NameEquals("enabled"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabled = property.Value.GetBoolean();
                     continue;
                 }
             }
-            return new DynamicExecutorAllocation(Optional.ToNullable(enabled));
+            return new DynamicExecutorAllocation(enabled);
         }
 
         internal partial class DynamicExecutorAllocationConverter : JsonConverter<DynamicExecutorAllocation>
         {
             public override void Write(Utf8JsonWriter writer, DynamicExecutorAllocation model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DynamicExecutorAllocation>(model);
             }
             public override DynamicExecutorAllocation Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

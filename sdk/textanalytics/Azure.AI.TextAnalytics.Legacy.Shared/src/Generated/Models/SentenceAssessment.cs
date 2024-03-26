@@ -13,7 +13,7 @@ namespace Azure.AI.TextAnalytics.Legacy
     /// <summary> The SentenceAssessment. </summary>
     internal partial class SentenceAssessment
     {
-        /// <summary> Initializes a new instance of SentenceAssessment. </summary>
+        /// <summary> Initializes a new instance of <see cref="SentenceAssessment"/>. </summary>
         /// <param name="sentiment"> Assessment sentiment in the sentence. </param>
         /// <param name="confidenceScores"> Assessment sentiment confidence scores in the sentence. </param>
         /// <param name="offset"> The assessment offset from the start of the sentence. </param>
@@ -23,14 +23,8 @@ namespace Azure.AI.TextAnalytics.Legacy
         /// <exception cref="ArgumentNullException"> <paramref name="confidenceScores"/> or <paramref name="text"/> is null. </exception>
         internal SentenceAssessment(TokenSentimentValue sentiment, TargetConfidenceScoreLabel confidenceScores, int offset, int length, string text, bool isNegated)
         {
-            if (confidenceScores == null)
-            {
-                throw new ArgumentNullException(nameof(confidenceScores));
-            }
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
+            Argument.AssertNotNull(confidenceScores, nameof(confidenceScores));
+            Argument.AssertNotNull(text, nameof(text));
 
             Sentiment = sentiment;
             ConfidenceScores = confidenceScores;

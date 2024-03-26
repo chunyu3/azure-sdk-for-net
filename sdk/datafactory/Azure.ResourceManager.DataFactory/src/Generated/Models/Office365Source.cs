@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity source for an Office 365 service. </summary>
-    public partial class Office365Source : CopySource
+    public partial class Office365Source : CopyActivitySource
     {
-        /// <summary> Initializes a new instance of Office365Source. </summary>
+        /// <summary> Initializes a new instance of <see cref="Office365Source"/>. </summary>
         public Office365Source()
         {
             CopySourceType = "Office365Source";
         }
 
-        /// <summary> Initializes a new instance of Office365Source. </summary>
+        /// <summary> Initializes a new instance of <see cref="Office365Source"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -28,32 +29,32 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="allowedGroups"> The groups containing all the users. Type: array of strings (or Expression with resultType array of strings). </param>
         /// <param name="userScopeFilterUri"> The user scope uri. Type: string (or Expression with resultType string). </param>
-        /// <param name="dateFilterColumn"> The Column to apply the &lt;paramref name=&quot;StartTime&quot;/&gt; and &lt;paramref name=&quot;EndTime&quot;/&gt;. Type: string (or Expression with resultType string). </param>
-        /// <param name="startTime"> Start time of the requested range for this dataset. Type: string (or Expression with resultType string). </param>
-        /// <param name="endTime"> End time of the requested range for this dataset. Type: string (or Expression with resultType string). </param>
-        /// <param name="outputColumns"> The columns to be read out from the Office 365 table. Type: array of objects (or Expression with resultType array of objects). Example: [ { &quot;name&quot;: &quot;Id&quot; }, { &quot;name&quot;: &quot;CreatedDateTime&quot; } ]. </param>
-        internal Office365Source(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData allowedGroups, BinaryData userScopeFilterUri, BinaryData dateFilterColumn, BinaryData startTime, BinaryData endTime, BinaryData outputColumns) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        /// <param name="dateFilterColumn"> The Column to apply the &lt;paramref name="StartTime"/&gt; and &lt;paramref name="EndTime"/&gt;. Type: string (or Expression with resultType string). </param>
+        /// <param name="startOn"> Start time of the requested range for this dataset. Type: string (or Expression with resultType string). </param>
+        /// <param name="endOn"> End time of the requested range for this dataset. Type: string (or Expression with resultType string). </param>
+        /// <param name="outputColumns"> The columns to be read out from the Office 365 table. Type: array of objects (or Expression with resultType array of objects). itemType: OutputColumn. Example: [ { "name": "Id" }, { "name": "CreatedDateTime" } ]. </param>
+        internal Office365Source(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<IList<string>> allowedGroups, DataFactoryElement<string> userScopeFilterUri, DataFactoryElement<string> dateFilterColumn, DataFactoryElement<string> startOn, DataFactoryElement<string> endOn, DataFactoryElement<IList<Office365TableOutputColumn>> outputColumns) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             AllowedGroups = allowedGroups;
             UserScopeFilterUri = userScopeFilterUri;
             DateFilterColumn = dateFilterColumn;
-            StartTime = startTime;
-            EndTime = endTime;
+            StartOn = startOn;
+            EndOn = endOn;
             OutputColumns = outputColumns;
             CopySourceType = copySourceType ?? "Office365Source";
         }
 
         /// <summary> The groups containing all the users. Type: array of strings (or Expression with resultType array of strings). </summary>
-        public BinaryData AllowedGroups { get; set; }
+        public DataFactoryElement<IList<string>> AllowedGroups { get; set; }
         /// <summary> The user scope uri. Type: string (or Expression with resultType string). </summary>
-        public BinaryData UserScopeFilterUri { get; set; }
-        /// <summary> The Column to apply the &lt;paramref name=&quot;StartTime&quot;/&gt; and &lt;paramref name=&quot;EndTime&quot;/&gt;. Type: string (or Expression with resultType string). </summary>
-        public BinaryData DateFilterColumn { get; set; }
+        public DataFactoryElement<string> UserScopeFilterUri { get; set; }
+        /// <summary> The Column to apply the &lt;paramref name="StartTime"/&gt; and &lt;paramref name="EndTime"/&gt;. Type: string (or Expression with resultType string). </summary>
+        public DataFactoryElement<string> DateFilterColumn { get; set; }
         /// <summary> Start time of the requested range for this dataset. Type: string (or Expression with resultType string). </summary>
-        public BinaryData StartTime { get; set; }
+        public DataFactoryElement<string> StartOn { get; set; }
         /// <summary> End time of the requested range for this dataset. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EndTime { get; set; }
-        /// <summary> The columns to be read out from the Office 365 table. Type: array of objects (or Expression with resultType array of objects). Example: [ { &quot;name&quot;: &quot;Id&quot; }, { &quot;name&quot;: &quot;CreatedDateTime&quot; } ]. </summary>
-        public BinaryData OutputColumns { get; set; }
+        public DataFactoryElement<string> EndOn { get; set; }
+        /// <summary> The columns to be read out from the Office 365 table. Type: array of objects (or Expression with resultType array of objects). itemType: OutputColumn. Example: [ { "name": "Id" }, { "name": "CreatedDateTime" } ]. </summary>
+        public DataFactoryElement<IList<Office365TableOutputColumn>> OutputColumns { get; set; }
     }
 }

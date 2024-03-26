@@ -5,17 +5,20 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the RouteFilter data model. </summary>
+    /// <summary>
+    /// A class representing the RouteFilter data model.
+    /// Route Filter Resource.
+    /// </summary>
     public partial class RouteFilterData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of RouteFilterData. </summary>
+        /// <summary> Initializes a new instance of <see cref="RouteFilterData"/>. </summary>
         public RouteFilterData()
         {
             Rules = new ChangeTrackingList<RouteFilterRuleData>();
@@ -23,23 +26,24 @@ namespace Azure.ResourceManager.Network
             IPv6Peerings = new ChangeTrackingList<ExpressRouteCircuitPeeringData>();
         }
 
-        /// <summary> Initializes a new instance of RouteFilterData. </summary>
+        /// <summary> Initializes a new instance of <see cref="RouteFilterData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
-        /// <param name="eTag"> A unique read-only string that changes whenever the resource is updated. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="rules"> Collection of RouteFilterRules contained within a route filter. </param>
         /// <param name="peerings"> A collection of references to express route circuit peerings. </param>
-        /// <param name="iPv6Peerings"> A collection of references to express route circuit ipv6 peerings. </param>
+        /// <param name="ipv6Peerings"> A collection of references to express route circuit ipv6 peerings. </param>
         /// <param name="provisioningState"> The provisioning state of the route filter resource. </param>
-        internal RouteFilterData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? eTag, IList<RouteFilterRuleData> rules, IReadOnlyList<ExpressRouteCircuitPeeringData> peerings, IReadOnlyList<ExpressRouteCircuitPeeringData> iPv6Peerings, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, location, tags)
+        internal RouteFilterData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, IList<RouteFilterRuleData> rules, IReadOnlyList<ExpressRouteCircuitPeeringData> peerings, IReadOnlyList<ExpressRouteCircuitPeeringData> ipv6Peerings, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
-            ETag = eTag;
+            ETag = etag;
             Rules = rules;
             Peerings = peerings;
-            IPv6Peerings = iPv6Peerings;
+            IPv6Peerings = ipv6Peerings;
             ProvisioningState = provisioningState;
         }
 

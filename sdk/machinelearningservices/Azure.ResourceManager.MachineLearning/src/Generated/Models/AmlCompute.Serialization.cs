@@ -6,159 +6,306 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    public partial class AmlCompute : IUtf8JsonSerializable
+    public partial class AmlCompute : IUtf8JsonSerializable, IJsonModel<AmlCompute>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AmlCompute>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AmlCompute>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AmlCompute>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AmlCompute)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Properties))
             {
-                writer.WritePropertyName("properties");
-                writer.WriteObjectValue(Properties);
+                writer.WritePropertyName("properties"u8);
+                writer.WriteObjectValue<AmlComputeProperties>(Properties, options);
             }
-            writer.WritePropertyName("computeType");
+            writer.WritePropertyName("computeType"u8);
             writer.WriteStringValue(ComputeType.ToString());
+            if (Optional.IsDefined(ComputeLocation))
+            {
+                writer.WritePropertyName("computeLocation"u8);
+                writer.WriteStringValue(ComputeLocation);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
-                writer.WriteStringValue(Description);
+                if (Description != null)
+                {
+                    writer.WritePropertyName("description"u8);
+                    writer.WriteStringValue(Description);
+                }
+                else
+                {
+                    writer.WriteNull("description");
+                }
+            }
+            if (options.Format != "W" && Optional.IsDefined(CreatedOn))
+            {
+                writer.WritePropertyName("createdOn"u8);
+                writer.WriteStringValue(CreatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(ModifiedOn))
+            {
+                writer.WritePropertyName("modifiedOn"u8);
+                writer.WriteStringValue(ModifiedOn.Value, "O");
             }
             if (Optional.IsDefined(ResourceId))
             {
-                writer.WritePropertyName("resourceId");
-                writer.WriteStringValue(ResourceId);
+                if (ResourceId != null)
+                {
+                    writer.WritePropertyName("resourceId"u8);
+                    writer.WriteStringValue(ResourceId);
+                }
+                else
+                {
+                    writer.WriteNull("resourceId");
+                }
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(ProvisioningErrors))
+            {
+                if (ProvisioningErrors != null)
+                {
+                    writer.WritePropertyName("provisioningErrors"u8);
+                    writer.WriteStartArray();
+                    foreach (var item in ProvisioningErrors)
+                    {
+                        writer.WriteObjectValue<MachineLearningError>(item, options);
+                    }
+                    writer.WriteEndArray();
+                }
+                else
+                {
+                    writer.WriteNull("provisioningErrors");
+                }
+            }
+            if (options.Format != "W" && Optional.IsDefined(IsAttachedCompute))
+            {
+                writer.WritePropertyName("isAttachedCompute"u8);
+                writer.WriteBooleanValue(IsAttachedCompute.Value);
             }
             if (Optional.IsDefined(DisableLocalAuth))
             {
-                writer.WritePropertyName("disableLocalAuth");
+                writer.WritePropertyName("disableLocalAuth"u8);
                 writer.WriteBooleanValue(DisableLocalAuth.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static AmlCompute DeserializeAmlCompute(JsonElement element)
+        AmlCompute IJsonModel<AmlCompute>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AmlComputeProperties> properties = default;
+            var format = options.Format == "W" ? ((IPersistableModel<AmlCompute>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AmlCompute)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAmlCompute(document.RootElement, options);
+        }
+
+        internal static AmlCompute DeserializeAmlCompute(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AmlComputeProperties properties = default;
             ComputeType computeType = default;
-            Optional<string> computeLocation = default;
-            Optional<ProvisioningState> provisioningState = default;
-            Optional<string> description = default;
-            Optional<DateTimeOffset> createdOn = default;
-            Optional<DateTimeOffset> modifiedOn = default;
-            Optional<ResourceIdentifier> resourceId = default;
-            Optional<IReadOnlyList<ErrorResponse>> provisioningErrors = default;
-            Optional<bool> isAttachedCompute = default;
-            Optional<bool> disableLocalAuth = default;
+            string computeLocation = default;
+            MachineLearningProvisioningState? provisioningState = default;
+            string description = default;
+            DateTimeOffset? createdOn = default;
+            DateTimeOffset? modifiedOn = default;
+            ResourceIdentifier resourceId = default;
+            IReadOnlyList<MachineLearningError> provisioningErrors = default;
+            bool? isAttachedCompute = default;
+            bool? disableLocalAuth = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    properties = AmlComputeProperties.DeserializeAmlComputeProperties(property.Value);
+                    properties = AmlComputeProperties.DeserializeAmlComputeProperties(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("computeType"))
+                if (property.NameEquals("computeType"u8))
                 {
                     computeType = new ComputeType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("computeLocation"))
+                if (property.NameEquals("computeLocation"u8))
                 {
                     computeLocation = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (property.NameEquals("provisioningState"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new ProvisioningState(property.Value.GetString());
+                    provisioningState = new MachineLearningProvisioningState(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        description = null;
+                        continue;
+                    }
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("createdOn"))
+                if (property.NameEquals("createdOn"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     createdOn = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("modifiedOn"))
+                if (property.NameEquals("modifiedOn"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     modifiedOn = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("resourceId"))
+                if (property.NameEquals("resourceId"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        resourceId = null;
                         continue;
                     }
                     resourceId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("provisioningErrors"))
+                if (property.NameEquals("provisioningErrors"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         provisioningErrors = null;
                         continue;
                     }
-                    List<ErrorResponse> array = new List<ErrorResponse>();
+                    List<MachineLearningError> array = new List<MachineLearningError>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ErrorResponse.DeserializeErrorResponse(item));
+                        array.Add(MachineLearningError.DeserializeMachineLearningError(item, options));
                     }
                     provisioningErrors = array;
                     continue;
                 }
-                if (property.NameEquals("isAttachedCompute"))
+                if (property.NameEquals("isAttachedCompute"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     isAttachedCompute = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("disableLocalAuth"))
+                if (property.NameEquals("disableLocalAuth"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     disableLocalAuth = property.Value.GetBoolean();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AmlCompute(computeType, computeLocation.Value, Optional.ToNullable(provisioningState), description.Value, Optional.ToNullable(createdOn), Optional.ToNullable(modifiedOn), resourceId.Value, Optional.ToList(provisioningErrors), Optional.ToNullable(isAttachedCompute), Optional.ToNullable(disableLocalAuth), properties.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AmlCompute(
+                computeType,
+                computeLocation,
+                provisioningState,
+                description,
+                createdOn,
+                modifiedOn,
+                resourceId,
+                provisioningErrors ?? new ChangeTrackingList<MachineLearningError>(),
+                isAttachedCompute,
+                disableLocalAuth,
+                serializedAdditionalRawData,
+                properties);
         }
+
+        BinaryData IPersistableModel<AmlCompute>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AmlCompute>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(AmlCompute)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AmlCompute IPersistableModel<AmlCompute>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AmlCompute>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAmlCompute(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AmlCompute)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AmlCompute>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

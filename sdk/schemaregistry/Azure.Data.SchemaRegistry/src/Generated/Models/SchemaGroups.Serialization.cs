@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Data.SchemaRegistry.Models
 {
@@ -15,14 +14,18 @@ namespace Azure.Data.SchemaRegistry.Models
     {
         internal static SchemaGroups DeserializeSchemaGroups(JsonElement element)
         {
-            Optional<IReadOnlyList<string>> schemaGroups = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<string> schemaGroups = default;
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("schemaGroups"))
+                if (property.NameEquals("schemaGroups"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -33,8 +36,13 @@ namespace Azure.Data.SchemaRegistry.Models
                     schemaGroups = array;
                     continue;
                 }
+                if (property.NameEquals("nextLink"u8))
+                {
+                    nextLink = property.Value.GetString();
+                    continue;
+                }
             }
-            return new SchemaGroups(Optional.ToList(schemaGroups));
+            return new SchemaGroups(schemaGroups ?? new ChangeTrackingList<string>(), nextLink);
         }
     }
 }

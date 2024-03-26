@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity Azure Table sink. </summary>
     public partial class AzureTableSink : CopySink
     {
-        /// <summary> Initializes a new instance of AzureTableSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureTableSink"/>. </summary>
         public AzureTableSink()
         {
             CopySinkType = "AzureTableSink";
         }
 
-        /// <summary> Initializes a new instance of AzureTableSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureTableSink"/>. </summary>
         /// <param name="copySinkType"> Copy sink type. </param>
         /// <param name="writeBatchSize"> Write batch size. Type: integer (or Expression with resultType integer), minimum: 0. </param>
         /// <param name="writeBatchTimeout"> Write batch timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -32,7 +33,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="azureTablePartitionKeyName"> Azure Table partition key name. Type: string (or Expression with resultType string). </param>
         /// <param name="azureTableRowKeyName"> Azure Table row key name. Type: string (or Expression with resultType string). </param>
         /// <param name="azureTableInsertType"> Azure Table insert type. Type: string (or Expression with resultType string). </param>
-        internal AzureTableSink(string copySinkType, BinaryData writeBatchSize, BinaryData writeBatchTimeout, BinaryData sinkRetryCount, BinaryData sinkRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData azureTableDefaultPartitionKeyValue, BinaryData azureTablePartitionKeyName, BinaryData azureTableRowKeyName, BinaryData azureTableInsertType) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal AzureTableSink(string copySinkType, DataFactoryElement<int> writeBatchSize, DataFactoryElement<string> writeBatchTimeout, DataFactoryElement<int> sinkRetryCount, DataFactoryElement<string> sinkRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> azureTableDefaultPartitionKeyValue, DataFactoryElement<string> azureTablePartitionKeyName, DataFactoryElement<string> azureTableRowKeyName, DataFactoryElement<string> azureTableInsertType) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             AzureTableDefaultPartitionKeyValue = azureTableDefaultPartitionKeyValue;
             AzureTablePartitionKeyName = azureTablePartitionKeyName;
@@ -42,12 +43,12 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> Azure Table default partition key value. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AzureTableDefaultPartitionKeyValue { get; set; }
+        public DataFactoryElement<string> AzureTableDefaultPartitionKeyValue { get; set; }
         /// <summary> Azure Table partition key name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AzureTablePartitionKeyName { get; set; }
+        public DataFactoryElement<string> AzureTablePartitionKeyName { get; set; }
         /// <summary> Azure Table row key name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AzureTableRowKeyName { get; set; }
+        public DataFactoryElement<string> AzureTableRowKeyName { get; set; }
         /// <summary> Azure Table insert type. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AzureTableInsertType { get; set; }
+        public DataFactoryElement<string> AzureTableInsertType { get; set; }
     }
 }

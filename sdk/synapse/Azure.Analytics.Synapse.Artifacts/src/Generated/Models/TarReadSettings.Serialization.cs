@@ -21,38 +21,41 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(PreserveCompressionFileNameAsFolder))
             {
-                writer.WritePropertyName("preserveCompressionFileNameAsFolder");
-                writer.WriteObjectValue(PreserveCompressionFileNameAsFolder);
+                writer.WritePropertyName("preserveCompressionFileNameAsFolder"u8);
+                writer.WriteObjectValue<object>(PreserveCompressionFileNameAsFolder);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static TarReadSettings DeserializeTarReadSettings(JsonElement element)
         {
-            Optional<object> preserveCompressionFileNameAsFolder = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object preserveCompressionFileNameAsFolder = default;
             string type = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("preserveCompressionFileNameAsFolder"))
+                if (property.NameEquals("preserveCompressionFileNameAsFolder"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     preserveCompressionFileNameAsFolder = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
@@ -60,14 +63,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new TarReadSettings(type, additionalProperties, preserveCompressionFileNameAsFolder.Value);
+            return new TarReadSettings(type, additionalProperties, preserveCompressionFileNameAsFolder);
         }
 
         internal partial class TarReadSettingsConverter : JsonConverter<TarReadSettings>
         {
             public override void Write(Utf8JsonWriter writer, TarReadSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<TarReadSettings>(model);
             }
             public override TarReadSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

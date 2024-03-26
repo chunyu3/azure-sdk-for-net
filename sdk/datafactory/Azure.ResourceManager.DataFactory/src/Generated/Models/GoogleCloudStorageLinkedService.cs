@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Linked service for Google Cloud Storage. </summary>
-    public partial class GoogleCloudStorageLinkedService : LinkedService
+    public partial class GoogleCloudStorageLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of GoogleCloudStorageLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="GoogleCloudStorageLinkedService"/>. </summary>
         public GoogleCloudStorageLinkedService()
         {
             LinkedServiceType = "GoogleCloudStorage";
         }
 
-        /// <summary> Initializes a new instance of GoogleCloudStorageLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="GoogleCloudStorageLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -27,14 +28,10 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="accessKeyId"> The access key identifier of the Google Cloud Storage Identity and Access Management (IAM) user. Type: string (or Expression with resultType string). </param>
-        /// <param name="secretAccessKey">
-        /// The secret access key of the Google Cloud Storage Identity and Access Management (IAM) user.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="secretAccessKey"> The secret access key of the Google Cloud Storage Identity and Access Management (IAM) user. </param>
         /// <param name="serviceUri"> This value specifies the endpoint to access with the Google Cloud Storage Connector. This is an optional property; change it only if you want to try a different service endpoint or want to switch between https and http. Type: string (or Expression with resultType string). </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal GoogleCloudStorageLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData accessKeyId, SecretBase secretAccessKey, BinaryData serviceUri, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal GoogleCloudStorageLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> accessKeyId, DataFactorySecret secretAccessKey, DataFactoryElement<string> serviceUri, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             AccessKeyId = accessKeyId;
             SecretAccessKey = secretAccessKey;
@@ -44,16 +41,12 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> The access key identifier of the Google Cloud Storage Identity and Access Management (IAM) user. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AccessKeyId { get; set; }
-        /// <summary>
-        /// The secret access key of the Google Cloud Storage Identity and Access Management (IAM) user.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase SecretAccessKey { get; set; }
+        public DataFactoryElement<string> AccessKeyId { get; set; }
+        /// <summary> The secret access key of the Google Cloud Storage Identity and Access Management (IAM) user. </summary>
+        public DataFactorySecret SecretAccessKey { get; set; }
         /// <summary> This value specifies the endpoint to access with the Google Cloud Storage Connector. This is an optional property; change it only if you want to try a different service endpoint or want to switch between https and http. Type: string (or Expression with resultType string). </summary>
-        public BinaryData ServiceUri { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> ServiceUri { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

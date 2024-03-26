@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ByoaSecretAkvUrl))
             {
-                writer.WritePropertyName("byoaSecretAkvUrl");
+                writer.WritePropertyName("byoaSecretAkvUrl"u8);
                 writer.WriteStringValue(ByoaSecretAkvUrl);
             }
             if (Optional.IsDefined(ByoaSecretName))
             {
-                writer.WritePropertyName("byoaSecretName");
+                writer.WritePropertyName("byoaSecretName"u8);
                 writer.WriteStringValue(ByoaSecretName);
             }
             writer.WriteEndObject();
@@ -33,29 +33,33 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static GitHubClientSecret DeserializeGitHubClientSecret(JsonElement element)
         {
-            Optional<string> byoaSecretAkvUrl = default;
-            Optional<string> byoaSecretName = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string byoaSecretAkvUrl = default;
+            string byoaSecretName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("byoaSecretAkvUrl"))
+                if (property.NameEquals("byoaSecretAkvUrl"u8))
                 {
                     byoaSecretAkvUrl = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("byoaSecretName"))
+                if (property.NameEquals("byoaSecretName"u8))
                 {
                     byoaSecretName = property.Value.GetString();
                     continue;
                 }
             }
-            return new GitHubClientSecret(byoaSecretAkvUrl.Value, byoaSecretName.Value);
+            return new GitHubClientSecret(byoaSecretAkvUrl, byoaSecretName);
         }
 
         internal partial class GitHubClientSecretConverter : JsonConverter<GitHubClientSecret>
         {
             public override void Write(Utf8JsonWriter writer, GitHubClientSecret model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<GitHubClientSecret>(model);
             }
             public override GitHubClientSecret Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

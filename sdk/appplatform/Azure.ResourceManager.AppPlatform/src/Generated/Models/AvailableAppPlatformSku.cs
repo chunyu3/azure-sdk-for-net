@@ -5,23 +5,56 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.AppPlatform.Models
 {
-    /// <summary> Describes an available Azure Spring Cloud SKU. </summary>
+    /// <summary> Describes an available Azure Spring Apps SKU. </summary>
     public partial class AvailableAppPlatformSku
     {
-        /// <summary> Initializes a new instance of AvailableAppPlatformSku. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="AvailableAppPlatformSku"/>. </summary>
         internal AvailableAppPlatformSku()
         {
             Locations = new ChangeTrackingList<AzureLocation>();
-            LocationInfo = new ChangeTrackingList<ResourceSkuLocationInfo>();
-            Restrictions = new ChangeTrackingList<ResourceSkuRestrictions>();
+            LocationInfo = new ChangeTrackingList<AppPlatformSkuLocationInfo>();
+            Restrictions = new ChangeTrackingList<AppPlatformSkuRestrictions>();
         }
 
-        /// <summary> Initializes a new instance of AvailableAppPlatformSku. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvailableAppPlatformSku"/>. </summary>
         /// <param name="resourceType"> Gets the type of resource the SKU applies to. </param>
         /// <param name="name"> Gets the name of SKU. </param>
         /// <param name="tier"> Gets the tier of SKU. </param>
@@ -32,7 +65,8 @@ namespace Azure.ResourceManager.AppPlatform.Models
         /// Gets the restrictions because of which SKU cannot be used. This is
         /// empty if there are no restrictions.
         /// </param>
-        internal AvailableAppPlatformSku(ResourceType? resourceType, string name, string tier, SkuCapacity capacity, IReadOnlyList<AzureLocation> locations, IReadOnlyList<ResourceSkuLocationInfo> locationInfo, IReadOnlyList<ResourceSkuRestrictions> restrictions)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal AvailableAppPlatformSku(ResourceType? resourceType, string name, string tier, AppPlatformSkuCapacity capacity, IReadOnlyList<AzureLocation> locations, IReadOnlyList<AppPlatformSkuLocationInfo> locationInfo, IReadOnlyList<AppPlatformSkuRestrictions> restrictions, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             ResourceType = resourceType;
             Name = name;
@@ -41,6 +75,7 @@ namespace Azure.ResourceManager.AppPlatform.Models
             Locations = locations;
             LocationInfo = locationInfo;
             Restrictions = restrictions;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Gets the type of resource the SKU applies to. </summary>
@@ -50,15 +85,15 @@ namespace Azure.ResourceManager.AppPlatform.Models
         /// <summary> Gets the tier of SKU. </summary>
         public string Tier { get; }
         /// <summary> Gets the capacity of SKU. </summary>
-        public SkuCapacity Capacity { get; }
+        public AppPlatformSkuCapacity Capacity { get; }
         /// <summary> Gets the set of locations that the SKU is available. </summary>
         public IReadOnlyList<AzureLocation> Locations { get; }
         /// <summary> Gets a list of locations and availability zones in those locations where the SKU is available. </summary>
-        public IReadOnlyList<ResourceSkuLocationInfo> LocationInfo { get; }
+        public IReadOnlyList<AppPlatformSkuLocationInfo> LocationInfo { get; }
         /// <summary>
         /// Gets the restrictions because of which SKU cannot be used. This is
         /// empty if there are no restrictions.
         /// </summary>
-        public IReadOnlyList<ResourceSkuRestrictions> Restrictions { get; }
+        public IReadOnlyList<AppPlatformSkuRestrictions> Restrictions { get; }
     }
 }

@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
@@ -12,17 +13,52 @@ using Azure.ResourceManager.SqlVirtualMachine.Models;
 
 namespace Azure.ResourceManager.SqlVirtualMachine
 {
-    /// <summary> A class representing the AvailabilityGroupListener data model. </summary>
+    /// <summary>
+    /// A class representing the AvailabilityGroupListener data model.
+    /// A SQL Server availability group listener.
+    /// </summary>
     public partial class AvailabilityGroupListenerData : ResourceData
     {
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerData"/>. </summary>
         public AvailabilityGroupListenerData()
         {
-            LoadBalancerConfigurations = new ChangeTrackingList<LoadBalancerConfiguration>();
+            LoadBalancerConfigurations = new ChangeTrackingList<AvailabilityGroupListenerLoadBalancerConfiguration>();
             MultiSubnetIPConfigurations = new ChangeTrackingList<MultiSubnetIPConfiguration>();
         }
 
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerData. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -34,7 +70,8 @@ namespace Azure.ResourceManager.SqlVirtualMachine
         /// <param name="createDefaultAvailabilityGroupIfNotExist"> Create a default availability group if it does not exist. </param>
         /// <param name="port"> Listener port. </param>
         /// <param name="availabilityGroupConfiguration"> Availability Group configuration. </param>
-        internal AvailabilityGroupListenerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string provisioningState, string availabilityGroupName, IList<LoadBalancerConfiguration> loadBalancerConfigurations, IList<MultiSubnetIPConfiguration> multiSubnetIPConfigurations, bool? createDefaultAvailabilityGroupIfNotExist, int? port, AgConfiguration availabilityGroupConfiguration) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal AvailabilityGroupListenerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string provisioningState, string availabilityGroupName, IList<AvailabilityGroupListenerLoadBalancerConfiguration> loadBalancerConfigurations, IList<MultiSubnetIPConfiguration> multiSubnetIPConfigurations, bool? createDefaultAvailabilityGroupIfNotExist, int? port, AvailabilityGroupConfiguration availabilityGroupConfiguration, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             ProvisioningState = provisioningState;
             AvailabilityGroupName = availabilityGroupName;
@@ -43,6 +80,7 @@ namespace Azure.ResourceManager.SqlVirtualMachine
             CreateDefaultAvailabilityGroupIfNotExist = createDefaultAvailabilityGroupIfNotExist;
             Port = port;
             AvailabilityGroupConfiguration = availabilityGroupConfiguration;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Provisioning state to track the async operation status. </summary>
@@ -50,7 +88,7 @@ namespace Azure.ResourceManager.SqlVirtualMachine
         /// <summary> Name of the availability group. </summary>
         public string AvailabilityGroupName { get; set; }
         /// <summary> List of load balancer configurations for an availability group listener. </summary>
-        public IList<LoadBalancerConfiguration> LoadBalancerConfigurations { get; }
+        public IList<AvailabilityGroupListenerLoadBalancerConfiguration> LoadBalancerConfigurations { get; }
         /// <summary> List of multi subnet IP configurations for an AG listener. </summary>
         public IList<MultiSubnetIPConfiguration> MultiSubnetIPConfigurations { get; }
         /// <summary> Create a default availability group if it does not exist. </summary>
@@ -58,14 +96,14 @@ namespace Azure.ResourceManager.SqlVirtualMachine
         /// <summary> Listener port. </summary>
         public int? Port { get; set; }
         /// <summary> Availability Group configuration. </summary>
-        internal AgConfiguration AvailabilityGroupConfiguration { get; set; }
+        internal AvailabilityGroupConfiguration AvailabilityGroupConfiguration { get; set; }
         /// <summary> Replica configurations. </summary>
-        public IList<AgReplica> AvailabilityGroupReplicas
+        public IList<AvailabilityGroupReplica> AvailabilityGroupReplicas
         {
             get
             {
                 if (AvailabilityGroupConfiguration is null)
-                    AvailabilityGroupConfiguration = new AgConfiguration();
+                    AvailabilityGroupConfiguration = new AvailabilityGroupConfiguration();
                 return AvailabilityGroupConfiguration.Replicas;
             }
         }

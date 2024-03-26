@@ -6,17 +6,15 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
 namespace Azure.Analytics.Purview.Administration
 {
-    /// <summary> The PurviewCollection service client. </summary>
+    // Data plane generated sub-client.
+    /// <summary> The PurviewCollection sub-client. </summary>
     public partial class PurviewCollection
     {
         private static readonly string[] AuthorizationScopes = new string[] { "https://purview.azure.net/.default" };
@@ -41,7 +39,7 @@ namespace Azure.Analytics.Purview.Administration
         /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
         /// <param name="tokenCredential"> The token credential to copy. </param>
         /// <param name="endpoint"> The account endpoint of your Purview account. Example: https://{accountName}.purview.azure.com/account/. </param>
-        /// <param name="collectionName"> The String to use. </param>
+        /// <param name="collectionName"> The <see cref="string"/> to use. </param>
         internal PurviewCollection(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, TokenCredential tokenCredential, Uri endpoint, string collectionName)
         {
             ClientDiagnostics = clientDiagnostics;
@@ -51,38 +49,21 @@ namespace Azure.Analytics.Purview.Administration
             _collectionName = collectionName;
         }
 
-        /// <summary> Get a collection. </summary>
+        /// <summary>
+        /// [Protocol Method] Get a collection
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetCollectionAsync(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetCollectionAsync(RequestContext)']/*" />
+        public virtual async Task<Response> GetCollectionAsync(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.GetCollection");
             scope.Start();
@@ -98,38 +79,21 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Get a collection. </summary>
+        /// <summary>
+        /// [Protocol Method] Get a collection
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetCollection(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetCollection(RequestContext)']/*" />
+        public virtual Response GetCollection(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.GetCollection");
             scope.Start();
@@ -145,62 +109,22 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Creates or updates a collection entity. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Creates or updates a collection entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='CreateOrUpdateCollectionAsync(RequestContent,RequestContext)']/*" />
         public virtual async Task<Response> CreateOrUpdateCollectionAsync(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -219,62 +143,22 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Creates or updates a collection entity. </summary>
-        /// <param name="content"> The content to send as the body of the request. Details of the request body schema are in the Remarks section below. </param>
+        /// <summary>
+        /// [Protocol Method] Creates or updates a collection entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="content"> The content to send as the body of the request. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the request and response payloads.
-        /// 
-        /// Request Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>Collection</c>:
-        /// <code>{
-        ///   collectionProvisioningState: &quot;Unknown&quot; | &quot;Creating&quot; | &quot;Moving&quot; | &quot;Deleting&quot; | &quot;Failed&quot; | &quot;Succeeded&quot;, # Optional. Gets the state of the provisioning.
-        ///   description: string, # Optional. Gets or sets the description.
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        ///   parentCollection: {
-        ///     referenceName: string, # Optional. Gets or sets the reference name.
-        ///     type: string, # Optional. Gets the reference type property.
-        ///   }, # Optional. Gets or sets the parent collection reference.
-        ///   systemData: {
-        ///     createdAt: string (ISO 8601 Format), # Optional. The timestamp of resource creation (UTC).
-        ///     createdBy: string, # Optional. The identity that created the resource.
-        ///     createdByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that created the resource.
-        ///     lastModifiedAt: string (ISO 8601 Format), # Optional. The timestamp of the last modification the resource (UTC).
-        ///     lastModifiedBy: string, # Optional. The identity that last modified the resource.
-        ///     lastModifiedByType: &quot;User&quot; | &quot;Application&quot; | &quot;ManagedIdentity&quot; | &quot;Key&quot;, # Optional. The type of identity that last modified the resource.
-        ///   }, # Optional. Gets the system data that contains information about who and when created and updated the resource.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='CreateOrUpdateCollection(RequestContent,RequestContext)']/*" />
         public virtual Response CreateOrUpdateCollection(RequestContent content, RequestContext context = null)
         {
             Argument.AssertNotNull(content, nameof(content));
@@ -293,10 +177,20 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Deletes a Collection entity. </summary>
+        /// <summary>
+        /// [Protocol Method] Deletes a Collection entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='DeleteCollectionAsync(RequestContext)']/*" />
         public virtual async Task<Response> DeleteCollectionAsync(RequestContext context = null)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.DeleteCollection");
@@ -313,10 +207,20 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Deletes a Collection entity. </summary>
+        /// <summary>
+        /// [Protocol Method] Deletes a Collection entity.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='DeleteCollection(RequestContext)']/*" />
         public virtual Response DeleteCollection(RequestContext context = null)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.DeleteCollection");
@@ -333,24 +237,21 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Gets the parent name and parent friendly name chains that represent the collection path. </summary>
+        /// <summary>
+        /// [Protocol Method] Gets the parent name and parent friendly name chains that represent the collection path.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionPathResponse</c>:
-        /// <code>{
-        ///   parentFriendlyNameChain: [string], # Optional. The friendly names of ancestors starting from the default (root) collection and ending with the immediate parent.
-        ///   parentNameChain: [string], # Optional. The names of ancestors starting from the default (root) collection and ending with the immediate parent.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetCollectionPathAsync(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetCollectionPathAsync(RequestContext)']/*" />
+        public virtual async Task<Response> GetCollectionPathAsync(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.GetCollectionPath");
             scope.Start();
@@ -366,24 +267,21 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Gets the parent name and parent friendly name chains that represent the collection path. </summary>
+        /// <summary>
+        /// [Protocol Method] Gets the parent name and parent friendly name chains that represent the collection path.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionPathResponse</c>:
-        /// <code>{
-        ///   parentFriendlyNameChain: [string], # Optional. The friendly names of ancestors starting from the default (root) collection and ending with the immediate parent.
-        ///   parentNameChain: [string], # Optional. The names of ancestors starting from the default (root) collection and ending with the immediate parent.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetCollectionPath(RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetCollectionPath(RequestContext)']/*" />
+        public virtual Response GetCollectionPath(RequestContext context)
         {
             using var scope = ClientDiagnostics.CreateScope("PurviewCollection.GetCollectionPath");
             scope.Start();
@@ -399,84 +297,48 @@ namespace Azure.Analytics.Purview.Administration
             }
         }
 
-        /// <summary> Lists the child collections names in the collection. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] Lists the child collections names in the collection.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionNameResponseListValue</c>:
-        /// <code>{
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual AsyncPageable<BinaryData> GetChildCollectionNamesAsync(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetChildCollectionNamesAsync(string,RequestContext)']/*" />
+        public virtual AsyncPageable<BinaryData> GetChildCollectionNamesAsync(string skipToken, RequestContext context)
         {
-            return GetChildCollectionNamesImplementationAsync("PurviewCollection.GetChildCollectionNames", skipToken, context);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetChildCollectionNamesRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetChildCollectionNamesNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewCollection.GetChildCollectionNames", "value", "nextLink", context);
         }
 
-        private AsyncPageable<BinaryData> GetChildCollectionNamesImplementationAsync(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetChildCollectionNamesRequest(skipToken, context)
-                        : CreateGetChildCollectionNamesNextPageRequest(nextLink, skipToken, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists the child collections names in the collection. </summary>
-        /// <param name="skipToken"> The String to use. </param>
+        /// <summary>
+        /// [Protocol Method] Lists the child collections names in the collection.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="skipToken"> The <see cref="string"/> to use. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
         /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for one item in the pageable response.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>CollectionNameResponseListValue</c>:
-        /// <code>{
-        ///   friendlyName: string, # Optional. Gets or sets the friendly name of the collection.
-        ///   name: string, # Optional. Gets the name.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Pageable<BinaryData> GetChildCollectionNames(string skipToken = null, RequestContext context = null)
+        /// <include file="Docs/PurviewCollection.xml" path="doc/members/member[@name='GetChildCollectionNames(string,RequestContext)']/*" />
+        public virtual Pageable<BinaryData> GetChildCollectionNames(string skipToken, RequestContext context)
         {
-            return GetChildCollectionNamesImplementation("PurviewCollection.GetChildCollectionNames", skipToken, context);
-        }
-
-        private Pageable<BinaryData> GetChildCollectionNamesImplementation(string diagnosticsScopeName, string skipToken, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetChildCollectionNamesRequest(skipToken, context)
-                        : CreateGetChildCollectionNamesNextPageRequest(nextLink, skipToken, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
+            HttpMessage FirstPageRequest(int? pageSizeHint) => CreateGetChildCollectionNamesRequest(skipToken, context);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => CreateGetChildCollectionNamesNextPageRequest(nextLink, skipToken, context);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => BinaryData.FromString(e.GetRawText()), ClientDiagnostics, _pipeline, "PurviewCollection.GetChildCollectionNames", "value", "nextLink", context);
         }
 
         internal HttpMessage CreateGetCollectionRequest(RequestContext context)

@@ -7,31 +7,32 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The location of http server. </summary>
     public partial class HttpServerLocation : DatasetLocation
     {
-        /// <summary> Initializes a new instance of HttpServerLocation. </summary>
+        /// <summary> Initializes a new instance of <see cref="HttpServerLocation"/>. </summary>
         public HttpServerLocation()
         {
             DatasetLocationType = "HttpServerLocation";
         }
 
-        /// <summary> Initializes a new instance of HttpServerLocation. </summary>
+        /// <summary> Initializes a new instance of <see cref="HttpServerLocation"/>. </summary>
         /// <param name="datasetLocationType"> Type of dataset storage location. </param>
         /// <param name="folderPath"> Specify the folder path of dataset. Type: string (or Expression with resultType string). </param>
         /// <param name="fileName"> Specify the file name of dataset. Type: string (or Expression with resultType string). </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="relativeUri"> Specify the relativeUrl of http server. Type: string (or Expression with resultType string). </param>
-        internal HttpServerLocation(string datasetLocationType, BinaryData folderPath, BinaryData fileName, IDictionary<string, BinaryData> additionalProperties, BinaryData relativeUri) : base(datasetLocationType, folderPath, fileName, additionalProperties)
+        internal HttpServerLocation(string datasetLocationType, DataFactoryElement<string> folderPath, DataFactoryElement<string> fileName, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> relativeUri) : base(datasetLocationType, folderPath, fileName, additionalProperties)
         {
             RelativeUri = relativeUri;
             DatasetLocationType = datasetLocationType ?? "HttpServerLocation";
         }
 
         /// <summary> Specify the relativeUrl of http server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData RelativeUri { get; set; }
+        public DataFactoryElement<string> RelativeUri { get; set; }
     }
 }

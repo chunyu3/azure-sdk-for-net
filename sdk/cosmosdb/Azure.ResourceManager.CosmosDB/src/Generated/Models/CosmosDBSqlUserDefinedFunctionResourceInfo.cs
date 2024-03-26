@@ -6,37 +6,76 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.CosmosDB.Models
 {
     /// <summary> Cosmos DB SQL userDefinedFunction resource object. </summary>
     public partial class CosmosDBSqlUserDefinedFunctionResourceInfo
     {
-        /// <summary> Initializes a new instance of CosmosDBSqlUserDefinedFunctionResourceInfo. </summary>
-        /// <param name="id"> Name of the Cosmos DB SQL userDefinedFunction. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="id"/> is null. </exception>
-        public CosmosDBSqlUserDefinedFunctionResourceInfo(string id)
-        {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private protected IDictionary<string, BinaryData> _serializedAdditionalRawData;
 
-            Id = id;
+        /// <summary> Initializes a new instance of <see cref="CosmosDBSqlUserDefinedFunctionResourceInfo"/>. </summary>
+        /// <param name="functionName"> Name of the Cosmos DB SQL userDefinedFunction. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="functionName"/> is null. </exception>
+        public CosmosDBSqlUserDefinedFunctionResourceInfo(string functionName)
+        {
+            Argument.AssertNotNull(functionName, nameof(functionName));
+
+            FunctionName = functionName;
         }
 
-        /// <summary> Initializes a new instance of CosmosDBSqlUserDefinedFunctionResourceInfo. </summary>
-        /// <param name="id"> Name of the Cosmos DB SQL userDefinedFunction. </param>
+        /// <summary> Initializes a new instance of <see cref="CosmosDBSqlUserDefinedFunctionResourceInfo"/>. </summary>
+        /// <param name="functionName"> Name of the Cosmos DB SQL userDefinedFunction. </param>
         /// <param name="body"> Body of the User Defined Function. </param>
-        internal CosmosDBSqlUserDefinedFunctionResourceInfo(string id, string body)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal CosmosDBSqlUserDefinedFunctionResourceInfo(string functionName, string body, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Id = id;
+            FunctionName = functionName;
             Body = body;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="CosmosDBSqlUserDefinedFunctionResourceInfo"/> for deserialization. </summary>
+        internal CosmosDBSqlUserDefinedFunctionResourceInfo()
+        {
         }
 
         /// <summary> Name of the Cosmos DB SQL userDefinedFunction. </summary>
-        public string Id { get; set; }
+        [WirePath("id")]
+        public string FunctionName { get; set; }
         /// <summary> Body of the User Defined Function. </summary>
+        [WirePath("body")]
         public string Body { get; set; }
     }
 }

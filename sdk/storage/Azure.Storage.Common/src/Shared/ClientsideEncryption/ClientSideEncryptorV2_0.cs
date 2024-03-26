@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.Cryptography;
+using Azure.Storage.Common;
 using Azure.Storage.Cryptography.Models;
 
 using static Azure.Storage.Constants.ClientSideEncryption.V2;
@@ -33,7 +34,9 @@ namespace Azure.Storage.Cryptography
             _keyWrapAlgorithm = options.KeyWrapAlgorithm;
         }
 
-        public long ExpectedOutputContentLength(long plaintextLength)
+        public long ExpectedOutputContentLength(long plaintextLength) => CalculateExpectedOutputContentLength(plaintextLength);
+
+        public static long CalculateExpectedOutputContentLength(long plaintextLength)
         {
             long numBlocks = plaintextLength / EncryptionRegionDataSize;
             // partial block check
@@ -176,12 +179,16 @@ namespace Azure.Storage.Cryptography
         /// <returns>The generated key bytes.</returns>
         private static byte[] CreateKey(int numBits)
         {
+#if NET6_0_OR_GREATER
+            return RandomNumberGenerator.GetBytes(numBits / 8);
+#else
             using (var secureRng = new RNGCryptoServiceProvider())
             {
                 var buff = new byte[numBits / 8];
                 secureRng.GetBytes(buff);
                 return buff;
             }
+#endif
         }
     }
 }

@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The MySQL table dataset. </summary>
-    public partial class MySqlTableDataset : Dataset
+    public partial class MySqlTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of MySqlTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="MySqlTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public MySqlTableDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public MySqlTableDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "MySqlTable";
         }
 
-        /// <summary> Initializes a new instance of MySqlTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="MySqlTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="tableName"> The MySQL table name. Type: string (or Expression with resultType string). </param>
-        internal MySqlTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal MySqlTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> tableName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             TableName = tableName;
             DatasetType = datasetType ?? "MySqlTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="MySqlTableDataset"/> for deserialization. </summary>
+        internal MySqlTableDataset()
+        {
+        }
+
         /// <summary> The MySQL table name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData TableName { get; set; }
+        public DataFactoryElement<string> TableName { get; set; }
     }
 }

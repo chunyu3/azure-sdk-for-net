@@ -6,18 +6,53 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
+using System.Net;
+using Azure.Core;
 
 namespace Azure.ResourceManager.ApiManagement.Models
 {
     /// <summary> Request Report data. </summary>
     public partial class RequestReportRecordContract
     {
-        /// <summary> Initializes a new instance of RequestReportRecordContract. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="RequestReportRecordContract"/>. </summary>
         internal RequestReportRecordContract()
         {
         }
 
-        /// <summary> Initializes a new instance of RequestReportRecordContract. </summary>
+        /// <summary> Initializes a new instance of <see cref="RequestReportRecordContract"/>. </summary>
         /// <param name="apiId"> API identifier path. /apis/{apiId}. </param>
         /// <param name="operationId"> Operation identifier path. /apis/{apiId}/operations/{operationId}. </param>
         /// <param name="productId"> Product identifier path. /products/{productId}. </param>
@@ -33,10 +68,11 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <param name="apiTime"> The total time it took to process this request. </param>
         /// <param name="serviceTime"> he time it took to forward this request to the backend and get the response back. </param>
         /// <param name="apiRegion"> Azure region where the gateway that processed this request is located. </param>
-        /// <param name="subscriptionId"> Subscription identifier path. /subscriptions/{subscriptionId}. </param>
+        /// <param name="subscriptionResourceId"> Subscription identifier path. /subscriptions/{subscriptionId}. </param>
         /// <param name="requestId"> Request Identifier. </param>
         /// <param name="requestSize"> The size of this request.. </param>
-        internal RequestReportRecordContract(string apiId, string operationId, string productId, string userId, string method, Uri uri, string ipAddress, string backendResponseCode, int? responseCode, int? responseSize, DateTimeOffset? timestamp, string cache, double? apiTime, double? serviceTime, string apiRegion, string subscriptionId, string requestId, int? requestSize)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal RequestReportRecordContract(string apiId, string operationId, string productId, string userId, RequestMethod? method, Uri uri, IPAddress ipAddress, string backendResponseCode, int? responseCode, int? responseSize, DateTimeOffset? timestamp, string cache, double? apiTime, double? serviceTime, string apiRegion, ResourceIdentifier subscriptionResourceId, string requestId, int? requestSize, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             ApiId = apiId;
             OperationId = operationId;
@@ -53,9 +89,10 @@ namespace Azure.ResourceManager.ApiManagement.Models
             ApiTime = apiTime;
             ServiceTime = serviceTime;
             ApiRegion = apiRegion;
-            SubscriptionId = subscriptionId;
+            SubscriptionResourceId = subscriptionResourceId;
             RequestId = requestId;
             RequestSize = requestSize;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> API identifier path. /apis/{apiId}. </summary>
@@ -67,11 +104,11 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <summary> User identifier path. /users/{userId}. </summary>
         public string UserId { get; }
         /// <summary> The HTTP method associated with this request.. </summary>
-        public string Method { get; }
+        public RequestMethod? Method { get; }
         /// <summary> The full URL associated with this request. </summary>
         public Uri Uri { get; }
         /// <summary> The client IP address associated with this request. </summary>
-        public string IPAddress { get; }
+        public IPAddress IPAddress { get; }
         /// <summary> The HTTP status code received by the gateway as a result of forwarding this request to the backend. </summary>
         public string BackendResponseCode { get; }
         /// <summary> The HTTP status code returned by the gateway. </summary>
@@ -89,7 +126,7 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <summary> Azure region where the gateway that processed this request is located. </summary>
         public string ApiRegion { get; }
         /// <summary> Subscription identifier path. /subscriptions/{subscriptionId}. </summary>
-        public string SubscriptionId { get; }
+        public ResourceIdentifier SubscriptionResourceId { get; }
         /// <summary> Request Identifier. </summary>
         public string RequestId { get; }
         /// <summary> The size of this request.. </summary>

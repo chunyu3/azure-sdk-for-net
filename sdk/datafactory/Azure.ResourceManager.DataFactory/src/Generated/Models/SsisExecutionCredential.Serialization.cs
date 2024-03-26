@@ -6,57 +6,131 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
-    public partial class SsisExecutionCredential : IUtf8JsonSerializable
+    public partial class SsisExecutionCredential : IUtf8JsonSerializable, IJsonModel<SsisExecutionCredential>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SsisExecutionCredential>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SsisExecutionCredential>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<SsisExecutionCredential>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SsisExecutionCredential)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("domain");
+            writer.WritePropertyName("domain"u8);
+            JsonSerializer.Serialize(writer, Domain);
+            writer.WritePropertyName("userName"u8);
+            JsonSerializer.Serialize(writer, UserName);
+            writer.WritePropertyName("password"u8);
+            JsonSerializer.Serialize(writer, Password);
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
 #if NET6_0_OR_GREATER
-				writer.WriteRawValue(Domain);
+				writer.WriteRawValue(item.Value);
 #else
-            JsonSerializer.Serialize(writer, JsonDocument.Parse(Domain.ToString()).RootElement);
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
 #endif
-            writer.WritePropertyName("userName");
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(UserName);
-#else
-            JsonSerializer.Serialize(writer, JsonDocument.Parse(UserName.ToString()).RootElement);
-#endif
-            writer.WritePropertyName("password");
-            writer.WriteObjectValue(Password);
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static SsisExecutionCredential DeserializeSsisExecutionCredential(JsonElement element)
+        SsisExecutionCredential IJsonModel<SsisExecutionCredential>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            BinaryData domain = default;
-            BinaryData userName = default;
-            SecureString password = default;
+            var format = options.Format == "W" ? ((IPersistableModel<SsisExecutionCredential>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SsisExecutionCredential)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSsisExecutionCredential(document.RootElement, options);
+        }
+
+        internal static SsisExecutionCredential DeserializeSsisExecutionCredential(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataFactoryElement<string> domain = default;
+            DataFactoryElement<string> userName = default;
+            DataFactorySecretString password = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("domain"))
+                if (property.NameEquals("domain"u8))
                 {
-                    domain = BinaryData.FromString(property.Value.GetRawText());
+                    domain = JsonSerializer.Deserialize<DataFactoryElement<string>>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("userName"))
+                if (property.NameEquals("userName"u8))
                 {
-                    userName = BinaryData.FromString(property.Value.GetRawText());
+                    userName = JsonSerializer.Deserialize<DataFactoryElement<string>>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("password"))
+                if (property.NameEquals("password"u8))
                 {
-                    password = SecureString.DeserializeSecureString(property.Value);
+                    password = JsonSerializer.Deserialize<DataFactorySecretString>(property.Value.GetRawText());
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
-            return new SsisExecutionCredential(domain, userName, password);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SsisExecutionCredential(domain, userName, password, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<SsisExecutionCredential>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SsisExecutionCredential>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(SsisExecutionCredential)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SsisExecutionCredential IPersistableModel<SsisExecutionCredential>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SsisExecutionCredential>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSsisExecutionCredential(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SsisExecutionCredential)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SsisExecutionCredential>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

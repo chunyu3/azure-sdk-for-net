@@ -7,27 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A FTP server Linked Service. </summary>
-    public partial class FtpServerLinkedService : LinkedService
+    public partial class FtpServerLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of FtpServerLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="FtpServerLinkedService"/>. </summary>
         /// <param name="host"> Host name of the FTP server. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="host"/> is null. </exception>
-        public FtpServerLinkedService(BinaryData host)
+        public FtpServerLinkedService(DataFactoryElement<string> host)
         {
-            if (host == null)
-            {
-                throw new ArgumentNullException(nameof(host));
-            }
+            Argument.AssertNotNull(host, nameof(host));
 
             Host = host;
             LinkedServiceType = "FtpServer";
         }
 
-        /// <summary> Initializes a new instance of FtpServerLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="FtpServerLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -38,15 +36,11 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="port"> The TCP port number that the FTP server uses to listen for client connections. Default value is 21. Type: integer (or Expression with resultType integer), minimum: 0. </param>
         /// <param name="authenticationType"> The authentication type to be used to connect to the FTP server. </param>
         /// <param name="userName"> Username to logon the FTP server. Type: string (or Expression with resultType string). </param>
-        /// <param name="password">
-        /// Password to logon the FTP server.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
+        /// <param name="password"> Password to logon the FTP server. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
         /// <param name="enableSsl"> If true, connect to the FTP server over SSL/TLS channel. Default value is true. Type: boolean (or Expression with resultType boolean). </param>
         /// <param name="enableServerCertificateValidation"> If true, validate the FTP server SSL certificate when connect over SSL/TLS channel. Default value is true. Type: boolean (or Expression with resultType boolean). </param>
-        internal FtpServerLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData host, BinaryData port, FtpAuthenticationType? authenticationType, BinaryData userName, SecretBase password, BinaryData encryptedCredential, BinaryData enableSsl, BinaryData enableServerCertificateValidation) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        internal FtpServerLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> host, DataFactoryElement<int> port, FtpAuthenticationType? authenticationType, DataFactoryElement<string> userName, DataFactorySecret password, string encryptedCredential, DataFactoryElement<bool> enableSsl, DataFactoryElement<bool> enableServerCertificateValidation) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Host = host;
             Port = port;
@@ -59,25 +53,26 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "FtpServer";
         }
 
+        /// <summary> Initializes a new instance of <see cref="FtpServerLinkedService"/> for deserialization. </summary>
+        internal FtpServerLinkedService()
+        {
+        }
+
         /// <summary> Host name of the FTP server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Host { get; set; }
+        public DataFactoryElement<string> Host { get; set; }
         /// <summary> The TCP port number that the FTP server uses to listen for client connections. Default value is 21. Type: integer (or Expression with resultType integer), minimum: 0. </summary>
-        public BinaryData Port { get; set; }
+        public DataFactoryElement<int> Port { get; set; }
         /// <summary> The authentication type to be used to connect to the FTP server. </summary>
         public FtpAuthenticationType? AuthenticationType { get; set; }
         /// <summary> Username to logon the FTP server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData UserName { get; set; }
-        /// <summary>
-        /// Password to logon the FTP server.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> UserName { get; set; }
+        /// <summary> Password to logon the FTP server. </summary>
+        public DataFactorySecret Password { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
         /// <summary> If true, connect to the FTP server over SSL/TLS channel. Default value is true. Type: boolean (or Expression with resultType boolean). </summary>
-        public BinaryData EnableSsl { get; set; }
+        public DataFactoryElement<bool> EnableSsl { get; set; }
         /// <summary> If true, validate the FTP server SSL certificate when connect over SSL/TLS channel. Default value is true. Type: boolean (or Expression with resultType boolean). </summary>
-        public BinaryData EnableServerCertificateValidation { get; set; }
+        public DataFactoryElement<bool> EnableServerCertificateValidation { get; set; }
     }
 }

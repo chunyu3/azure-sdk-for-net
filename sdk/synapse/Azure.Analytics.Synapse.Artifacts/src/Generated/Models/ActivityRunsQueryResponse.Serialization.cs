@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Analytics.Synapse.Artifacts.Models
 {
@@ -18,11 +17,15 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
     {
         internal static ActivityRunsQueryResponse DeserializeActivityRunsQueryResponse(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IReadOnlyList<ActivityRun> value = default;
-            Optional<string> continuationToken = default;
+            string continuationToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     List<ActivityRun> array = new List<ActivityRun>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -32,13 +35,13 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("continuationToken"))
+                if (property.NameEquals("continuationToken"u8))
                 {
                     continuationToken = property.Value.GetString();
                     continue;
                 }
             }
-            return new ActivityRunsQueryResponse(value, continuationToken.Value);
+            return new ActivityRunsQueryResponse(value, continuationToken);
         }
 
         internal partial class ActivityRunsQueryResponseConverter : JsonConverter<ActivityRunsQueryResponse>

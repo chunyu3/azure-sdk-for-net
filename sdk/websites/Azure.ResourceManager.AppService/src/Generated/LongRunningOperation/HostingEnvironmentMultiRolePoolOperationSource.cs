@@ -8,9 +8,7 @@
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.AppService
 {
@@ -26,14 +24,14 @@ namespace Azure.ResourceManager.AppService
         HostingEnvironmentMultiRolePoolResource IOperationSource<HostingEnvironmentMultiRolePoolResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
             using var document = JsonDocument.Parse(response.ContentStream);
-            var data = WorkerPoolResourceData.DeserializeWorkerPoolResourceData(document.RootElement);
+            var data = AppServiceWorkerPoolData.DeserializeAppServiceWorkerPoolData(document.RootElement);
             return new HostingEnvironmentMultiRolePoolResource(_client, data);
         }
 
         async ValueTask<HostingEnvironmentMultiRolePoolResource> IOperationSource<HostingEnvironmentMultiRolePoolResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
             using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = WorkerPoolResourceData.DeserializeWorkerPoolResourceData(document.RootElement);
+            var data = AppServiceWorkerPoolData.DeserializeAppServiceWorkerPoolData(document.RootElement);
             return new HostingEnvironmentMultiRolePoolResource(_client, data);
         }
     }

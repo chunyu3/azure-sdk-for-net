@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -14,49 +13,50 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static CommunicationIdentifierModel DeserializeCommunicationIdentifierModel(JsonElement element)
         {
-            Optional<string> rawId = default;
-            Optional<CommunicationUserIdentifierModel> communicationUser = default;
-            Optional<PhoneNumberIdentifierModel> phoneNumber = default;
-            Optional<MicrosoftTeamsUserIdentifierModel> microsoftTeamsUser = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string rawId = default;
+            CommunicationUserIdentifierModel communicationUser = default;
+            PhoneNumberIdentifierModel phoneNumber = default;
+            MicrosoftTeamsUserIdentifierModel microsoftTeamsUser = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("rawId"))
+                if (property.NameEquals("rawId"u8))
                 {
                     rawId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("communicationUser"))
+                if (property.NameEquals("communicationUser"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     communicationUser = CommunicationUserIdentifierModel.DeserializeCommunicationUserIdentifierModel(property.Value);
                     continue;
                 }
-                if (property.NameEquals("phoneNumber"))
+                if (property.NameEquals("phoneNumber"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     phoneNumber = PhoneNumberIdentifierModel.DeserializePhoneNumberIdentifierModel(property.Value);
                     continue;
                 }
-                if (property.NameEquals("microsoftTeamsUser"))
+                if (property.NameEquals("microsoftTeamsUser"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     microsoftTeamsUser = MicrosoftTeamsUserIdentifierModel.DeserializeMicrosoftTeamsUserIdentifierModel(property.Value);
                     continue;
                 }
             }
-            return new CommunicationIdentifierModel(rawId.Value, communicationUser.Value, phoneNumber.Value, microsoftTeamsUser.Value);
+            return new CommunicationIdentifierModel(rawId, communicationUser, phoneNumber, microsoftTeamsUser);
         }
     }
 }

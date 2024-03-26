@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Search.Documents.Models
 {
@@ -15,12 +14,16 @@ namespace Azure.Search.Documents.Models
     {
         internal static SuggestResult DeserializeSuggestResult(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string searchText = default;
             IReadOnlyDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("@search.text"))
+                if (property.NameEquals("@search.text"u8))
                 {
                     searchText = property.Value.GetString();
                     continue;

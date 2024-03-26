@@ -7,7 +7,6 @@
 
 using System;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.MetricsAdvisor.Models
 {
@@ -15,22 +14,26 @@ namespace Azure.AI.MetricsAdvisor.Models
     {
         internal static DataFeedIngestionStatus DeserializeDataFeedIngestionStatus(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             DateTimeOffset timestamp = default;
             IngestionStatusType status = default;
             string message = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("timestamp"))
+                if (property.NameEquals("timestamp"u8))
                 {
                     timestamp = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     status = new IngestionStatusType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("message"))
+                if (property.NameEquals("message"u8))
                 {
                     message = property.Value.GetString();
                     continue;

@@ -6,14 +6,13 @@
 #nullable disable
 
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy.Models
 {
     /// <summary> The TasksStateTasks. </summary>
     internal partial class TasksStateTasks
     {
-        /// <summary> Initializes a new instance of TasksStateTasks. </summary>
+        /// <summary> Initializes a new instance of <see cref="TasksStateTasks"/>. </summary>
         /// <param name="completed"></param>
         /// <param name="failed"></param>
         /// <param name="inProgress"></param>
@@ -29,13 +28,9 @@ namespace Azure.AI.TextAnalytics.Legacy.Models
             KeyPhraseExtractionTasks = new ChangeTrackingList<TasksStateTasksKeyPhraseExtractionTasksItem>();
             EntityLinkingTasks = new ChangeTrackingList<TasksStateTasksEntityLinkingTasksItem>();
             SentimentAnalysisTasks = new ChangeTrackingList<TasksStateTasksSentimentAnalysisTasksItem>();
-            ExtractiveSummarizationTasks = new ChangeTrackingList<TasksStateTasksExtractiveSummarizationTasksItem>();
-            CustomEntityRecognitionTasks = new ChangeTrackingList<TasksStateTasksCustomEntityRecognitionTasksItem>();
-            CustomSingleClassificationTasks = new ChangeTrackingList<TasksStateTasksCustomSingleClassificationTasksItem>();
-            CustomMultiClassificationTasks = new ChangeTrackingList<TasksStateTasksCustomMultiClassificationTasksItem>();
         }
 
-        /// <summary> Initializes a new instance of TasksStateTasks. </summary>
+        /// <summary> Initializes a new instance of <see cref="TasksStateTasks"/>. </summary>
         /// <param name="completed"></param>
         /// <param name="failed"></param>
         /// <param name="inProgress"></param>
@@ -45,11 +40,7 @@ namespace Azure.AI.TextAnalytics.Legacy.Models
         /// <param name="keyPhraseExtractionTasks"></param>
         /// <param name="entityLinkingTasks"></param>
         /// <param name="sentimentAnalysisTasks"></param>
-        /// <param name="extractiveSummarizationTasks"></param>
-        /// <param name="customEntityRecognitionTasks"></param>
-        /// <param name="customSingleClassificationTasks"></param>
-        /// <param name="customMultiClassificationTasks"></param>
-        internal TasksStateTasks(int completed, int failed, int inProgress, int total, IReadOnlyList<TasksStateTasksEntityRecognitionTasksItem> entityRecognitionTasks, IReadOnlyList<TasksStateTasksEntityRecognitionPiiTasksItem> entityRecognitionPiiTasks, IReadOnlyList<TasksStateTasksKeyPhraseExtractionTasksItem> keyPhraseExtractionTasks, IReadOnlyList<TasksStateTasksEntityLinkingTasksItem> entityLinkingTasks, IReadOnlyList<TasksStateTasksSentimentAnalysisTasksItem> sentimentAnalysisTasks, IReadOnlyList<TasksStateTasksExtractiveSummarizationTasksItem> extractiveSummarizationTasks, IReadOnlyList<TasksStateTasksCustomEntityRecognitionTasksItem> customEntityRecognitionTasks, IReadOnlyList<TasksStateTasksCustomSingleClassificationTasksItem> customSingleClassificationTasks, IReadOnlyList<TasksStateTasksCustomMultiClassificationTasksItem> customMultiClassificationTasks)
+        internal TasksStateTasks(int completed, int failed, int inProgress, int total, IReadOnlyList<TasksStateTasksEntityRecognitionTasksItem> entityRecognitionTasks, IReadOnlyList<TasksStateTasksEntityRecognitionPiiTasksItem> entityRecognitionPiiTasks, IReadOnlyList<TasksStateTasksKeyPhraseExtractionTasksItem> keyPhraseExtractionTasks, IReadOnlyList<TasksStateTasksEntityLinkingTasksItem> entityLinkingTasks, IReadOnlyList<TasksStateTasksSentimentAnalysisTasksItem> sentimentAnalysisTasks)
         {
             Completed = completed;
             Failed = failed;
@@ -60,10 +51,6 @@ namespace Azure.AI.TextAnalytics.Legacy.Models
             KeyPhraseExtractionTasks = keyPhraseExtractionTasks;
             EntityLinkingTasks = entityLinkingTasks;
             SentimentAnalysisTasks = sentimentAnalysisTasks;
-            ExtractiveSummarizationTasks = extractiveSummarizationTasks;
-            CustomEntityRecognitionTasks = customEntityRecognitionTasks;
-            CustomSingleClassificationTasks = customSingleClassificationTasks;
-            CustomMultiClassificationTasks = customMultiClassificationTasks;
         }
 
         /// <summary> Gets the completed. </summary>
@@ -84,13 +71,5 @@ namespace Azure.AI.TextAnalytics.Legacy.Models
         public IReadOnlyList<TasksStateTasksEntityLinkingTasksItem> EntityLinkingTasks { get; }
         /// <summary> Gets the sentiment analysis tasks. </summary>
         public IReadOnlyList<TasksStateTasksSentimentAnalysisTasksItem> SentimentAnalysisTasks { get; }
-        /// <summary> Gets the extractive summarization tasks. </summary>
-        public IReadOnlyList<TasksStateTasksExtractiveSummarizationTasksItem> ExtractiveSummarizationTasks { get; }
-        /// <summary> Gets the custom entity recognition tasks. </summary>
-        public IReadOnlyList<TasksStateTasksCustomEntityRecognitionTasksItem> CustomEntityRecognitionTasks { get; }
-        /// <summary> Gets the custom single classification tasks. </summary>
-        public IReadOnlyList<TasksStateTasksCustomSingleClassificationTasksItem> CustomSingleClassificationTasks { get; }
-        /// <summary> Gets the custom multi classification tasks. </summary>
-        public IReadOnlyList<TasksStateTasksCustomMultiClassificationTasksItem> CustomMultiClassificationTasks { get; }
     }
 }

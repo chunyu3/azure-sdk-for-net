@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(JobVersion))
             {
-                writer.WritePropertyName("jobVersion");
+                writer.WritePropertyName("jobVersion"u8);
                 writer.WriteStringValue(JobVersion);
             }
             writer.WriteEndObject();
@@ -28,23 +28,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static StartDataFlowDebugSessionResponse DeserializeStartDataFlowDebugSessionResponse(JsonElement element)
         {
-            Optional<string> jobVersion = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string jobVersion = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("jobVersion"))
+                if (property.NameEquals("jobVersion"u8))
                 {
                     jobVersion = property.Value.GetString();
                     continue;
                 }
             }
-            return new StartDataFlowDebugSessionResponse(jobVersion.Value);
+            return new StartDataFlowDebugSessionResponse(jobVersion);
         }
 
         internal partial class StartDataFlowDebugSessionResponseConverter : JsonConverter<StartDataFlowDebugSessionResponse>
         {
             public override void Write(Utf8JsonWriter writer, StartDataFlowDebugSessionResponse model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<StartDataFlowDebugSessionResponse>(model);
             }
             public override StartDataFlowDebugSessionResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

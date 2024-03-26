@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Dynamics CRM entity dataset. </summary>
-    public partial class DynamicsCrmEntityDataset : Dataset
+    public partial class DynamicsCrmEntityDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of DynamicsCrmEntityDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsCrmEntityDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public DynamicsCrmEntityDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public DynamicsCrmEntityDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "DynamicsCrmEntity";
         }
 
-        /// <summary> Initializes a new instance of DynamicsCrmEntityDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsCrmEntityDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="entityName"> The logical name of the entity. Type: string (or Expression with resultType string). </param>
-        internal DynamicsCrmEntityDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData entityName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal DynamicsCrmEntityDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> entityName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             EntityName = entityName;
             DatasetType = datasetType ?? "DynamicsCrmEntity";
         }
 
+        /// <summary> Initializes a new instance of <see cref="DynamicsCrmEntityDataset"/> for deserialization. </summary>
+        internal DynamicsCrmEntityDataset()
+        {
+        }
+
         /// <summary> The logical name of the entity. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EntityName { get; set; }
+        public DataFactoryElement<string> EntityName { get; set; }
     }
 }

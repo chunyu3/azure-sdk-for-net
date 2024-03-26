@@ -5,81 +5,147 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Workloads.Models
 {
-    public partial class SapDiskConfiguration
+    public partial class SapDiskConfiguration : IUtf8JsonSerializable, IJsonModel<SapDiskConfiguration>
     {
-        internal static SapDiskConfiguration DeserializeSapDiskConfiguration(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SapDiskConfiguration>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SapDiskConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> volume = default;
-            Optional<string> diskType = default;
-            Optional<long> diskCount = default;
-            Optional<long> diskSizeGB = default;
-            Optional<long> diskIopsReadWrite = default;
-            Optional<long> diskMBpsReadWrite = default;
-            Optional<string> diskStorageType = default;
-            foreach (var property in element.EnumerateObject())
+            var format = options.Format == "W" ? ((IPersistableModel<SapDiskConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("volume"))
+                throw new FormatException($"The model {nameof(SapDiskConfiguration)} does not support writing '{format}' format.");
+            }
+
+            writer.WriteStartObject();
+            if (Optional.IsDefined(RecommendedConfiguration))
+            {
+                writer.WritePropertyName("recommendedConfiguration"u8);
+                writer.WriteObjectValue<DiskVolumeConfiguration>(RecommendedConfiguration, options);
+            }
+            if (Optional.IsCollectionDefined(SupportedConfigurations))
+            {
+                writer.WritePropertyName("supportedConfigurations"u8);
+                writer.WriteStartArray();
+                foreach (var item in SupportedConfigurations)
                 {
-                    volume = property.Value.GetString();
-                    continue;
+                    writer.WriteObjectValue<SupportedConfigurationsDiskDetails>(item, options);
                 }
-                if (property.NameEquals("diskType"))
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
                 {
-                    diskType = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("diskCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    diskCount = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("diskSizeGB"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    diskSizeGB = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("diskIopsReadWrite"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    diskIopsReadWrite = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("diskMBpsReadWrite"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    diskMBpsReadWrite = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("diskStorageType"))
-                {
-                    diskStorageType = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new SapDiskConfiguration(volume.Value, diskType.Value, Optional.ToNullable(diskCount), Optional.ToNullable(diskSizeGB), Optional.ToNullable(diskIopsReadWrite), Optional.ToNullable(diskMBpsReadWrite), diskStorageType.Value);
+            writer.WriteEndObject();
         }
+
+        SapDiskConfiguration IJsonModel<SapDiskConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SapDiskConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SapDiskConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSapDiskConfiguration(document.RootElement, options);
+        }
+
+        internal static SapDiskConfiguration DeserializeSapDiskConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DiskVolumeConfiguration recommendedConfiguration = default;
+            IReadOnlyList<SupportedConfigurationsDiskDetails> supportedConfigurations = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
+            foreach (var property in element.EnumerateObject())
+            {
+                if (property.NameEquals("recommendedConfiguration"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    recommendedConfiguration = DiskVolumeConfiguration.DeserializeDiskVolumeConfiguration(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("supportedConfigurations"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<SupportedConfigurationsDiskDetails> array = new List<SupportedConfigurationsDiskDetails>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(SupportedConfigurationsDiskDetails.DeserializeSupportedConfigurationsDiskDetails(item, options));
+                    }
+                    supportedConfigurations = array;
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
+            }
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SapDiskConfiguration(recommendedConfiguration, supportedConfigurations ?? new ChangeTrackingList<SupportedConfigurationsDiskDetails>(), serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<SapDiskConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SapDiskConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(SapDiskConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SapDiskConfiguration IPersistableModel<SapDiskConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SapDiskConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSapDiskConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SapDiskConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SapDiskConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

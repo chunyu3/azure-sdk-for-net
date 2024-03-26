@@ -20,12 +20,12 @@ namespace Azure.Security.Attestation
             writer.WriteStartObject();
             if (Optional.IsDefined(CertificateThumbprint))
             {
-                writer.WritePropertyName("x-ms-certificate-thumbprint");
+                writer.WritePropertyName("x-ms-certificate-thumbprint"u8);
                 writer.WriteStringValue(CertificateThumbprint);
             }
             if (Optional.IsDefined(CertificateResolution))
             {
-                writer.WritePropertyName("x-ms-policycertificates-result");
+                writer.WritePropertyName("x-ms-policycertificates-result"u8);
                 writer.WriteStringValue(CertificateResolution.Value.ToString());
             }
             writer.WriteEndObject();
@@ -33,34 +33,37 @@ namespace Azure.Security.Attestation
 
         internal static PolicyCertificatesModificationResult DeserializePolicyCertificatesModificationResult(JsonElement element)
         {
-            Optional<string> xMsCertificateThumbprint = default;
-            Optional<PolicyCertificateResolution> xMsPolicycertificatesResult = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string xMsCertificateThumbprint = default;
+            PolicyCertificateResolution? xMsPolicycertificatesResult = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("x-ms-certificate-thumbprint"))
+                if (property.NameEquals("x-ms-certificate-thumbprint"u8))
                 {
                     xMsCertificateThumbprint = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("x-ms-policycertificates-result"))
+                if (property.NameEquals("x-ms-policycertificates-result"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     xMsPolicycertificatesResult = new PolicyCertificateResolution(property.Value.GetString());
                     continue;
                 }
             }
-            return new PolicyCertificatesModificationResult(xMsCertificateThumbprint.Value, Optional.ToNullable(xMsPolicycertificatesResult));
+            return new PolicyCertificatesModificationResult(xMsCertificateThumbprint, xMsPolicycertificatesResult);
         }
 
         internal partial class PolicyCertificatesModificationResultConverter : JsonConverter<PolicyCertificatesModificationResult>
         {
             public override void Write(Utf8JsonWriter writer, PolicyCertificatesModificationResult model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<PolicyCertificatesModificationResult>(model);
             }
             public override PolicyCertificatesModificationResult Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

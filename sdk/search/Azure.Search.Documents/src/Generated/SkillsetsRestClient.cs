@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Search.Documents.Indexes.Models;
@@ -34,7 +33,7 @@ namespace Azure.Search.Documents
         /// <param name="xMsClientRequestId"> The tracking ID sent with the request to help with debugging. </param>
         /// <param name="apiVersion"> Api Version. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="clientDiagnostics"/>, <paramref name="pipeline"/>, <paramref name="endpoint"/> or <paramref name="apiVersion"/> is null. </exception>
-        public SkillsetsRestClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, Guid? xMsClientRequestId = null, string apiVersion = "2021-04-30-Preview")
+        public SkillsetsRestClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, Guid? xMsClientRequestId = null, string apiVersion = "2024-03-01-Preview")
         {
             ClientDiagnostics = clientDiagnostics ?? throw new ArgumentNullException(nameof(clientDiagnostics));
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
@@ -75,7 +74,7 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=minimal");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(skillset);
+            content.JsonWriter.WriteObjectValue<SearchIndexerSkillset>(skillset);
             request.Content = content;
             return message;
         }
@@ -113,7 +112,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -150,7 +149,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -199,7 +198,7 @@ namespace Azure.Search.Documents
                 case 404:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -224,7 +223,7 @@ namespace Azure.Search.Documents
                 case 404:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -267,7 +266,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -294,7 +293,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -317,7 +316,7 @@ namespace Azure.Search.Documents
         }
 
         /// <summary> List all skillsets in a search service. </summary>
-        /// <param name="select"> Selects which top-level properties of the skillsets to retrieve. Specified as a comma-separated list of JSON property names, or &apos;*&apos; for all properties. The default is all properties. </param>
+        /// <param name="select"> Selects which top-level properties of the skillsets to retrieve. Specified as a comma-separated list of JSON property names, or '*' for all properties. The default is all properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public async Task<Response<ListSkillsetsResult>> ListAsync(string select = null, CancellationToken cancellationToken = default)
         {
@@ -333,12 +332,12 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> List all skillsets in a search service. </summary>
-        /// <param name="select"> Selects which top-level properties of the skillsets to retrieve. Specified as a comma-separated list of JSON property names, or &apos;*&apos; for all properties. The default is all properties. </param>
+        /// <param name="select"> Selects which top-level properties of the skillsets to retrieve. Specified as a comma-separated list of JSON property names, or '*' for all properties. The default is all properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public Response<ListSkillsetsResult> List(string select = null, CancellationToken cancellationToken = default)
         {
@@ -354,7 +353,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -371,7 +370,7 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=minimal");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(skillset);
+            content.JsonWriter.WriteObjectValue<SearchIndexerSkillset>(skillset);
             request.Content = content;
             return message;
         }
@@ -399,7 +398,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -426,7 +425,7 @@ namespace Azure.Search.Documents
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -445,7 +444,7 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=minimal");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(skillNames);
+            content.JsonWriter.WriteObjectValue<ResetSkillsOptions>(skillNames);
             request.Content = content;
             return message;
         }
@@ -473,7 +472,7 @@ namespace Azure.Search.Documents
                 case 204:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -500,7 +499,7 @@ namespace Azure.Search.Documents
                 case 204:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

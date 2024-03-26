@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ApiManagement.Models
 {
-    /// <summary> The request&apos;s protocol. Specific protocol configuration can be available based on this selection. The specified destination address must be coherent with this value. </summary>
+    /// <summary> The request's protocol. Specific protocol configuration can be available based on this selection. The specified destination address must be coherent with this value. </summary>
     public readonly partial struct ConnectivityCheckProtocol : IEquatable<ConnectivityCheckProtocol>
     {
         private readonly string _value;
@@ -22,12 +22,12 @@ namespace Azure.ResourceManager.ApiManagement.Models
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        private const string TCPValue = "TCP";
+        private const string TcpValue = "TCP";
         private const string HttpValue = "HTTP";
         private const string HttpsValue = "HTTPS";
 
         /// <summary> TCP. </summary>
-        public static ConnectivityCheckProtocol TCP { get; } = new ConnectivityCheckProtocol(TCPValue);
+        public static ConnectivityCheckProtocol Tcp { get; } = new ConnectivityCheckProtocol(TcpValue);
         /// <summary> HTTP. </summary>
         public static ConnectivityCheckProtocol Http { get; } = new ConnectivityCheckProtocol(HttpValue);
         /// <summary> HTTPS. </summary>

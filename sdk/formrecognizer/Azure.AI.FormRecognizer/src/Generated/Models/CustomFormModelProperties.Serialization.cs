@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.FormRecognizer.Training
 {
@@ -14,14 +13,17 @@ namespace Azure.AI.FormRecognizer.Training
     {
         internal static CustomFormModelProperties DeserializeCustomFormModelProperties(JsonElement element)
         {
-            Optional<bool> isComposed = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool isComposed = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("isComposed"))
+                if (property.NameEquals("isComposed"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     isComposed = property.Value.GetBoolean();

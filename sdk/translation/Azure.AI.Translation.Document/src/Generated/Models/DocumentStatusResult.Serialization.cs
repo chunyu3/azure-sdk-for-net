@@ -7,7 +7,6 @@
 
 using System;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.Translation.Document
 {
@@ -15,80 +14,92 @@ namespace Azure.AI.Translation.Document
     {
         internal static DocumentStatusResult DeserializeDocumentStatusResult(JsonElement element)
         {
-            Optional<Uri> path = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            Uri path = default;
             Uri sourcePath = default;
             DateTimeOffset createdDateTimeUtc = default;
             DateTimeOffset lastActionDateTimeUtc = default;
             DocumentTranslationStatus status = default;
             string to = default;
-            Optional<JsonElement> error = default;
+            JsonElement error = default;
             float progress = default;
             string id = default;
-            Optional<long> characterCharged = default;
+            long characterCharged = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("path"))
+                if (property.NameEquals("path"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     path = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sourcePath"))
+                if (property.NameEquals("sourcePath"u8))
                 {
                     sourcePath = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("createdDateTimeUtc"))
+                if (property.NameEquals("createdDateTimeUtc"u8))
                 {
                     createdDateTimeUtc = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("lastActionDateTimeUtc"))
+                if (property.NameEquals("lastActionDateTimeUtc"u8))
                 {
                     lastActionDateTimeUtc = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     status = new DocumentTranslationStatus(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("to"))
+                if (property.NameEquals("to"u8))
                 {
                     to = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("error"))
+                if (property.NameEquals("error"u8))
                 {
                     error = property.Value.Clone();
                     continue;
                 }
-                if (property.NameEquals("progress"))
+                if (property.NameEquals("progress"u8))
                 {
                     progress = property.Value.GetSingle();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("characterCharged"))
+                if (property.NameEquals("characterCharged"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     characterCharged = property.Value.GetInt64();
                     continue;
                 }
             }
-            return new DocumentStatusResult(path.Value, sourcePath, createdDateTimeUtc, lastActionDateTimeUtc, status, to, error, progress, id, characterCharged);
+            return new DocumentStatusResult(
+                path,
+                sourcePath,
+                createdDateTimeUtc,
+                lastActionDateTimeUtc,
+                status,
+                to,
+                error,
+                progress,
+                id,
+                characterCharged);
         }
     }
 }

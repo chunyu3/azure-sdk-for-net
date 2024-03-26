@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -14,16 +13,20 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static History DeserializeHistory(JsonElement element)
         {
-            Optional<string> v1Compatibility = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string v1Compatibility = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("v1Compatibility"))
+                if (property.NameEquals("v1Compatibility"u8))
                 {
                     v1Compatibility = property.Value.GetString();
                     continue;
                 }
             }
-            return new History(v1Compatibility.Value);
+            return new History(v1Compatibility);
         }
     }
 }

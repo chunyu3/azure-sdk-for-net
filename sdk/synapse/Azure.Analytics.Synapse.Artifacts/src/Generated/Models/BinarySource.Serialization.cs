@@ -21,101 +21,100 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(StoreSettings))
             {
-                writer.WritePropertyName("storeSettings");
-                writer.WriteObjectValue(StoreSettings);
+                writer.WritePropertyName("storeSettings"u8);
+                writer.WriteObjectValue<StoreReadSettings>(StoreSettings);
             }
             if (Optional.IsDefined(FormatSettings))
             {
-                writer.WritePropertyName("formatSettings");
-                writer.WriteObjectValue(FormatSettings);
+                writer.WritePropertyName("formatSettings"u8);
+                writer.WriteObjectValue<BinaryReadSettings>(FormatSettings);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(SourceRetryCount))
             {
-                writer.WritePropertyName("sourceRetryCount");
-                writer.WriteObjectValue(SourceRetryCount);
+                writer.WritePropertyName("sourceRetryCount"u8);
+                writer.WriteObjectValue<object>(SourceRetryCount);
             }
             if (Optional.IsDefined(SourceRetryWait))
             {
-                writer.WritePropertyName("sourceRetryWait");
-                writer.WriteObjectValue(SourceRetryWait);
+                writer.WritePropertyName("sourceRetryWait"u8);
+                writer.WriteObjectValue<object>(SourceRetryWait);
             }
             if (Optional.IsDefined(MaxConcurrentConnections))
             {
-                writer.WritePropertyName("maxConcurrentConnections");
-                writer.WriteObjectValue(MaxConcurrentConnections);
+                writer.WritePropertyName("maxConcurrentConnections"u8);
+                writer.WriteObjectValue<object>(MaxConcurrentConnections);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static BinarySource DeserializeBinarySource(JsonElement element)
         {
-            Optional<StoreReadSettings> storeSettings = default;
-            Optional<BinaryReadSettings> formatSettings = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            StoreReadSettings storeSettings = default;
+            BinaryReadSettings formatSettings = default;
             string type = default;
-            Optional<object> sourceRetryCount = default;
-            Optional<object> sourceRetryWait = default;
-            Optional<object> maxConcurrentConnections = default;
+            object sourceRetryCount = default;
+            object sourceRetryWait = default;
+            object maxConcurrentConnections = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("storeSettings"))
+                if (property.NameEquals("storeSettings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     storeSettings = StoreReadSettings.DeserializeStoreReadSettings(property.Value);
                     continue;
                 }
-                if (property.NameEquals("formatSettings"))
+                if (property.NameEquals("formatSettings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     formatSettings = BinaryReadSettings.DeserializeBinaryReadSettings(property.Value);
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sourceRetryCount"))
+                if (property.NameEquals("sourceRetryCount"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sourceRetryCount = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("sourceRetryWait"))
+                if (property.NameEquals("sourceRetryWait"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sourceRetryWait = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("maxConcurrentConnections"))
+                if (property.NameEquals("maxConcurrentConnections"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxConcurrentConnections = property.Value.GetObject();
@@ -124,14 +123,21 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new BinarySource(type, sourceRetryCount.Value, sourceRetryWait.Value, maxConcurrentConnections.Value, additionalProperties, storeSettings.Value, formatSettings.Value);
+            return new BinarySource(
+                type,
+                sourceRetryCount,
+                sourceRetryWait,
+                maxConcurrentConnections,
+                additionalProperties,
+                storeSettings,
+                formatSettings);
         }
 
         internal partial class BinarySourceConverter : JsonConverter<BinarySource>
         {
             public override void Write(Utf8JsonWriter writer, BinarySource model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<BinarySource>(model);
             }
             public override BinarySource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -13,19 +13,54 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Logic
 {
-    /// <summary> A class representing the IntegrationServiceEnvironmentManagedApi data model. </summary>
+    /// <summary>
+    /// A class representing the IntegrationServiceEnvironmentManagedApi data model.
+    /// The integration service environment managed api.
+    /// </summary>
     public partial class IntegrationServiceEnvironmentManagedApiData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of IntegrationServiceEnvironmentManagedApiData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="IntegrationServiceEnvironmentManagedApiData"/>. </summary>
         /// <param name="location"> The location. </param>
         public IntegrationServiceEnvironmentManagedApiData(AzureLocation location) : base(location)
         {
             ConnectionParameters = new ChangeTrackingDictionary<string, BinaryData>();
-            RuntimeUrls = new ChangeTrackingList<string>();
+            RuntimeUris = new ChangeTrackingList<Uri>();
             Capabilities = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of IntegrationServiceEnvironmentManagedApiData. </summary>
+        /// <summary> Initializes a new instance of <see cref="IntegrationServiceEnvironmentManagedApiData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -35,7 +70,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="namePropertiesName"> The name. </param>
         /// <param name="connectionParameters"> The connection parameters. </param>
         /// <param name="metadata"> The metadata. </param>
-        /// <param name="runtimeUrls"> The runtime urls. </param>
+        /// <param name="runtimeUris"> The runtime urls. </param>
         /// <param name="generalInformation"> The api general information. </param>
         /// <param name="capabilities"> The capabilities. </param>
         /// <param name="backendService"> The backend service. </param>
@@ -46,12 +81,13 @@ namespace Azure.ResourceManager.Logic
         /// <param name="provisioningState"> The provisioning state. </param>
         /// <param name="category"> The category. </param>
         /// <param name="deploymentParameters"> The integration service environment managed api deployment parameters. </param>
-        internal IntegrationServiceEnvironmentManagedApiData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, string namePropertiesName, IReadOnlyDictionary<string, BinaryData> connectionParameters, ApiResourceMetadata metadata, IReadOnlyList<string> runtimeUrls, ApiResourceGeneralInformation generalInformation, IReadOnlyList<string> capabilities, ApiResourceBackendService backendService, ApiResourcePolicies policies, Uri apiDefinitionUri, ApiResourceDefinitions apiDefinitions, ResourceReference integrationServiceEnvironment, WorkflowProvisioningState? provisioningState, ApiTier? category, IntegrationServiceEnvironmentManagedApiDeploymentParameters deploymentParameters) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal IntegrationServiceEnvironmentManagedApiData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, string namePropertiesName, IReadOnlyDictionary<string, BinaryData> connectionParameters, LogicApiResourceMetadata metadata, IReadOnlyList<Uri> runtimeUris, LogicApiResourceGeneralInformation generalInformation, IReadOnlyList<string> capabilities, LogicApiResourceBackendService backendService, LogicApiResourcePolicies policies, Uri apiDefinitionUri, LogicApiResourceDefinitions apiDefinitions, LogicResourceReference integrationServiceEnvironment, LogicWorkflowProvisioningState? provisioningState, LogicApiTier? category, IntegrationServiceEnvironmentManagedApiDeploymentParameters deploymentParameters, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             NamePropertiesName = namePropertiesName;
             ConnectionParameters = connectionParameters;
             Metadata = metadata;
-            RuntimeUrls = runtimeUrls;
+            RuntimeUris = runtimeUris;
             GeneralInformation = generalInformation;
             Capabilities = capabilities;
             BackendService = backendService;
@@ -62,22 +98,57 @@ namespace Azure.ResourceManager.Logic
             ProvisioningState = provisioningState;
             Category = category;
             DeploymentParameters = deploymentParameters;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="IntegrationServiceEnvironmentManagedApiData"/> for deserialization. </summary>
+        internal IntegrationServiceEnvironmentManagedApiData()
+        {
         }
 
         /// <summary> The name. </summary>
         public string NamePropertiesName { get; }
-        /// <summary> The connection parameters. </summary>
+        /// <summary>
+        /// The connection parameters.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IReadOnlyDictionary<string, BinaryData> ConnectionParameters { get; }
         /// <summary> The metadata. </summary>
-        public ApiResourceMetadata Metadata { get; }
+        public LogicApiResourceMetadata Metadata { get; }
         /// <summary> The runtime urls. </summary>
-        public IReadOnlyList<string> RuntimeUrls { get; }
+        public IReadOnlyList<Uri> RuntimeUris { get; }
         /// <summary> The api general information. </summary>
-        public ApiResourceGeneralInformation GeneralInformation { get; }
+        public LogicApiResourceGeneralInformation GeneralInformation { get; }
         /// <summary> The capabilities. </summary>
         public IReadOnlyList<string> Capabilities { get; }
         /// <summary> The backend service. </summary>
-        internal ApiResourceBackendService BackendService { get; }
+        internal LogicApiResourceBackendService BackendService { get; }
         /// <summary> The service URL. </summary>
         public Uri ServiceUri
         {
@@ -85,21 +156,21 @@ namespace Azure.ResourceManager.Logic
         }
 
         /// <summary> The policies for the API. </summary>
-        public ApiResourcePolicies Policies { get; }
+        public LogicApiResourcePolicies Policies { get; }
         /// <summary> The API definition. </summary>
         public Uri ApiDefinitionUri { get; }
         /// <summary> The api definitions. </summary>
-        public ApiResourceDefinitions ApiDefinitions { get; }
+        public LogicApiResourceDefinitions ApiDefinitions { get; }
         /// <summary> The integration service environment reference. </summary>
-        public ResourceReference IntegrationServiceEnvironment { get; set; }
+        public LogicResourceReference IntegrationServiceEnvironment { get; set; }
         /// <summary> The provisioning state. </summary>
-        public WorkflowProvisioningState? ProvisioningState { get; }
+        public LogicWorkflowProvisioningState? ProvisioningState { get; }
         /// <summary> The category. </summary>
-        public ApiTier? Category { get; }
+        public LogicApiTier? Category { get; }
         /// <summary> The integration service environment managed api deployment parameters. </summary>
         internal IntegrationServiceEnvironmentManagedApiDeploymentParameters DeploymentParameters { get; set; }
         /// <summary> The integration service environment managed api content link for deployment. </summary>
-        public ContentLink DeploymentParametersContentLinkDefinition
+        public LogicContentLink DeploymentParametersContentLinkDefinition
         {
             get => DeploymentParameters is null ? default : DeploymentParameters.ContentLinkDefinition;
             set

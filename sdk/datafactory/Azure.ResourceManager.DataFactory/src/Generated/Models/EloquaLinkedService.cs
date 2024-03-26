@@ -7,33 +7,28 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Eloqua server linked service. </summary>
-    public partial class EloquaLinkedService : LinkedService
+    public partial class EloquaLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of EloquaLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="EloquaLinkedService"/>. </summary>
         /// <param name="endpoint"> The endpoint of the Eloqua server. (i.e. eloqua.example.com). </param>
         /// <param name="username"> The site name and user name of your Eloqua account in the form: sitename/username. (i.e. Eloqua/Alice). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="username"/> is null. </exception>
-        public EloquaLinkedService(BinaryData endpoint, BinaryData username)
+        public EloquaLinkedService(DataFactoryElement<string> endpoint, DataFactoryElement<string> username)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-            if (username == null)
-            {
-                throw new ArgumentNullException(nameof(username));
-            }
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
+            Argument.AssertNotNull(username, nameof(username));
 
             Endpoint = endpoint;
             Username = username;
             LinkedServiceType = "Eloqua";
         }
 
-        /// <summary> Initializes a new instance of EloquaLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="EloquaLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -42,16 +37,12 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="endpoint"> The endpoint of the Eloqua server. (i.e. eloqua.example.com). </param>
         /// <param name="username"> The site name and user name of your Eloqua account in the form: sitename/username. (i.e. Eloqua/Alice). </param>
-        /// <param name="password">
-        /// The password corresponding to the user name.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="password"> The password corresponding to the user name. </param>
         /// <param name="useEncryptedEndpoints"> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </param>
-        /// <param name="useHostVerification"> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
+        /// <param name="useHostVerification"> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
         /// <param name="usePeerVerification"> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal EloquaLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData endpoint, BinaryData username, SecretBase password, BinaryData useEncryptedEndpoints, BinaryData useHostVerification, BinaryData usePeerVerification, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal EloquaLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> endpoint, DataFactoryElement<string> username, DataFactorySecret password, DataFactoryElement<bool> useEncryptedEndpoints, DataFactoryElement<bool> useHostVerification, DataFactoryElement<bool> usePeerVerification, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Endpoint = endpoint;
             Username = username;
@@ -63,23 +54,24 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "Eloqua";
         }
 
+        /// <summary> Initializes a new instance of <see cref="EloquaLinkedService"/> for deserialization. </summary>
+        internal EloquaLinkedService()
+        {
+        }
+
         /// <summary> The endpoint of the Eloqua server. (i.e. eloqua.example.com). </summary>
-        public BinaryData Endpoint { get; set; }
+        public DataFactoryElement<string> Endpoint { get; set; }
         /// <summary> The site name and user name of your Eloqua account in the form: sitename/username. (i.e. Eloqua/Alice). </summary>
-        public BinaryData Username { get; set; }
-        /// <summary>
-        /// The password corresponding to the user name.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
+        public DataFactoryElement<string> Username { get; set; }
+        /// <summary> The password corresponding to the user name. </summary>
+        public DataFactorySecret Password { get; set; }
         /// <summary> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </summary>
-        public BinaryData UseEncryptedEndpoints { get; set; }
-        /// <summary> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UseHostVerification { get; set; }
+        public DataFactoryElement<bool> UseEncryptedEndpoints { get; set; }
+        /// <summary> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
+        public DataFactoryElement<bool> UseHostVerification { get; set; }
         /// <summary> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UsePeerVerification { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<bool> UsePeerVerification { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

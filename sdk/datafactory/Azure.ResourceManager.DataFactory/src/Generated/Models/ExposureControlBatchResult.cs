@@ -14,27 +14,63 @@ namespace Azure.ResourceManager.DataFactory.Models
     /// <summary> A list of exposure control feature values. </summary>
     public partial class ExposureControlBatchResult
     {
-        /// <summary> Initializes a new instance of ExposureControlBatchResult. </summary>
-        /// <param name="exposureControlResponses"> List of exposure control feature values. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="exposureControlResponses"/> is null. </exception>
-        internal ExposureControlBatchResult(IEnumerable<ExposureControlResult> exposureControlResponses)
-        {
-            if (exposureControlResponses == null)
-            {
-                throw new ArgumentNullException(nameof(exposureControlResponses));
-            }
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
 
-            ExposureControlResponses = exposureControlResponses.ToList();
+        /// <summary> Initializes a new instance of <see cref="ExposureControlBatchResult"/>. </summary>
+        /// <param name="exposureControlResults"> List of exposure control feature values. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="exposureControlResults"/> is null. </exception>
+        internal ExposureControlBatchResult(IEnumerable<ExposureControlResult> exposureControlResults)
+        {
+            Argument.AssertNotNull(exposureControlResults, nameof(exposureControlResults));
+
+            ExposureControlResults = exposureControlResults.ToList();
         }
 
-        /// <summary> Initializes a new instance of ExposureControlBatchResult. </summary>
-        /// <param name="exposureControlResponses"> List of exposure control feature values. </param>
-        internal ExposureControlBatchResult(IReadOnlyList<ExposureControlResult> exposureControlResponses)
+        /// <summary> Initializes a new instance of <see cref="ExposureControlBatchResult"/>. </summary>
+        /// <param name="exposureControlResults"> List of exposure control feature values. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ExposureControlBatchResult(IReadOnlyList<ExposureControlResult> exposureControlResults, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            ExposureControlResponses = exposureControlResponses;
+            ExposureControlResults = exposureControlResults;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ExposureControlBatchResult"/> for deserialization. </summary>
+        internal ExposureControlBatchResult()
+        {
         }
 
         /// <summary> List of exposure control feature values. </summary>
-        public IReadOnlyList<ExposureControlResult> ExposureControlResponses { get; }
+        public IReadOnlyList<ExposureControlResult> ExposureControlResults { get; }
     }
 }

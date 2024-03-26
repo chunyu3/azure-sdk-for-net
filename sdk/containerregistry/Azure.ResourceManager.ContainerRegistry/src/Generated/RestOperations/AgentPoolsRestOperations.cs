@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ContainerRegistry.Models;
@@ -60,19 +60,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the detailed information for a given agent pool. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolData>> GetAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryAgentPoolData>> GetAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -80,32 +80,32 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolData value = default;
+                        ContainerRegistryAgentPoolData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = AgentPoolData.DeserializeAgentPoolData(document.RootElement);
+                        value = ContainerRegistryAgentPoolData.DeserializeContainerRegistryAgentPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((AgentPoolData)null, message.Response);
+                    return Response.FromValue((ContainerRegistryAgentPoolData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the detailed information for a given agent pool. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolData> Get(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryAgentPoolData> Get(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             _pipeline.Send(message, cancellationToken);
@@ -113,19 +113,19 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolData value = default;
+                        ContainerRegistryAgentPoolData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = AgentPoolData.DeserializeAgentPoolData(document.RootElement);
+                        value = ContainerRegistryAgentPoolData.DeserializeContainerRegistryAgentPoolData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((AgentPoolData)null, message.Response);
+                    return Response.FromValue((ContainerRegistryAgentPoolData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolData data)
+        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -145,14 +145,14 @@ namespace Azure.ResourceManager.ContainerRegistry
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ContainerRegistryAgentPoolData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates an agent pool for a container registry with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -160,13 +160,13 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
+        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolData data, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
-            Core.Argument.AssertNotNull(data, nameof(data));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateCreateRequest(subscriptionId, resourceGroupName, registryName, agentPoolName, data);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -181,7 +181,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Creates an agent pool for a container registry with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -189,13 +189,13 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="agentPoolName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Create(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolData data, CancellationToken cancellationToken = default)
+        public Response Create(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolData data, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
-            Core.Argument.AssertNotNull(data, nameof(data));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateCreateRequest(subscriptionId, resourceGroupName, registryName, agentPoolName, data);
             _pipeline.Send(message, cancellationToken);
@@ -232,7 +232,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes a specified agent pool resource. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -241,10 +241,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -260,7 +260,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes a specified agent pool resource. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -269,10 +269,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response Delete(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             _pipeline.Send(message, cancellationToken);
@@ -287,7 +287,7 @@ namespace Azure.ResourceManager.ContainerRegistry
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolPatch patch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolPatch patch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -307,14 +307,14 @@ namespace Azure.ResourceManager.ContainerRegistry
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(patch);
+            content.JsonWriter.WriteObjectValue<ContainerRegistryAgentPoolPatch>(patch, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Updates an agent pool with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -322,13 +322,13 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
+        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolPatch patch, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
-            Core.Argument.AssertNotNull(patch, nameof(patch));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, registryName, agentPoolName, patch);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -343,7 +343,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Updates an agent pool with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
@@ -351,13 +351,13 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="agentPoolName"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Update(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, AgentPoolPatch patch, CancellationToken cancellationToken = default)
+        public Response Update(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, ContainerRegistryAgentPoolPatch patch, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
-            Core.Argument.AssertNotNull(patch, nameof(patch));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, registryName, agentPoolName, patch);
             _pipeline.Send(message, cancellationToken);
@@ -393,17 +393,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists all the agent pools for a specified container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolListResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryAgentPoolListResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -411,9 +411,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolListResult value = default;
+                        ContainerRegistryAgentPoolListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = AgentPoolListResult.DeserializeAgentPoolListResult(document.RootElement);
+                        value = ContainerRegistryAgentPoolListResult.DeserializeContainerRegistryAgentPoolListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -422,17 +422,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists all the agent pools for a specified container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolListResult> List(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryAgentPoolListResult> List(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);
@@ -440,9 +440,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolListResult value = default;
+                        ContainerRegistryAgentPoolListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = AgentPoolListResult.DeserializeAgentPoolListResult(document.RootElement);
+                        value = ContainerRegistryAgentPoolListResult.DeserializeContainerRegistryAgentPoolListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -474,19 +474,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the count of queued runs for a given agent pool. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolQueueStatus>> GetQueueStatusAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryAgentPoolQueueStatus>> GetQueueStatusAsync(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateGetQueueStatusRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -494,9 +494,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolQueueStatus value = default;
+                        ContainerRegistryAgentPoolQueueStatus value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = AgentPoolQueueStatus.DeserializeAgentPoolQueueStatus(document.RootElement);
+                        value = ContainerRegistryAgentPoolQueueStatus.DeserializeContainerRegistryAgentPoolQueueStatus(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -505,19 +505,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the count of queued runs for a given agent pool. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="agentPoolName"> The name of the agent pool. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="agentPoolName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolQueueStatus> GetQueueStatus(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryAgentPoolQueueStatus> GetQueueStatus(string subscriptionId, string resourceGroupName, string registryName, string agentPoolName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(agentPoolName, nameof(agentPoolName));
 
             using var message = CreateGetQueueStatusRequest(subscriptionId, resourceGroupName, registryName, agentPoolName);
             _pipeline.Send(message, cancellationToken);
@@ -525,9 +525,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolQueueStatus value = default;
+                        ContainerRegistryAgentPoolQueueStatus value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = AgentPoolQueueStatus.DeserializeAgentPoolQueueStatus(document.RootElement);
+                        value = ContainerRegistryAgentPoolQueueStatus.DeserializeContainerRegistryAgentPoolQueueStatus(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -551,18 +551,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists all the agent pools for a specified container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<AgentPoolListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryAgentPoolListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -570,9 +570,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolListResult value = default;
+                        ContainerRegistryAgentPoolListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = AgentPoolListResult.DeserializeAgentPoolListResult(document.RootElement);
+                        value = ContainerRegistryAgentPoolListResult.DeserializeContainerRegistryAgentPoolListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -582,18 +582,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists all the agent pools for a specified container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<AgentPoolListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryAgentPoolListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);
@@ -601,9 +601,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        AgentPoolListResult value = default;
+                        ContainerRegistryAgentPoolListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = AgentPoolListResult.DeserializeAgentPoolListResult(document.RootElement);
+                        value = ContainerRegistryAgentPoolListResult.DeserializeContainerRegistryAgentPoolListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

@@ -5,112 +5,379 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class ArcConfiguration : IUtf8JsonSerializable
+    public partial class ArcConfiguration : IUtf8JsonSerializable, IJsonModel<ArcConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ArcConfiguration>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<ArcConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ArcConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ArcConfiguration)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(ArtifactsStorageType))
             {
-                writer.WritePropertyName("artifactsStorageType");
+                writer.WritePropertyName("artifactsStorageType"u8);
                 writer.WriteStringValue(ArtifactsStorageType.Value.ToSerialString());
             }
             if (Optional.IsDefined(ArtifactStorageClassName))
             {
-                writer.WritePropertyName("artifactStorageClassName");
+                writer.WritePropertyName("artifactStorageClassName"u8);
                 writer.WriteStringValue(ArtifactStorageClassName);
             }
             if (Optional.IsDefined(ArtifactStorageMountPath))
             {
-                writer.WritePropertyName("artifactStorageMountPath");
+                writer.WritePropertyName("artifactStorageMountPath"u8);
                 writer.WriteStringValue(ArtifactStorageMountPath);
             }
             if (Optional.IsDefined(ArtifactStorageNodeName))
             {
-                writer.WritePropertyName("artifactStorageNodeName");
+                writer.WritePropertyName("artifactStorageNodeName"u8);
                 writer.WriteStringValue(ArtifactStorageNodeName);
             }
             if (Optional.IsDefined(ArtifactStorageAccessMode))
             {
-                writer.WritePropertyName("artifactStorageAccessMode");
+                writer.WritePropertyName("artifactStorageAccessMode"u8);
                 writer.WriteStringValue(ArtifactStorageAccessMode);
             }
             if (Optional.IsDefined(FrontEndServiceConfiguration))
             {
-                writer.WritePropertyName("frontEndServiceConfiguration");
-                writer.WriteObjectValue(FrontEndServiceConfiguration);
+                writer.WritePropertyName("frontEndServiceConfiguration"u8);
+                writer.WriteObjectValue<FrontEndConfiguration>(FrontEndServiceConfiguration, options);
             }
             if (Optional.IsDefined(KubeConfig))
             {
-                writer.WritePropertyName("kubeConfig");
+                writer.WritePropertyName("kubeConfig"u8);
                 writer.WriteStringValue(KubeConfig);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static ArcConfiguration DeserializeArcConfiguration(JsonElement element)
+        ArcConfiguration IJsonModel<ArcConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<StorageType> artifactsStorageType = default;
-            Optional<string> artifactStorageClassName = default;
-            Optional<string> artifactStorageMountPath = default;
-            Optional<string> artifactStorageNodeName = default;
-            Optional<string> artifactStorageAccessMode = default;
-            Optional<FrontEndConfiguration> frontEndServiceConfiguration = default;
-            Optional<string> kubeConfig = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ArcConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ArcConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeArcConfiguration(document.RootElement, options);
+        }
+
+        internal static ArcConfiguration DeserializeArcConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ArtifactStorageType? artifactsStorageType = default;
+            string artifactStorageClassName = default;
+            string artifactStorageMountPath = default;
+            string artifactStorageNodeName = default;
+            string artifactStorageAccessMode = default;
+            FrontEndConfiguration frontEndServiceConfiguration = default;
+            string kubeConfig = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("artifactsStorageType"))
+                if (property.NameEquals("artifactsStorageType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    artifactsStorageType = property.Value.GetString().ToStorageType();
+                    artifactsStorageType = property.Value.GetString().ToArtifactStorageType();
                     continue;
                 }
-                if (property.NameEquals("artifactStorageClassName"))
+                if (property.NameEquals("artifactStorageClassName"u8))
                 {
                     artifactStorageClassName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("artifactStorageMountPath"))
+                if (property.NameEquals("artifactStorageMountPath"u8))
                 {
                     artifactStorageMountPath = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("artifactStorageNodeName"))
+                if (property.NameEquals("artifactStorageNodeName"u8))
                 {
                     artifactStorageNodeName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("artifactStorageAccessMode"))
+                if (property.NameEquals("artifactStorageAccessMode"u8))
                 {
                     artifactStorageAccessMode = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("frontEndServiceConfiguration"))
+                if (property.NameEquals("frontEndServiceConfiguration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    frontEndServiceConfiguration = FrontEndConfiguration.DeserializeFrontEndConfiguration(property.Value);
+                    frontEndServiceConfiguration = FrontEndConfiguration.DeserializeFrontEndConfiguration(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("kubeConfig"))
+                if (property.NameEquals("kubeConfig"u8))
                 {
                     kubeConfig = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ArcConfiguration(Optional.ToNullable(artifactsStorageType), artifactStorageClassName.Value, artifactStorageMountPath.Value, artifactStorageNodeName.Value, artifactStorageAccessMode.Value, frontEndServiceConfiguration.Value, kubeConfig.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new ArcConfiguration(
+                artifactsStorageType,
+                artifactStorageClassName,
+                artifactStorageMountPath,
+                artifactStorageNodeName,
+                artifactStorageAccessMode,
+                frontEndServiceConfiguration,
+                kubeConfig,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            if (propertyOverrides != null)
+            {
+                TransformFlattenedOverrides(bicepOptions, propertyOverrides);
+            }
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ArtifactsStorageType), out propertyOverride);
+            if (Optional.IsDefined(ArtifactsStorageType) || hasPropertyOverride)
+            {
+                builder.Append("  artifactsStorageType: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ArtifactsStorageType.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ArtifactStorageClassName), out propertyOverride);
+            if (Optional.IsDefined(ArtifactStorageClassName) || hasPropertyOverride)
+            {
+                builder.Append("  artifactStorageClassName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ArtifactStorageClassName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ArtifactStorageClassName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ArtifactStorageClassName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ArtifactStorageMountPath), out propertyOverride);
+            if (Optional.IsDefined(ArtifactStorageMountPath) || hasPropertyOverride)
+            {
+                builder.Append("  artifactStorageMountPath: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ArtifactStorageMountPath.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ArtifactStorageMountPath}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ArtifactStorageMountPath}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ArtifactStorageNodeName), out propertyOverride);
+            if (Optional.IsDefined(ArtifactStorageNodeName) || hasPropertyOverride)
+            {
+                builder.Append("  artifactStorageNodeName: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ArtifactStorageNodeName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ArtifactStorageNodeName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ArtifactStorageNodeName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ArtifactStorageAccessMode), out propertyOverride);
+            if (Optional.IsDefined(ArtifactStorageAccessMode) || hasPropertyOverride)
+            {
+                builder.Append("  artifactStorageAccessMode: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ArtifactStorageAccessMode.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ArtifactStorageAccessMode}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ArtifactStorageAccessMode}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(FrontEndServiceConfiguration), out propertyOverride);
+            if (Optional.IsDefined(FrontEndServiceConfiguration) || hasPropertyOverride)
+            {
+                builder.Append("  frontEndServiceConfiguration: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, FrontEndServiceConfiguration, options, 2, false, "  frontEndServiceConfiguration: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(KubeConfig), out propertyOverride);
+            if (Optional.IsDefined(KubeConfig) || hasPropertyOverride)
+            {
+                builder.Append("  kubeConfig: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (KubeConfig.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{KubeConfig}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{KubeConfig}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        private void TransformFlattenedOverrides(BicepModelReaderWriterOptions bicepOptions, IDictionary<string, string> propertyOverrides)
+        {
+            foreach (var item in propertyOverrides.ToList())
+            {
+                switch (item.Key)
+                {
+                    case "FrontEndServiceKind":
+                        Dictionary<string, string> propertyDictionary = new Dictionary<string, string>();
+                        propertyDictionary.Add("Kind", item.Value);
+                        bicepOptions.PropertyOverrides.Add(FrontEndServiceConfiguration, propertyDictionary);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+        }
+
+        BinaryData IPersistableModel<ArcConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ArcConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ArcConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ArcConfiguration IPersistableModel<ArcConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ArcConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeArcConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ArcConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ArcConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

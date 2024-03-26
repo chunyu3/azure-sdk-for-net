@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Cryptography;
@@ -36,6 +37,8 @@ namespace Azure.Storage.Blobs.Test
         public ClientSideEncryptionTests(bool async, BlobClientOptions.ServiceVersion serviceVersion)
             : base(async, serviceVersion, null /* RecordedTestMode.Record /* to re-record */)
         {
+            // TODO: enable after new KeyValue is released (after Dec 2023)
+            TestDiagnostics = false;
         }
 
         private static IEnumerable<ClientSideEncryptionVersion> GetEncryptionVersions()
@@ -890,6 +893,47 @@ namespace Azure.Storage.Blobs.Test
             }
         }
 
+        /// <summary>
+        /// Track 1 had a bug where it used default casing settings for serializing properties,
+        /// which the application writer could change. So there exists encryption metadata in
+        /// Storage we do not know the casing of. We need to be able to deserialize those objects.
+        /// </summary>
+        [Test]
+        [LiveOnly]
+        public async Task DownloadBadCasing()
+        {
+            var data = new BinaryData(GetRandomBuffer(Constants.KB)); // ensure we have enough room in original data
+
+            var keyEncryptionKeyBytes = this.GenerateKeyBytes();
+            var keyId = this.GenerateKeyId();
+
+            var mockKey = this.GetIKeyEncryptionKey(s_cancellationToken, keyEncryptionKeyBytes, keyId).Object;
+            await using var disposable = await GetTestContainerEncryptionAsync(
+#pragma warning disable CS0618 // obsolete
+                new ClientSideEncryptionOptions(ClientSideEncryptionVersion.V1_0)
+                {
+                    KeyEncryptionKey = mockKey,
+                    KeyWrapAlgorithm = s_algorithmName
+                });
+
+            var blob = InstrumentClient(disposable.Container.GetBlobClient(GetNewBlobName()));
+            await blob.UploadAsync(data.ToStream(), cancellationToken: s_cancellationToken);
+
+            // tamper metadata json key casing
+            Assert.IsTrue((await blob.GetPropertiesAsync()).Value.Metadata.TryGetValue(EncryptionDataKey, out string rawEncryptionData));
+            // pattern to match restated without string literal escapes: /"(\w+)"\s*:/
+            // matches json property key and captures the text inside the quotations
+            // (regex not perfect but will capture in our scenario)
+            // replaces captured key with ToUpper of said key, ensuring casing is unexpected but we can parse it anyway on download
+            rawEncryptionData = Regex.Replace(rawEncryptionData, "\"(\\w+)\"\\s*:", match => match.Value.ToUpper());
+            await blob.SetMetadataAsync(new Dictionary<string, string>
+            {
+                { EncryptionDataKey, rawEncryptionData }
+            });
+
+            Assert.DoesNotThrowAsync(async () => await blob.DownloadContentAsync(cancellationToken: s_cancellationToken));
+        }
+
         [Test]
         [LiveOnly] // need access to keyvault service && cannot seed content encryption key
         public async Task RoundtripWithKeyvaultProvider([ValueSource("GetEncryptionVersions")] ClientSideEncryptionVersion version)
@@ -1490,6 +1534,41 @@ namespace Azure.Storage.Blobs.Test
 
             // Assert
             CollectionAssert.AreEqual(plaintext.ToArray(), roundtrippedPlaintext);
+        }
+
+        [Test]
+        [Combinatorial]
+        [LiveOnly]
+        public async Task EncryptionDataCaseInsensitivity(
+            [Values("ENCRYPTIONDATA", "EncryptionData", "eNcRyPtIoNdAtA")] string newKey,
+            [ValueSource("GetEncryptionVersions")] ClientSideEncryptionVersion version)
+        {
+            // Arrange
+            ReadOnlyMemory<byte> data = GetRandomBuffer(Constants.KB);
+            Mock<IKeyEncryptionKey> mockKey1 = this.GetIKeyEncryptionKey(s_cancellationToken);
+            var encryptionOptions = new ClientSideEncryptionOptions(version)
+            {
+                KeyEncryptionKey = mockKey1.Object,
+                KeyWrapAlgorithm = s_algorithmName
+            };
+
+            await using var disposable = await GetTestContainerAsync();
+
+            BlobClient standardBlobClient = disposable.Container.GetBlobClient(GetNewBlobName());
+            BlobClient encryptedBlobClient = InstrumentClient(standardBlobClient.WithClientSideEncryptionOptions(encryptionOptions));
+
+            await encryptedBlobClient.UploadAsync(BinaryData.FromBytes(data), cancellationToken: s_cancellationToken);
+
+            // change casing of encryptiondata key
+            string rawEncryptiondata = (await standardBlobClient.GetPropertiesAsync()).Value.Metadata[EncryptionDataKey];
+            Assert.IsNotEmpty(rawEncryptiondata); // quick check we're testing the right thing
+            await standardBlobClient.SetMetadataAsync(new Dictionary<string, string> { { newKey, rawEncryptiondata } });
+
+            // Act
+            ReadOnlyMemory<byte> downloadedContent = (await encryptedBlobClient.DownloadContentAsync(s_cancellationToken)).Value.Content.ToMemory();
+
+            // Assert
+            Assert.IsTrue(data.Span.SequenceEqual(downloadedContent.Span));
         }
 
         /// <summary>

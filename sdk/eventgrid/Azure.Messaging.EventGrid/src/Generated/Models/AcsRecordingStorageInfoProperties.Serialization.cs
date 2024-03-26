@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -15,14 +14,17 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static AcsRecordingStorageInfoProperties DeserializeAcsRecordingStorageInfoProperties(JsonElement element)
         {
-            Optional<IReadOnlyList<AcsRecordingChunkInfoProperties>> recordingChunks = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<AcsRecordingChunkInfoProperties> recordingChunks = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("recordingChunks"))
+                if (property.NameEquals("recordingChunks"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<AcsRecordingChunkInfoProperties> array = new List<AcsRecordingChunkInfoProperties>();
@@ -34,7 +36,7 @@ namespace Azure.Messaging.EventGrid.SystemEvents
                     continue;
                 }
             }
-            return new AcsRecordingStorageInfoProperties(Optional.ToList(recordingChunks));
+            return new AcsRecordingStorageInfoProperties(recordingChunks ?? new ChangeTrackingList<AcsRecordingChunkInfoProperties>());
         }
     }
 }

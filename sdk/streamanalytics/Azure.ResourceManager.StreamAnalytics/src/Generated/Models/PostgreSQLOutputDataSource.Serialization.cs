@@ -5,77 +5,123 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.StreamAnalytics.Models
 {
-    public partial class PostgreSQLOutputDataSource : IUtf8JsonSerializable
+    public partial class PostgreSQLOutputDataSource : IUtf8JsonSerializable, IJsonModel<PostgreSQLOutputDataSource>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<PostgreSQLOutputDataSource>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<PostgreSQLOutputDataSource>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<PostgreSQLOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PostgreSQLOutputDataSource)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(OutputDataSourceType);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(Server))
             {
-                writer.WritePropertyName("server");
+                writer.WritePropertyName("server"u8);
                 writer.WriteStringValue(Server);
             }
             if (Optional.IsDefined(Database))
             {
-                writer.WritePropertyName("database");
+                writer.WritePropertyName("database"u8);
                 writer.WriteStringValue(Database);
             }
             if (Optional.IsDefined(Table))
             {
-                writer.WritePropertyName("table");
+                writer.WritePropertyName("table"u8);
                 writer.WriteStringValue(Table);
             }
             if (Optional.IsDefined(User))
             {
-                writer.WritePropertyName("user");
+                writer.WritePropertyName("user"u8);
                 writer.WriteStringValue(User);
             }
             if (Optional.IsDefined(Password))
             {
-                writer.WritePropertyName("password");
+                writer.WritePropertyName("password"u8);
                 writer.WriteStringValue(Password);
             }
             if (Optional.IsDefined(MaxWriterCount))
             {
-                writer.WritePropertyName("maxWriterCount");
+                writer.WritePropertyName("maxWriterCount"u8);
                 writer.WriteNumberValue(MaxWriterCount.Value);
             }
             if (Optional.IsDefined(AuthenticationMode))
             {
-                writer.WritePropertyName("authenticationMode");
+                writer.WritePropertyName("authenticationMode"u8);
                 writer.WriteStringValue(AuthenticationMode.Value.ToString());
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static PostgreSQLOutputDataSource DeserializePostgreSQLOutputDataSource(JsonElement element)
+        PostgreSQLOutputDataSource IJsonModel<PostgreSQLOutputDataSource>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<PostgreSQLOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PostgreSQLOutputDataSource)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePostgreSQLOutputDataSource(document.RootElement, options);
+        }
+
+        internal static PostgreSQLOutputDataSource DeserializePostgreSQLOutputDataSource(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<string> server = default;
-            Optional<string> database = default;
-            Optional<string> table = default;
-            Optional<string> user = default;
-            Optional<string> password = default;
-            Optional<float> maxWriterCount = default;
-            Optional<AuthenticationMode> authenticationMode = default;
+            string server = default;
+            string database = default;
+            string table = default;
+            string user = default;
+            string password = default;
+            int? maxWriterCount = default;
+            StreamAnalyticsAuthenticationMode? authenticationMode = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -84,56 +130,99 @@ namespace Azure.ResourceManager.StreamAnalytics.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("server"))
+                        if (property0.NameEquals("server"u8))
                         {
                             server = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("database"))
+                        if (property0.NameEquals("database"u8))
                         {
                             database = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("table"))
+                        if (property0.NameEquals("table"u8))
                         {
                             table = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("user"))
+                        if (property0.NameEquals("user"u8))
                         {
                             user = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("password"))
+                        if (property0.NameEquals("password"u8))
                         {
                             password = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("maxWriterCount"))
+                        if (property0.NameEquals("maxWriterCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            maxWriterCount = property0.Value.GetSingle();
+                            maxWriterCount = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("authenticationMode"))
+                        if (property0.NameEquals("authenticationMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            authenticationMode = new AuthenticationMode(property0.Value.GetString());
+                            authenticationMode = new StreamAnalyticsAuthenticationMode(property0.Value.GetString());
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new PostgreSQLOutputDataSource(type, server.Value, database.Value, table.Value, user.Value, password.Value, Optional.ToNullable(maxWriterCount), Optional.ToNullable(authenticationMode));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new PostgreSQLOutputDataSource(
+                type,
+                serializedAdditionalRawData,
+                server,
+                database,
+                table,
+                user,
+                password,
+                maxWriterCount,
+                authenticationMode);
         }
+
+        BinaryData IPersistableModel<PostgreSQLOutputDataSource>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PostgreSQLOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(PostgreSQLOutputDataSource)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        PostgreSQLOutputDataSource IPersistableModel<PostgreSQLOutputDataSource>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PostgreSQLOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializePostgreSQLOutputDataSource(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PostgreSQLOutputDataSource)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<PostgreSQLOutputDataSource>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

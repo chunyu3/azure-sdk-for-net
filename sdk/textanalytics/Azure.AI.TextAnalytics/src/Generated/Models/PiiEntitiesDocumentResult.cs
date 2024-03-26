@@ -8,14 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.AI.TextAnalytics;
 
 namespace Azure.AI.TextAnalytics.Models
 {
     /// <summary> The PiiEntitiesDocumentResult. </summary>
     internal partial class PiiEntitiesDocumentResult : DocumentResult
     {
-        /// <summary> Initializes a new instance of PiiEntitiesDocumentResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PiiEntitiesDocumentResult"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="warnings"> Warnings encountered while processing document. </param>
         /// <param name="redactedText"> Returns redacted text. </param>
@@ -23,28 +22,16 @@ namespace Azure.AI.TextAnalytics.Models
         /// <exception cref="ArgumentNullException"> <paramref name="id"/>, <paramref name="warnings"/>, <paramref name="redactedText"/> or <paramref name="entities"/> is null. </exception>
         public PiiEntitiesDocumentResult(string id, IEnumerable<DocumentWarning> warnings, string redactedText, IEnumerable<Entity> entities) : base(id, warnings)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-            if (warnings == null)
-            {
-                throw new ArgumentNullException(nameof(warnings));
-            }
-            if (redactedText == null)
-            {
-                throw new ArgumentNullException(nameof(redactedText));
-            }
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
+            Argument.AssertNotNull(id, nameof(id));
+            Argument.AssertNotNull(warnings, nameof(warnings));
+            Argument.AssertNotNull(redactedText, nameof(redactedText));
+            Argument.AssertNotNull(entities, nameof(entities));
 
             RedactedText = redactedText;
             Entities = entities.ToList();
         }
 
-        /// <summary> Initializes a new instance of PiiEntitiesDocumentResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PiiEntitiesDocumentResult"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="warnings"> Warnings encountered while processing document. </param>
         /// <param name="statistics"> if showStats=true was specified in the request this field will contain information about the document payload. </param>

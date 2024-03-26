@@ -20,36 +20,39 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(PartitionColumnName))
             {
-                writer.WritePropertyName("partitionColumnName");
-                writer.WriteObjectValue(PartitionColumnName);
+                writer.WritePropertyName("partitionColumnName"u8);
+                writer.WriteObjectValue<object>(PartitionColumnName);
             }
             writer.WriteEndObject();
         }
 
         internal static SapHanaPartitionSettings DeserializeSapHanaPartitionSettings(JsonElement element)
         {
-            Optional<object> partitionColumnName = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object partitionColumnName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("partitionColumnName"))
+                if (property.NameEquals("partitionColumnName"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     partitionColumnName = property.Value.GetObject();
                     continue;
                 }
             }
-            return new SapHanaPartitionSettings(partitionColumnName.Value);
+            return new SapHanaPartitionSettings(partitionColumnName);
         }
 
         internal partial class SapHanaPartitionSettingsConverter : JsonConverter<SapHanaPartitionSettings>
         {
             public override void Write(Utf8JsonWriter writer, SapHanaPartitionSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SapHanaPartitionSettings>(model);
             }
             public override SapHanaPartitionSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

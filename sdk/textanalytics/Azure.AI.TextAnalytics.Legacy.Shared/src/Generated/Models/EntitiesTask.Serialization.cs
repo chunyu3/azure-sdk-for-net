@@ -6,6 +6,7 @@
 #nullable disable
 
 using System.Text.Json;
+using Azure.AI.TextAnalytics.Legacy.Models;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy
@@ -17,12 +18,12 @@ namespace Azure.AI.TextAnalytics.Legacy
             writer.WriteStartObject();
             if (Optional.IsDefined(Parameters))
             {
-                writer.WritePropertyName("parameters");
-                writer.WriteObjectValue(Parameters);
+                writer.WritePropertyName("parameters"u8);
+                writer.WriteObjectValue<EntitiesTaskParameters>(Parameters);
             }
             if (Optional.IsDefined(TaskName))
             {
-                writer.WritePropertyName("taskName");
+                writer.WritePropertyName("taskName"u8);
                 writer.WriteStringValue(TaskName);
             }
             writer.WriteEndObject();

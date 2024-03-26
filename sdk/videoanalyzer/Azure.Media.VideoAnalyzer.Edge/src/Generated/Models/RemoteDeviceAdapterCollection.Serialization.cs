@@ -18,17 +18,17 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Value))
             {
-                writer.WritePropertyName("value");
+                writer.WritePropertyName("value"u8);
                 writer.WriteStartArray();
                 foreach (var item in Value)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<RemoteDeviceAdapter>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ContinuationToken))
             {
-                writer.WritePropertyName("@continuationToken");
+                writer.WritePropertyName("@continuationToken"u8);
                 writer.WriteStringValue(ContinuationToken);
             }
             writer.WriteEndObject();
@@ -36,15 +36,18 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static RemoteDeviceAdapterCollection DeserializeRemoteDeviceAdapterCollection(JsonElement element)
         {
-            Optional<IList<RemoteDeviceAdapter>> value = default;
-            Optional<string> continuationToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<RemoteDeviceAdapter> value = default;
+            string continuationToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<RemoteDeviceAdapter> array = new List<RemoteDeviceAdapter>();
@@ -55,13 +58,13 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("@continuationToken"))
+                if (property.NameEquals("@continuationToken"u8))
                 {
                     continuationToken = property.Value.GetString();
                     continue;
                 }
             }
-            return new RemoteDeviceAdapterCollection(Optional.ToList(value), continuationToken.Value);
+            return new RemoteDeviceAdapterCollection(value ?? new ChangeTrackingList<RemoteDeviceAdapter>(), continuationToken);
         }
     }
 }

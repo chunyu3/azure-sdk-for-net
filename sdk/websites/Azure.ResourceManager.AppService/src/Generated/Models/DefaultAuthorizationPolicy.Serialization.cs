@@ -5,25 +5,37 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class DefaultAuthorizationPolicy : IUtf8JsonSerializable
+    public partial class DefaultAuthorizationPolicy : IUtf8JsonSerializable, IJsonModel<DefaultAuthorizationPolicy>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DefaultAuthorizationPolicy>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<DefaultAuthorizationPolicy>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<DefaultAuthorizationPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DefaultAuthorizationPolicy)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(AllowedPrincipals))
             {
-                writer.WritePropertyName("allowedPrincipals");
-                writer.WriteObjectValue(AllowedPrincipals);
+                writer.WritePropertyName("allowedPrincipals"u8);
+                writer.WriteObjectValue<AppServiceAadAllowedPrincipals>(AllowedPrincipals, options);
             }
             if (Optional.IsCollectionDefined(AllowedApplications))
             {
-                writer.WritePropertyName("allowedApplications");
+                writer.WritePropertyName("allowedApplications"u8);
                 writer.WriteStartArray();
                 foreach (var item in AllowedApplications)
                 {
@@ -31,30 +43,63 @@ namespace Azure.ResourceManager.AppService.Models
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static DefaultAuthorizationPolicy DeserializeDefaultAuthorizationPolicy(JsonElement element)
+        DefaultAuthorizationPolicy IJsonModel<DefaultAuthorizationPolicy>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AllowedPrincipals> allowedPrincipals = default;
-            Optional<IList<string>> allowedApplications = default;
+            var format = options.Format == "W" ? ((IPersistableModel<DefaultAuthorizationPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DefaultAuthorizationPolicy)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDefaultAuthorizationPolicy(document.RootElement, options);
+        }
+
+        internal static DefaultAuthorizationPolicy DeserializeDefaultAuthorizationPolicy(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AppServiceAadAllowedPrincipals allowedPrincipals = default;
+            IList<string> allowedApplications = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("allowedPrincipals"))
+                if (property.NameEquals("allowedPrincipals"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    allowedPrincipals = AllowedPrincipals.DeserializeAllowedPrincipals(property.Value);
+                    allowedPrincipals = AppServiceAadAllowedPrincipals.DeserializeAppServiceAadAllowedPrincipals(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("allowedApplications"))
+                if (property.NameEquals("allowedApplications"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -65,8 +110,110 @@ namespace Azure.ResourceManager.AppService.Models
                     allowedApplications = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new DefaultAuthorizationPolicy(allowedPrincipals.Value, Optional.ToList(allowedApplications));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new DefaultAuthorizationPolicy(allowedPrincipals, allowedApplications ?? new ChangeTrackingList<string>(), serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AllowedPrincipals), out propertyOverride);
+            if (Optional.IsDefined(AllowedPrincipals) || hasPropertyOverride)
+            {
+                builder.Append("  allowedPrincipals: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, AllowedPrincipals, options, 2, false, "  allowedPrincipals: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AllowedApplications), out propertyOverride);
+            if (Optional.IsCollectionDefined(AllowedApplications) || hasPropertyOverride)
+            {
+                if (AllowedApplications.Any() || hasPropertyOverride)
+                {
+                    builder.Append("  allowedApplications: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in AllowedApplications)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<DefaultAuthorizationPolicy>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DefaultAuthorizationPolicy>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(DefaultAuthorizationPolicy)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DefaultAuthorizationPolicy IPersistableModel<DefaultAuthorizationPolicy>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DefaultAuthorizationPolicy>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeDefaultAuthorizationPolicy(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DefaultAuthorizationPolicy)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DefaultAuthorizationPolicy>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

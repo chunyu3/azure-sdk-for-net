@@ -7,29 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> ServiceNow server linked service. </summary>
-    public partial class ServiceNowLinkedService : LinkedService
+    public partial class ServiceNowLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of ServiceNowLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServiceNowLinkedService"/>. </summary>
         /// <param name="endpoint"> The endpoint of the ServiceNow server. (i.e. &lt;instance&gt;.service-now.com). </param>
         /// <param name="authenticationType"> The authentication type to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> is null. </exception>
-        public ServiceNowLinkedService(BinaryData endpoint, ServiceNowAuthenticationType authenticationType)
+        public ServiceNowLinkedService(DataFactoryElement<string> endpoint, ServiceNowAuthenticationType authenticationType)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
 
             Endpoint = endpoint;
             AuthenticationType = authenticationType;
             LinkedServiceType = "ServiceNow";
         }
 
-        /// <summary> Initializes a new instance of ServiceNowLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServiceNowLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -39,22 +37,14 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="endpoint"> The endpoint of the ServiceNow server. (i.e. &lt;instance&gt;.service-now.com). </param>
         /// <param name="authenticationType"> The authentication type to use. </param>
         /// <param name="username"> The user name used to connect to the ServiceNow server for Basic and OAuth2 authentication. </param>
-        /// <param name="password">
-        /// The password corresponding to the user name for Basic and OAuth2 authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="password"> The password corresponding to the user name for Basic and OAuth2 authentication. </param>
         /// <param name="clientId"> The client id for OAuth2 authentication. </param>
-        /// <param name="clientSecret">
-        /// The client secret for OAuth2 authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="clientSecret"> The client secret for OAuth2 authentication. </param>
         /// <param name="useEncryptedEndpoints"> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </param>
-        /// <param name="useHostVerification"> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
+        /// <param name="useHostVerification"> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
         /// <param name="usePeerVerification"> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal ServiceNowLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData endpoint, ServiceNowAuthenticationType authenticationType, BinaryData username, SecretBase password, BinaryData clientId, SecretBase clientSecret, BinaryData useEncryptedEndpoints, BinaryData useHostVerification, BinaryData usePeerVerification, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal ServiceNowLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> endpoint, ServiceNowAuthenticationType authenticationType, DataFactoryElement<string> username, DataFactorySecret password, DataFactoryElement<string> clientId, DataFactorySecret clientSecret, DataFactoryElement<bool> useEncryptedEndpoints, DataFactoryElement<bool> useHostVerification, DataFactoryElement<bool> usePeerVerification, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Endpoint = endpoint;
             AuthenticationType = authenticationType;
@@ -69,33 +59,30 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "ServiceNow";
         }
 
+        /// <summary> Initializes a new instance of <see cref="ServiceNowLinkedService"/> for deserialization. </summary>
+        internal ServiceNowLinkedService()
+        {
+        }
+
         /// <summary> The endpoint of the ServiceNow server. (i.e. &lt;instance&gt;.service-now.com). </summary>
-        public BinaryData Endpoint { get; set; }
+        public DataFactoryElement<string> Endpoint { get; set; }
         /// <summary> The authentication type to use. </summary>
         public ServiceNowAuthenticationType AuthenticationType { get; set; }
         /// <summary> The user name used to connect to the ServiceNow server for Basic and OAuth2 authentication. </summary>
-        public BinaryData Username { get; set; }
-        /// <summary>
-        /// The password corresponding to the user name for Basic and OAuth2 authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
+        public DataFactoryElement<string> Username { get; set; }
+        /// <summary> The password corresponding to the user name for Basic and OAuth2 authentication. </summary>
+        public DataFactorySecret Password { get; set; }
         /// <summary> The client id for OAuth2 authentication. </summary>
-        public BinaryData ClientId { get; set; }
-        /// <summary>
-        /// The client secret for OAuth2 authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase ClientSecret { get; set; }
+        public DataFactoryElement<string> ClientId { get; set; }
+        /// <summary> The client secret for OAuth2 authentication. </summary>
+        public DataFactorySecret ClientSecret { get; set; }
         /// <summary> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </summary>
-        public BinaryData UseEncryptedEndpoints { get; set; }
-        /// <summary> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UseHostVerification { get; set; }
+        public DataFactoryElement<bool> UseEncryptedEndpoints { get; set; }
+        /// <summary> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
+        public DataFactoryElement<bool> UseHostVerification { get; set; }
         /// <summary> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UsePeerVerification { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<bool> UsePeerVerification { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

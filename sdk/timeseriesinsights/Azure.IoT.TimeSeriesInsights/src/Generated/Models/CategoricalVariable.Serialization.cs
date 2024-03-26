@@ -16,65 +16,67 @@ namespace Azure.IoT.TimeSeriesInsights
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("value");
-            writer.WriteObjectValue(Value);
+            writer.WritePropertyName("value"u8);
+            writer.WriteObjectValue<TimeSeriesExpression>(Value);
             if (Optional.IsDefined(Interpolation))
             {
-                writer.WritePropertyName("interpolation");
-                writer.WriteObjectValue(Interpolation);
+                writer.WritePropertyName("interpolation"u8);
+                writer.WriteObjectValue<TimeSeriesInterpolation>(Interpolation);
             }
             if (Optional.IsCollectionDefined(Categories))
             {
-                writer.WritePropertyName("categories");
+                writer.WritePropertyName("categories"u8);
                 writer.WriteStartArray();
                 foreach (var item in Categories)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<TimeSeriesAggregateCategory>(item);
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("defaultCategory");
-            writer.WriteObjectValue(DefaultCategory);
-            writer.WritePropertyName("kind");
+            writer.WritePropertyName("defaultCategory"u8);
+            writer.WriteObjectValue<TimeSeriesDefaultCategory>(DefaultCategory);
+            writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind);
             if (Optional.IsDefined(Filter))
             {
-                writer.WritePropertyName("filter");
-                writer.WriteObjectValue(Filter);
+                writer.WritePropertyName("filter"u8);
+                writer.WriteObjectValue<TimeSeriesExpression>(Filter);
             }
             writer.WriteEndObject();
         }
 
         internal static CategoricalVariable DeserializeCategoricalVariable(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             TimeSeriesExpression value = default;
-            Optional<TimeSeriesInterpolation> interpolation = default;
-            Optional<IList<TimeSeriesAggregateCategory>> categories = default;
+            TimeSeriesInterpolation interpolation = default;
+            IList<TimeSeriesAggregateCategory> categories = default;
             TimeSeriesDefaultCategory defaultCategory = default;
             string kind = default;
-            Optional<TimeSeriesExpression> filter = default;
+            TimeSeriesExpression filter = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     value = TimeSeriesExpression.DeserializeTimeSeriesExpression(property.Value);
                     continue;
                 }
-                if (property.NameEquals("interpolation"))
+                if (property.NameEquals("interpolation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     interpolation = TimeSeriesInterpolation.DeserializeTimeSeriesInterpolation(property.Value);
                     continue;
                 }
-                if (property.NameEquals("categories"))
+                if (property.NameEquals("categories"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<TimeSeriesAggregateCategory> array = new List<TimeSeriesAggregateCategory>();
@@ -85,28 +87,33 @@ namespace Azure.IoT.TimeSeriesInsights
                     categories = array;
                     continue;
                 }
-                if (property.NameEquals("defaultCategory"))
+                if (property.NameEquals("defaultCategory"u8))
                 {
                     defaultCategory = TimeSeriesDefaultCategory.DeserializeTimeSeriesDefaultCategory(property.Value);
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("filter"))
+                if (property.NameEquals("filter"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     filter = TimeSeriesExpression.DeserializeTimeSeriesExpression(property.Value);
                     continue;
                 }
             }
-            return new CategoricalVariable(kind, filter.Value, value, interpolation.Value, Optional.ToList(categories), defaultCategory);
+            return new CategoricalVariable(
+                kind,
+                filter,
+                value,
+                interpolation,
+                categories ?? new ChangeTrackingList<TimeSeriesAggregateCategory>(),
+                defaultCategory);
         }
     }
 }

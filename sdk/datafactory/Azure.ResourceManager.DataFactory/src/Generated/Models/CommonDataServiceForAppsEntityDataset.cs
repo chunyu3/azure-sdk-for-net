@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Common Data Service for Apps entity dataset. </summary>
-    public partial class CommonDataServiceForAppsEntityDataset : Dataset
+    public partial class CommonDataServiceForAppsEntityDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of CommonDataServiceForAppsEntityDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommonDataServiceForAppsEntityDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public CommonDataServiceForAppsEntityDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public CommonDataServiceForAppsEntityDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "CommonDataServiceForAppsEntity";
         }
 
-        /// <summary> Initializes a new instance of CommonDataServiceForAppsEntityDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommonDataServiceForAppsEntityDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="entityName"> The logical name of the entity. Type: string (or Expression with resultType string). </param>
-        internal CommonDataServiceForAppsEntityDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData entityName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal CommonDataServiceForAppsEntityDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> entityName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             EntityName = entityName;
             DatasetType = datasetType ?? "CommonDataServiceForAppsEntity";
         }
 
+        /// <summary> Initializes a new instance of <see cref="CommonDataServiceForAppsEntityDataset"/> for deserialization. </summary>
+        internal CommonDataServiceForAppsEntityDataset()
+        {
+        }
+
         /// <summary> The logical name of the entity. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EntityName { get; set; }
+        public DataFactoryElement<string> EntityName { get; set; }
     }
 }

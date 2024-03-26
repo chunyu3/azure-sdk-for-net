@@ -9,7 +9,6 @@ using Azure.ResourceManager.Resources;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.EventHubs.Models;
 using Azure.ResourceManager.EventHubs;
-using Azure.ResourceManager.EventHubs.Tests.Helpers;
 using Azure.ResourceManager.Resources.Models;
 using Azure.Core;
 
@@ -65,9 +64,9 @@ namespace Azure.ResourceManager.EventHubs.Tests
             Assert.NotNull(subResource);
 
             //update the cluster
-            cluster.Data.Tags.Add("key", "value");
+            cluster.Data.Tags.Add("key1", "value1");
             cluster = (await cluster.UpdateAsync(WaitUntil.Completed, cluster.Data)).Value;
-            Assert.AreEqual(cluster.Data.Tags["key"], "value");
+            Assert.AreEqual(cluster.Data.Tags["key1"], "value1");
 
             //delete the cluster
             await cluster.DeleteAsync(WaitUntil.Completed);

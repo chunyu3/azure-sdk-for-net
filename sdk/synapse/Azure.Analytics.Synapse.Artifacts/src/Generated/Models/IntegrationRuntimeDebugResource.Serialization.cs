@@ -18,11 +18,11 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("properties");
-            writer.WriteObjectValue(Properties);
+            writer.WritePropertyName("properties"u8);
+            writer.WriteObjectValue<IntegrationRuntime>(Properties);
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             writer.WriteEndObject();
@@ -30,29 +30,33 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static IntegrationRuntimeDebugResource DeserializeIntegrationRuntimeDebugResource(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IntegrationRuntime properties = default;
-            Optional<string> name = default;
+            string name = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     properties = IntegrationRuntime.DeserializeIntegrationRuntime(property.Value);
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
             }
-            return new IntegrationRuntimeDebugResource(name.Value, properties);
+            return new IntegrationRuntimeDebugResource(name, properties);
         }
 
         internal partial class IntegrationRuntimeDebugResourceConverter : JsonConverter<IntegrationRuntimeDebugResource>
         {
             public override void Write(Utf8JsonWriter writer, IntegrationRuntimeDebugResource model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<IntegrationRuntimeDebugResource>(model);
             }
             public override IntegrationRuntimeDebugResource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

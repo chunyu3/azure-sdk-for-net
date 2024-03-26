@@ -21,16 +21,16 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Value))
             {
-                writer.WritePropertyName("value");
+                writer.WritePropertyName("value"u8);
                 writer.WriteStringValue(Value);
             }
             if (Optional.IsCollectionDefined(Activities))
             {
-                writer.WritePropertyName("activities");
+                writer.WritePropertyName("activities"u8);
                 writer.WriteStartArray();
                 foreach (var item in Activities)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<Activity>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -39,20 +39,23 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static SwitchCase DeserializeSwitchCase(JsonElement element)
         {
-            Optional<string> value = default;
-            Optional<IList<Activity>> activities = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string value = default;
+            IList<Activity> activities = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     value = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("activities"))
+                if (property.NameEquals("activities"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<Activity> array = new List<Activity>();
@@ -64,14 +67,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new SwitchCase(value.Value, Optional.ToList(activities));
+            return new SwitchCase(value, activities ?? new ChangeTrackingList<Activity>());
         }
 
         internal partial class SwitchCaseConverter : JsonConverter<SwitchCase>
         {
             public override void Write(Utf8JsonWriter writer, SwitchCase model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SwitchCase>(model);
             }
             public override SwitchCase Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

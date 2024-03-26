@@ -6,13 +6,18 @@ Run `dotnet build /t:GenerateCode` to generate code.
 azure-arm: true
 csharp: true
 namespace: Azure.ResourceManager.ServiceBus
-require: https://github.com/Azure/azure-rest-api-specs/blob/c2d2b523575031790b8672640ea762bdf9ad4964/specification/servicebus/resource-manager/readme.md
-tag: package-2021-11
+require: https://github.com/Azure/azure-rest-api-specs/blob/f69c52dd603c79a8b29ba51483e3aa7fe1b56212/specification/servicebus/resource-manager/readme.md
+tag: package-2022-10-preview
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../samples/Generated
+  clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+enable-bicep-serialization: true
 
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ServiceBus/namespaces/{namespaceName}/AuthorizationRules/{authorizationRuleName}: ServiceBusNamespaceAuthorizationRule
@@ -30,12 +35,12 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
   Ip: IP
-  Ips: IPs
+  Ips: IPs|ips
   ID: Id
   IDs: Ids
   VM: Vm
@@ -46,11 +51,27 @@ rename-rules:
   VPN: Vpn
   NAT: Nat
   WAN: Wan
-  Ipv4: IPv4
-  Ipv6: IPv6
-  Ipsec: IPsec
+  Ipv4: IPv4|ipv4
+  Ipv6: IPv6|ipv6
+  Ipsec: IPsec|ipsec
   SSO: Sso
   URI: Uri
+  Etag: ETag|etag
+
+rename-mapping:
+  UnavailableReason: ServiceBusNameUnavailableReason
+  EntityStatus: ServiceBusMessagingEntityStatus
+  FilterType: ServiceBusFilterType
+  SqlFilter: ServiceBusSqlFilter
+  CorrelationFilter: ServiceBusCorrelationFilter
+  CorrelationFilter.label: Subject
+  CorrelationFilter.properties: ApplicationProperties
+  FilterAction: ServiceBusFilterAction
+  ServiceBusNamespace.properties.zoneRedundant: IsZoneRedundant
+  ServiceBusNetworkRuleSet.properties.trustedServiceAccessEnabled: IsTrustedServiceAccessEnabled
+  ServiceBusNameAvailabilityResult.nameAvailable: IsNameAvailable
+  PublicNetworkAccess: ServiceBusPublicNetworkAccess
+  TlsVersion: ServiceBusMinimumTlsVersion
 
 directive:
     - from: swagger-document
@@ -177,6 +198,7 @@ directive:
         $.Rule['x-ms-client-name'] = 'ServiceBusRule';
         $.Action['x-ms-client-name'] = 'FilterAction';
         $.CorrelationFilter.properties.to['x-ms-client-name'] = 'sendTo';
+        $.CorrelationFilter.properties.properties.additionalProperties['x-ms-format'] = 'object';
     - from: topics.json
       where: $.definitions
       transform: >

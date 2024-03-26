@@ -7,57 +7,48 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Linked service for Asana. </summary>
-    public partial class AsanaLinkedService : LinkedService
+    public partial class AsanaLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of AsanaLinkedService. </summary>
-        /// <param name="apiToken">
-        /// The api token for the Asana source.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="AsanaLinkedService"/>. </summary>
+        /// <param name="apiToken"> The api token for the Asana source. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="apiToken"/> is null. </exception>
-        public AsanaLinkedService(SecretBase apiToken)
+        public AsanaLinkedService(DataFactorySecret apiToken)
         {
-            if (apiToken == null)
-            {
-                throw new ArgumentNullException(nameof(apiToken));
-            }
+            Argument.AssertNotNull(apiToken, nameof(apiToken));
 
             ApiToken = apiToken;
             LinkedServiceType = "Asana";
         }
 
-        /// <summary> Initializes a new instance of AsanaLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AsanaLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
         /// <param name="parameters"> Parameters for linked service. </param>
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="apiToken">
-        /// The api token for the Asana source.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal AsanaLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, SecretBase apiToken, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="apiToken"> The api token for the Asana source. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal AsanaLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactorySecret apiToken, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             ApiToken = apiToken;
             EncryptedCredential = encryptedCredential;
             LinkedServiceType = linkedServiceType ?? "Asana";
         }
 
-        /// <summary>
-        /// The api token for the Asana source.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase ApiToken { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        /// <summary> Initializes a new instance of <see cref="AsanaLinkedService"/> for deserialization. </summary>
+        internal AsanaLinkedService()
+        {
+        }
+
+        /// <summary> The api token for the Asana source. </summary>
+        public DataFactorySecret ApiToken { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

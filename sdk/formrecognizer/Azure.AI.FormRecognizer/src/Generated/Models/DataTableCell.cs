@@ -8,14 +8,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 
 namespace Azure.AI.FormRecognizer.Models
 {
     /// <summary> Information about the extracted cell in a table. </summary>
     internal partial class DataTableCell
     {
-        /// <summary> Initializes a new instance of DataTableCell. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataTableCell"/>. </summary>
         /// <param name="rowIndex"> Row index of the cell. </param>
         /// <param name="columnIndex"> Column index of the cell. </param>
         /// <param name="text"> Text content of the cell. </param>
@@ -24,14 +23,8 @@ namespace Azure.AI.FormRecognizer.Models
         /// <exception cref="ArgumentNullException"> <paramref name="text"/> or <paramref name="boundingBox"/> is null. </exception>
         internal DataTableCell(int rowIndex, int columnIndex, string text, IEnumerable<float> boundingBox, float confidence)
         {
-            if (text == null)
-            {
-                throw new ArgumentNullException(nameof(text));
-            }
-            if (boundingBox == null)
-            {
-                throw new ArgumentNullException(nameof(boundingBox));
-            }
+            Argument.AssertNotNull(text, nameof(text));
+            Argument.AssertNotNull(boundingBox, nameof(boundingBox));
 
             RowIndex = rowIndex;
             ColumnIndex = columnIndex;
@@ -41,7 +34,7 @@ namespace Azure.AI.FormRecognizer.Models
             Elements = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DataTableCell. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataTableCell"/>. </summary>
         /// <param name="rowIndex"> Row index of the cell. </param>
         /// <param name="columnIndex"> Column index of the cell. </param>
         /// <param name="rowSpan"> Number of rows spanned by this cell. </param>

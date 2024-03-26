@@ -18,25 +18,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type.ToString());
-            writer.WritePropertyName("referenceName");
-            writer.WriteObjectValue(ReferenceName);
+            writer.WritePropertyName("referenceName"u8);
+            writer.WriteObjectValue<object>(ReferenceName);
             writer.WriteEndObject();
         }
 
         internal static SynapseNotebookReference DeserializeSynapseNotebookReference(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             NotebookReferenceType type = default;
             object referenceName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new NotebookReferenceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("referenceName"))
+                if (property.NameEquals("referenceName"u8))
                 {
                     referenceName = property.Value.GetObject();
                     continue;
@@ -49,7 +53,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, SynapseNotebookReference model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SynapseNotebookReference>(model);
             }
             public override SynapseNotebookReference Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

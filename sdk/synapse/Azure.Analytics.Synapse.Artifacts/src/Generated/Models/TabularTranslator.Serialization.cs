@@ -21,134 +21,131 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ColumnMappings))
             {
-                writer.WritePropertyName("columnMappings");
-                writer.WriteObjectValue(ColumnMappings);
+                writer.WritePropertyName("columnMappings"u8);
+                writer.WriteObjectValue<object>(ColumnMappings);
             }
             if (Optional.IsDefined(SchemaMapping))
             {
-                writer.WritePropertyName("schemaMapping");
-                writer.WriteObjectValue(SchemaMapping);
+                writer.WritePropertyName("schemaMapping"u8);
+                writer.WriteObjectValue<object>(SchemaMapping);
             }
             if (Optional.IsDefined(CollectionReference))
             {
-                writer.WritePropertyName("collectionReference");
-                writer.WriteObjectValue(CollectionReference);
+                writer.WritePropertyName("collectionReference"u8);
+                writer.WriteObjectValue<object>(CollectionReference);
             }
             if (Optional.IsDefined(MapComplexValuesToString))
             {
-                writer.WritePropertyName("mapComplexValuesToString");
-                writer.WriteObjectValue(MapComplexValuesToString);
+                writer.WritePropertyName("mapComplexValuesToString"u8);
+                writer.WriteObjectValue<object>(MapComplexValuesToString);
             }
             if (Optional.IsDefined(Mappings))
             {
-                writer.WritePropertyName("mappings");
-                writer.WriteObjectValue(Mappings);
+                writer.WritePropertyName("mappings"u8);
+                writer.WriteObjectValue<object>(Mappings);
             }
             if (Optional.IsDefined(TypeConversion))
             {
-                writer.WritePropertyName("typeConversion");
-                writer.WriteObjectValue(TypeConversion);
+                writer.WritePropertyName("typeConversion"u8);
+                writer.WriteObjectValue<object>(TypeConversion);
             }
             if (Optional.IsDefined(TypeConversionSettings))
             {
-                writer.WritePropertyName("typeConversionSettings");
-                writer.WriteObjectValue(TypeConversionSettings);
+                writer.WritePropertyName("typeConversionSettings"u8);
+                writer.WriteObjectValue<TypeConversionSettings>(TypeConversionSettings);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static TabularTranslator DeserializeTabularTranslator(JsonElement element)
         {
-            Optional<object> columnMappings = default;
-            Optional<object> schemaMapping = default;
-            Optional<object> collectionReference = default;
-            Optional<object> mapComplexValuesToString = default;
-            Optional<object> mappings = default;
-            Optional<object> typeConversion = default;
-            Optional<TypeConversionSettings> typeConversionSettings = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object columnMappings = default;
+            object schemaMapping = default;
+            object collectionReference = default;
+            object mapComplexValuesToString = default;
+            object mappings = default;
+            object typeConversion = default;
+            TypeConversionSettings typeConversionSettings = default;
             string type = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("columnMappings"))
+                if (property.NameEquals("columnMappings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     columnMappings = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("schemaMapping"))
+                if (property.NameEquals("schemaMapping"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     schemaMapping = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("collectionReference"))
+                if (property.NameEquals("collectionReference"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     collectionReference = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("mapComplexValuesToString"))
+                if (property.NameEquals("mapComplexValuesToString"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     mapComplexValuesToString = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("mappings"))
+                if (property.NameEquals("mappings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     mappings = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("typeConversion"))
+                if (property.NameEquals("typeConversion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     typeConversion = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("typeConversionSettings"))
+                if (property.NameEquals("typeConversionSettings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     typeConversionSettings = TypeConversionSettings.DeserializeTypeConversionSettings(property.Value);
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
@@ -156,14 +153,23 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new TabularTranslator(type, additionalProperties, columnMappings.Value, schemaMapping.Value, collectionReference.Value, mapComplexValuesToString.Value, mappings.Value, typeConversion.Value, typeConversionSettings.Value);
+            return new TabularTranslator(
+                type,
+                additionalProperties,
+                columnMappings,
+                schemaMapping,
+                collectionReference,
+                mapComplexValuesToString,
+                mappings,
+                typeConversion,
+                typeConversionSettings);
         }
 
         internal partial class TabularTranslatorConverter : JsonConverter<TabularTranslator>
         {
             public override void Write(Utf8JsonWriter writer, TabularTranslator model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<TabularTranslator>(model);
             }
             public override TabularTranslator Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

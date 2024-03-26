@@ -18,62 +18,65 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("store");
-            writer.WriteObjectValue(Store);
-            writer.WritePropertyName("secretName");
-            writer.WriteObjectValue(SecretName);
+            writer.WritePropertyName("store"u8);
+            writer.WriteObjectValue<LinkedServiceReference>(Store);
+            writer.WritePropertyName("secretName"u8);
+            writer.WriteObjectValue<object>(SecretName);
             if (Optional.IsDefined(SecretVersion))
             {
-                writer.WritePropertyName("secretVersion");
-                writer.WriteObjectValue(SecretVersion);
+                writer.WritePropertyName("secretVersion"u8);
+                writer.WriteObjectValue<object>(SecretVersion);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             writer.WriteEndObject();
         }
 
         internal static AzureKeyVaultSecretReference DeserializeAzureKeyVaultSecretReference(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             LinkedServiceReference store = default;
             object secretName = default;
-            Optional<object> secretVersion = default;
+            object secretVersion = default;
             string type = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("store"))
+                if (property.NameEquals("store"u8))
                 {
                     store = LinkedServiceReference.DeserializeLinkedServiceReference(property.Value);
                     continue;
                 }
-                if (property.NameEquals("secretName"))
+                if (property.NameEquals("secretName"u8))
                 {
                     secretName = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("secretVersion"))
+                if (property.NameEquals("secretVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     secretVersion = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
             }
-            return new AzureKeyVaultSecretReference(type, store, secretName, secretVersion.Value);
+            return new AzureKeyVaultSecretReference(type, store, secretName, secretVersion);
         }
 
         internal partial class AzureKeyVaultSecretReferenceConverter : JsonConverter<AzureKeyVaultSecretReference>
         {
             public override void Write(Utf8JsonWriter writer, AzureKeyVaultSecretReference model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AzureKeyVaultSecretReference>(model);
             }
             public override AzureKeyVaultSecretReference Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

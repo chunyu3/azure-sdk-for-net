@@ -15,15 +15,15 @@ namespace Azure.AI.MetricsAdvisor.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("startTime");
+            writer.WritePropertyName("startTime"u8);
             writer.WriteStringValue(StartTime, "O");
-            writer.WritePropertyName("endTime");
+            writer.WritePropertyName("endTime"u8);
             writer.WriteStringValue(EndTime, "O");
-            writer.WritePropertyName("series");
+            writer.WritePropertyName("series"u8);
             writer.WriteStartArray();
             foreach (var item in Series)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<SeriesIdentity>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();

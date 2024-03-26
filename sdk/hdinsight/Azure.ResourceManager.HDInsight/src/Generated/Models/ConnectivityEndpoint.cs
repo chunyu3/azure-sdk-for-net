@@ -5,42 +5,78 @@
 
 #nullable disable
 
-using Azure.Core;
+using System;
+using System.Collections.Generic;
+using System.Net;
 
 namespace Azure.ResourceManager.HDInsight.Models
 {
     /// <summary> The connectivity properties. </summary>
     public partial class ConnectivityEndpoint
     {
-        /// <summary> Initializes a new instance of ConnectivityEndpoint. </summary>
-        internal ConnectivityEndpoint()
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ConnectivityEndpoint"/>. </summary>
+        public ConnectivityEndpoint()
         {
         }
 
-        /// <summary> Initializes a new instance of ConnectivityEndpoint. </summary>
+        /// <summary> Initializes a new instance of <see cref="ConnectivityEndpoint"/>. </summary>
         /// <param name="name"> The name of the endpoint. </param>
         /// <param name="protocol"> The protocol of the endpoint. </param>
-        /// <param name="location"> The location of the endpoint. </param>
+        /// <param name="endpointLocation"> The location of the endpoint. </param>
         /// <param name="port"> The port to connect to. </param>
         /// <param name="privateIPAddress"> The private ip address of the endpoint. </param>
-        internal ConnectivityEndpoint(string name, string protocol, AzureLocation? location, int? port, string privateIPAddress)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ConnectivityEndpoint(string name, string protocol, string endpointLocation, int? port, IPAddress privateIPAddress, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Protocol = protocol;
-            Location = location;
+            EndpointLocation = endpointLocation;
             Port = port;
             PrivateIPAddress = privateIPAddress;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The name of the endpoint. </summary>
-        public string Name { get; }
+        public string Name { get; set; }
         /// <summary> The protocol of the endpoint. </summary>
-        public string Protocol { get; }
+        public string Protocol { get; set; }
         /// <summary> The location of the endpoint. </summary>
-        public AzureLocation? Location { get; }
+        public string EndpointLocation { get; set; }
         /// <summary> The port to connect to. </summary>
-        public int? Port { get; }
+        public int? Port { get; set; }
         /// <summary> The private ip address of the endpoint. </summary>
-        public string PrivateIPAddress { get; }
+        public IPAddress PrivateIPAddress { get; set; }
     }
 }

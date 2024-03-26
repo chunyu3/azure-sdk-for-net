@@ -20,36 +20,54 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(LinkedService))
             {
-                writer.WritePropertyName("linkedService");
-                writer.WriteObjectValue(LinkedService);
+                writer.WritePropertyName("linkedService"u8);
+                writer.WriteObjectValue<LinkedServiceReference>(LinkedService);
+            }
+            if (Optional.IsDefined(TypeProperties))
+            {
+                writer.WritePropertyName("typeProperties"u8);
+                writer.WriteObjectValue<LinkConnectionTargetDatabaseTypeProperties>(TypeProperties);
             }
             writer.WriteEndObject();
         }
 
         internal static LinkConnectionTargetDatabase DeserializeLinkConnectionTargetDatabase(JsonElement element)
         {
-            Optional<LinkedServiceReference> linkedService = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            LinkedServiceReference linkedService = default;
+            LinkConnectionTargetDatabaseTypeProperties typeProperties = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("linkedService"))
+                if (property.NameEquals("linkedService"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     linkedService = LinkedServiceReference.DeserializeLinkedServiceReference(property.Value);
                     continue;
                 }
+                if (property.NameEquals("typeProperties"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    typeProperties = LinkConnectionTargetDatabaseTypeProperties.DeserializeLinkConnectionTargetDatabaseTypeProperties(property.Value);
+                    continue;
+                }
             }
-            return new LinkConnectionTargetDatabase(linkedService.Value);
+            return new LinkConnectionTargetDatabase(linkedService, typeProperties);
         }
 
         internal partial class LinkConnectionTargetDatabaseConverter : JsonConverter<LinkConnectionTargetDatabase>
         {
             public override void Write(Utf8JsonWriter writer, LinkConnectionTargetDatabase model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LinkConnectionTargetDatabase>(model);
             }
             public override LinkConnectionTargetDatabase Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

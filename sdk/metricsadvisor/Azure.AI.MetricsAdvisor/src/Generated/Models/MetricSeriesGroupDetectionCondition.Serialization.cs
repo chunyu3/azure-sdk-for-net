@@ -15,87 +15,87 @@ namespace Azure.AI.MetricsAdvisor.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("group");
-            writer.WriteObjectValue(SeriesGroupKey);
+            writer.WritePropertyName("group"u8);
+            writer.WriteObjectValue<DimensionKey>(SeriesGroupKey);
             if (Optional.IsDefined(ConditionOperator))
             {
-                writer.WritePropertyName("conditionOperator");
+                writer.WritePropertyName("conditionOperator"u8);
                 writer.WriteStringValue(ConditionOperator.Value.ToString());
             }
             if (Optional.IsDefined(SmartDetectionCondition))
             {
-                writer.WritePropertyName("smartDetectionCondition");
-                writer.WriteObjectValue(SmartDetectionCondition);
+                writer.WritePropertyName("smartDetectionCondition"u8);
+                writer.WriteObjectValue<SmartDetectionCondition>(SmartDetectionCondition);
             }
             if (Optional.IsDefined(HardThresholdCondition))
             {
-                writer.WritePropertyName("hardThresholdCondition");
-                writer.WriteObjectValue(HardThresholdCondition);
+                writer.WritePropertyName("hardThresholdCondition"u8);
+                writer.WriteObjectValue<HardThresholdCondition>(HardThresholdCondition);
             }
             if (Optional.IsDefined(ChangeThresholdCondition))
             {
-                writer.WritePropertyName("changeThresholdCondition");
-                writer.WriteObjectValue(ChangeThresholdCondition);
+                writer.WritePropertyName("changeThresholdCondition"u8);
+                writer.WriteObjectValue<ChangeThresholdCondition>(ChangeThresholdCondition);
             }
             writer.WriteEndObject();
         }
 
         internal static MetricSeriesGroupDetectionCondition DeserializeMetricSeriesGroupDetectionCondition(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             DimensionKey group = default;
-            Optional<DetectionConditionOperator> conditionOperator = default;
-            Optional<SmartDetectionCondition> smartDetectionCondition = default;
-            Optional<HardThresholdCondition> hardThresholdCondition = default;
-            Optional<ChangeThresholdCondition> changeThresholdCondition = default;
+            DetectionConditionOperator? conditionOperator = default;
+            SmartDetectionCondition smartDetectionCondition = default;
+            HardThresholdCondition hardThresholdCondition = default;
+            ChangeThresholdCondition changeThresholdCondition = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("group"))
+                if (property.NameEquals("group"u8))
                 {
                     group = DimensionKey.DeserializeDimensionKey(property.Value);
                     continue;
                 }
-                if (property.NameEquals("conditionOperator"))
+                if (property.NameEquals("conditionOperator"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     conditionOperator = new DetectionConditionOperator(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("smartDetectionCondition"))
+                if (property.NameEquals("smartDetectionCondition"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     smartDetectionCondition = Models.SmartDetectionCondition.DeserializeSmartDetectionCondition(property.Value);
                     continue;
                 }
-                if (property.NameEquals("hardThresholdCondition"))
+                if (property.NameEquals("hardThresholdCondition"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     hardThresholdCondition = Models.HardThresholdCondition.DeserializeHardThresholdCondition(property.Value);
                     continue;
                 }
-                if (property.NameEquals("changeThresholdCondition"))
+                if (property.NameEquals("changeThresholdCondition"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     changeThresholdCondition = Models.ChangeThresholdCondition.DeserializeChangeThresholdCondition(property.Value);
                     continue;
                 }
             }
-            return new MetricSeriesGroupDetectionCondition(Optional.ToNullable(conditionOperator), smartDetectionCondition.Value, hardThresholdCondition.Value, changeThresholdCondition.Value, group);
+            return new MetricSeriesGroupDetectionCondition(conditionOperator, smartDetectionCondition, hardThresholdCondition, changeThresholdCondition, group);
         }
     }
 }

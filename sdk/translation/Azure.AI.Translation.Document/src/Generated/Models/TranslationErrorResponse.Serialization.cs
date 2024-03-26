@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.Translation.Document.Models
 {
@@ -14,21 +13,24 @@ namespace Azure.AI.Translation.Document.Models
     {
         internal static TranslationErrorResponse DeserializeTranslationErrorResponse(JsonElement element)
         {
-            Optional<TranslationError> error = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            TranslationError error = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("error"))
+                if (property.NameEquals("error"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     error = TranslationError.DeserializeTranslationError(property.Value);
                     continue;
                 }
             }
-            return new TranslationErrorResponse(error.Value);
+            return new TranslationErrorResponse(error);
         }
     }
 }

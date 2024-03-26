@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ArcScVmm.Models;
@@ -137,7 +137,7 @@ namespace Azure.ResourceManager.ArcScVmm
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ScVmmVirtualMachineData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -299,7 +299,7 @@ namespace Azure.ResourceManager.ArcScVmm
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(patch);
+            content.JsonWriter.WriteObjectValue<ScVmmVirtualMachinePatch>(patch, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -382,7 +382,7 @@ namespace Azure.ResourceManager.ArcScVmm
             {
                 request.Headers.Add("Content-Type", "application/json");
                 var content0 = new Utf8JsonRequestContent();
-                content0.JsonWriter.WriteObjectValue(content);
+                content0.JsonWriter.WriteObjectValue<StopVirtualMachineContent>(content, new ModelReaderWriterOptions("W"));
                 request.Content = content0;
             }
             _userAgent.Apply(message);
@@ -603,9 +603,9 @@ namespace Azure.ResourceManager.ArcScVmm
             if (body != null)
             {
                 request.Headers.Add("Content-Type", "application/json");
-                var content0 = new Utf8JsonRequestContent();
-                content0.JsonWriter.WriteObjectValue(body);
-                request.Content = content0;
+                var content = new Utf8JsonRequestContent();
+                content.JsonWriter.WriteObjectValue<VirtualMachineCreateCheckpoint>(body, new ModelReaderWriterOptions("W"));
+                request.Content = content;
             }
             _userAgent.Apply(message);
             return message;
@@ -683,9 +683,9 @@ namespace Azure.ResourceManager.ArcScVmm
             if (body != null)
             {
                 request.Headers.Add("Content-Type", "application/json");
-                var content0 = new Utf8JsonRequestContent();
-                content0.JsonWriter.WriteObjectValue(body);
-                request.Content = content0;
+                var content = new Utf8JsonRequestContent();
+                content.JsonWriter.WriteObjectValue<VirtualMachineDeleteCheckpoint>(body, new ModelReaderWriterOptions("W"));
+                request.Content = content;
             }
             _userAgent.Apply(message);
             return message;
@@ -763,9 +763,9 @@ namespace Azure.ResourceManager.ArcScVmm
             if (body != null)
             {
                 request.Headers.Add("Content-Type", "application/json");
-                var content0 = new Utf8JsonRequestContent();
-                content0.JsonWriter.WriteObjectValue(body);
-                request.Content = content0;
+                var content = new Utf8JsonRequestContent();
+                content.JsonWriter.WriteObjectValue<VirtualMachineRestoreCheckpoint>(body, new ModelReaderWriterOptions("W"));
+                request.Content = content;
             }
             _userAgent.Apply(message);
             return message;

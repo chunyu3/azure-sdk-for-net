@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.MySql.FlexibleServers.Models;
@@ -33,7 +32,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-05-01";
+            _apiVersion = apiVersion ?? "2023-12-01-preview";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -54,7 +53,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
 
         /// <summary> Get private DNS zone suffix in the cloud. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<GetPrivateDnsZoneSuffixResponse>> ExecuteAsync(CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlFlexibleServerPrivateDnsZoneSuffixResponse>> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             using var message = CreateExecuteRequest();
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -62,9 +61,9 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             {
                 case 200:
                     {
-                        GetPrivateDnsZoneSuffixResponse value = default;
+                        MySqlFlexibleServerPrivateDnsZoneSuffixResponse value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GetPrivateDnsZoneSuffixResponse.DeserializeGetPrivateDnsZoneSuffixResponse(document.RootElement);
+                        value = MySqlFlexibleServerPrivateDnsZoneSuffixResponse.DeserializeMySqlFlexibleServerPrivateDnsZoneSuffixResponse(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -74,7 +73,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
 
         /// <summary> Get private DNS zone suffix in the cloud. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<GetPrivateDnsZoneSuffixResponse> Execute(CancellationToken cancellationToken = default)
+        public Response<MySqlFlexibleServerPrivateDnsZoneSuffixResponse> Execute(CancellationToken cancellationToken = default)
         {
             using var message = CreateExecuteRequest();
             _pipeline.Send(message, cancellationToken);
@@ -82,9 +81,9 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             {
                 case 200:
                     {
-                        GetPrivateDnsZoneSuffixResponse value = default;
+                        MySqlFlexibleServerPrivateDnsZoneSuffixResponse value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GetPrivateDnsZoneSuffixResponse.DeserializeGetPrivateDnsZoneSuffixResponse(document.RootElement);
+                        value = MySqlFlexibleServerPrivateDnsZoneSuffixResponse.DeserializeMySqlFlexibleServerPrivateDnsZoneSuffixResponse(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

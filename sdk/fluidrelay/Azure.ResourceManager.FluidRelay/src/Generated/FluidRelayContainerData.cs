@@ -6,21 +6,57 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.FluidRelay.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.FluidRelay
 {
-    /// <summary> A class representing the FluidRelayContainer data model. </summary>
+    /// <summary>
+    /// A class representing the FluidRelayContainer data model.
+    /// A FluidRelay Container.
+    /// </summary>
     public partial class FluidRelayContainerData : ResourceData
     {
-        /// <summary> Initializes a new instance of FluidRelayContainerData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="FluidRelayContainerData"/>. </summary>
         public FluidRelayContainerData()
         {
         }
 
-        /// <summary> Initializes a new instance of FluidRelayContainerData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FluidRelayContainerData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -28,11 +64,17 @@ namespace Azure.ResourceManager.FluidRelay
         /// <param name="frsTenantId"> The Fluid tenantId for this container. </param>
         /// <param name="frsContainerId"> The frsContainerId for this container. </param>
         /// <param name="provisioningState"> Provision states for FluidRelay RP. </param>
-        internal FluidRelayContainerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, Guid? frsTenantId, Guid? frsContainerId, ProvisioningState? provisioningState) : base(id, name, resourceType, systemData)
+        /// <param name="createdOn"> The creation time of this resource. </param>
+        /// <param name="lastAccessOn"> Last time when user access this resource. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal FluidRelayContainerData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, Guid? frsTenantId, Guid? frsContainerId, FluidRelayProvisioningState? provisioningState, DateTimeOffset? createdOn, DateTimeOffset? lastAccessOn, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             FrsTenantId = frsTenantId;
             FrsContainerId = frsContainerId;
             ProvisioningState = provisioningState;
+            CreatedOn = createdOn;
+            LastAccessOn = lastAccessOn;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The Fluid tenantId for this container. </summary>
@@ -40,6 +82,10 @@ namespace Azure.ResourceManager.FluidRelay
         /// <summary> The frsContainerId for this container. </summary>
         public Guid? FrsContainerId { get; }
         /// <summary> Provision states for FluidRelay RP. </summary>
-        public ProvisioningState? ProvisioningState { get; }
+        public FluidRelayProvisioningState? ProvisioningState { get; }
+        /// <summary> The creation time of this resource. </summary>
+        public DateTimeOffset? CreatedOn { get; }
+        /// <summary> Last time when user access this resource. </summary>
+        public DateTimeOffset? LastAccessOn { get; }
     }
 }

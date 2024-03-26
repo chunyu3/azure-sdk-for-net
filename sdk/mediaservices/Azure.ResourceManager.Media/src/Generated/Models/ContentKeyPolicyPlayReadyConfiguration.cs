@@ -14,34 +14,66 @@ namespace Azure.ResourceManager.Media.Models
     /// <summary> Specifies a configuration for PlayReady licenses. </summary>
     public partial class ContentKeyPolicyPlayReadyConfiguration : ContentKeyPolicyConfiguration
     {
-        /// <summary> Initializes a new instance of ContentKeyPolicyPlayReadyConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyConfiguration"/>. </summary>
         /// <param name="licenses"> The PlayReady licenses. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="licenses"/> is null. </exception>
         public ContentKeyPolicyPlayReadyConfiguration(IEnumerable<ContentKeyPolicyPlayReadyLicense> licenses)
         {
-            if (licenses == null)
-            {
-                throw new ArgumentNullException(nameof(licenses));
-            }
+            Argument.AssertNotNull(licenses, nameof(licenses));
 
             Licenses = licenses.ToList();
             OdataType = "#Microsoft.Media.ContentKeyPolicyPlayReadyConfiguration";
         }
 
-        /// <summary> Initializes a new instance of ContentKeyPolicyPlayReadyConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyConfiguration"/>. </summary>
         /// <param name="odataType"> The discriminator for derived types. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="licenses"> The PlayReady licenses. </param>
         /// <param name="responseCustomData"> The custom response data. </param>
-        internal ContentKeyPolicyPlayReadyConfiguration(string odataType, IList<ContentKeyPolicyPlayReadyLicense> licenses, string responseCustomData) : base(odataType)
+        internal ContentKeyPolicyPlayReadyConfiguration(string odataType, IDictionary<string, BinaryData> serializedAdditionalRawData, IList<ContentKeyPolicyPlayReadyLicense> licenses, BinaryData responseCustomData) : base(odataType, serializedAdditionalRawData)
         {
             Licenses = licenses;
             ResponseCustomData = responseCustomData;
             OdataType = odataType ?? "#Microsoft.Media.ContentKeyPolicyPlayReadyConfiguration";
         }
 
+        /// <summary> Initializes a new instance of <see cref="ContentKeyPolicyPlayReadyConfiguration"/> for deserialization. </summary>
+        internal ContentKeyPolicyPlayReadyConfiguration()
+        {
+        }
+
         /// <summary> The PlayReady licenses. </summary>
         public IList<ContentKeyPolicyPlayReadyLicense> Licenses { get; }
-        /// <summary> The custom response data. </summary>
-        public string ResponseCustomData { get; set; }
+        /// <summary>
+        /// The custom response data.
+        /// <para>
+        /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        public BinaryData ResponseCustomData { get; set; }
     }
 }

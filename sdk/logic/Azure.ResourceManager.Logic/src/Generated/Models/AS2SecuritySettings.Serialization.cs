@@ -5,114 +5,207 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Logic.Models
 {
-    public partial class AS2SecuritySettings : IUtf8JsonSerializable
+    public partial class AS2SecuritySettings : IUtf8JsonSerializable, IJsonModel<AS2SecuritySettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AS2SecuritySettings>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AS2SecuritySettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AS2SecuritySettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AS2SecuritySettings)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("overrideGroupSigningCertificate");
+            writer.WritePropertyName("overrideGroupSigningCertificate"u8);
             writer.WriteBooleanValue(OverrideGroupSigningCertificate);
             if (Optional.IsDefined(SigningCertificateName))
             {
-                writer.WritePropertyName("signingCertificateName");
+                writer.WritePropertyName("signingCertificateName"u8);
                 writer.WriteStringValue(SigningCertificateName);
             }
             if (Optional.IsDefined(EncryptionCertificateName))
             {
-                writer.WritePropertyName("encryptionCertificateName");
+                writer.WritePropertyName("encryptionCertificateName"u8);
                 writer.WriteStringValue(EncryptionCertificateName);
             }
-            writer.WritePropertyName("enableNRRForInboundEncodedMessages");
-            writer.WriteBooleanValue(EnableNRRForInboundEncodedMessages);
-            writer.WritePropertyName("enableNRRForInboundDecodedMessages");
-            writer.WriteBooleanValue(EnableNRRForInboundDecodedMessages);
-            writer.WritePropertyName("enableNRRForOutboundMDN");
-            writer.WriteBooleanValue(EnableNRRForOutboundMDN);
-            writer.WritePropertyName("enableNRRForOutboundEncodedMessages");
-            writer.WriteBooleanValue(EnableNRRForOutboundEncodedMessages);
-            writer.WritePropertyName("enableNRRForOutboundDecodedMessages");
-            writer.WriteBooleanValue(EnableNRRForOutboundDecodedMessages);
-            writer.WritePropertyName("enableNRRForInboundMDN");
-            writer.WriteBooleanValue(EnableNRRForInboundMDN);
+            writer.WritePropertyName("enableNRRForInboundEncodedMessages"u8);
+            writer.WriteBooleanValue(EnableNrrForInboundEncodedMessages);
+            writer.WritePropertyName("enableNRRForInboundDecodedMessages"u8);
+            writer.WriteBooleanValue(EnableNrrForInboundDecodedMessages);
+            writer.WritePropertyName("enableNRRForOutboundMDN"u8);
+            writer.WriteBooleanValue(EnableNrrForOutboundMdn);
+            writer.WritePropertyName("enableNRRForOutboundEncodedMessages"u8);
+            writer.WriteBooleanValue(EnableNrrForOutboundEncodedMessages);
+            writer.WritePropertyName("enableNRRForOutboundDecodedMessages"u8);
+            writer.WriteBooleanValue(EnableNrrForOutboundDecodedMessages);
+            writer.WritePropertyName("enableNRRForInboundMDN"u8);
+            writer.WriteBooleanValue(EnableNrrForInboundMdn);
             if (Optional.IsDefined(Sha2AlgorithmFormat))
             {
-                writer.WritePropertyName("sha2AlgorithmFormat");
+                writer.WritePropertyName("sha2AlgorithmFormat"u8);
                 writer.WriteStringValue(Sha2AlgorithmFormat);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static AS2SecuritySettings DeserializeAS2SecuritySettings(JsonElement element)
+        AS2SecuritySettings IJsonModel<AS2SecuritySettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AS2SecuritySettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AS2SecuritySettings)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAS2SecuritySettings(document.RootElement, options);
+        }
+
+        internal static AS2SecuritySettings DeserializeAS2SecuritySettings(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             bool overrideGroupSigningCertificate = default;
-            Optional<string> signingCertificateName = default;
-            Optional<string> encryptionCertificateName = default;
-            bool enableNRRForInboundEncodedMessages = default;
-            bool enableNRRForInboundDecodedMessages = default;
-            bool enableNRRForOutboundMDN = default;
-            bool enableNRRForOutboundEncodedMessages = default;
-            bool enableNRRForOutboundDecodedMessages = default;
-            bool enableNRRForInboundMDN = default;
-            Optional<string> sha2AlgorithmFormat = default;
+            string signingCertificateName = default;
+            string encryptionCertificateName = default;
+            bool enableNrrForInboundEncodedMessages = default;
+            bool enableNrrForInboundDecodedMessages = default;
+            bool enableNrrForOutboundMdn = default;
+            bool enableNrrForOutboundEncodedMessages = default;
+            bool enableNrrForOutboundDecodedMessages = default;
+            bool enableNrrForInboundMdn = default;
+            string sha2AlgorithmFormat = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("overrideGroupSigningCertificate"))
+                if (property.NameEquals("overrideGroupSigningCertificate"u8))
                 {
                     overrideGroupSigningCertificate = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("signingCertificateName"))
+                if (property.NameEquals("signingCertificateName"u8))
                 {
                     signingCertificateName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("encryptionCertificateName"))
+                if (property.NameEquals("encryptionCertificateName"u8))
                 {
                     encryptionCertificateName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForInboundEncodedMessages"))
+                if (property.NameEquals("enableNRRForInboundEncodedMessages"u8))
                 {
-                    enableNRRForInboundEncodedMessages = property.Value.GetBoolean();
+                    enableNrrForInboundEncodedMessages = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForInboundDecodedMessages"))
+                if (property.NameEquals("enableNRRForInboundDecodedMessages"u8))
                 {
-                    enableNRRForInboundDecodedMessages = property.Value.GetBoolean();
+                    enableNrrForInboundDecodedMessages = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForOutboundMDN"))
+                if (property.NameEquals("enableNRRForOutboundMDN"u8))
                 {
-                    enableNRRForOutboundMDN = property.Value.GetBoolean();
+                    enableNrrForOutboundMdn = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForOutboundEncodedMessages"))
+                if (property.NameEquals("enableNRRForOutboundEncodedMessages"u8))
                 {
-                    enableNRRForOutboundEncodedMessages = property.Value.GetBoolean();
+                    enableNrrForOutboundEncodedMessages = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForOutboundDecodedMessages"))
+                if (property.NameEquals("enableNRRForOutboundDecodedMessages"u8))
                 {
-                    enableNRRForOutboundDecodedMessages = property.Value.GetBoolean();
+                    enableNrrForOutboundDecodedMessages = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("enableNRRForInboundMDN"))
+                if (property.NameEquals("enableNRRForInboundMDN"u8))
                 {
-                    enableNRRForInboundMDN = property.Value.GetBoolean();
+                    enableNrrForInboundMdn = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("sha2AlgorithmFormat"))
+                if (property.NameEquals("sha2AlgorithmFormat"u8))
                 {
                     sha2AlgorithmFormat = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AS2SecuritySettings(overrideGroupSigningCertificate, signingCertificateName.Value, encryptionCertificateName.Value, enableNRRForInboundEncodedMessages, enableNRRForInboundDecodedMessages, enableNRRForOutboundMDN, enableNRRForOutboundEncodedMessages, enableNRRForOutboundDecodedMessages, enableNRRForInboundMDN, sha2AlgorithmFormat.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AS2SecuritySettings(
+                overrideGroupSigningCertificate,
+                signingCertificateName,
+                encryptionCertificateName,
+                enableNrrForInboundEncodedMessages,
+                enableNrrForInboundDecodedMessages,
+                enableNrrForOutboundMdn,
+                enableNrrForOutboundEncodedMessages,
+                enableNrrForOutboundDecodedMessages,
+                enableNrrForInboundMdn,
+                sha2AlgorithmFormat,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<AS2SecuritySettings>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AS2SecuritySettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(AS2SecuritySettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AS2SecuritySettings IPersistableModel<AS2SecuritySettings>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AS2SecuritySettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAS2SecuritySettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AS2SecuritySettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AS2SecuritySettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

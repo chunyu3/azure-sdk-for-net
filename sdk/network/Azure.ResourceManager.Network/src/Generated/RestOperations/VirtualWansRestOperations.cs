@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Network.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Network
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-02-01";
+            _apiVersion = apiVersion ?? "2023-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -137,13 +137,13 @@ namespace Azure.ResourceManager.Network
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<VirtualWanData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates a VirtualWAN resource if it doesn&apos;t exist else updates the existing VirtualWAN. </summary>
+        /// <summary> Creates a VirtualWAN resource if it doesn't exist else updates the existing VirtualWAN. </summary>
         /// <param name="subscriptionId"> The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The resource group name of the VirtualWan. </param>
         /// <param name="virtualWanName"> The name of the VirtualWAN being created or updated. </param>
@@ -170,7 +170,7 @@ namespace Azure.ResourceManager.Network
             }
         }
 
-        /// <summary> Creates a VirtualWAN resource if it doesn&apos;t exist else updates the existing VirtualWAN. </summary>
+        /// <summary> Creates a VirtualWAN resource if it doesn't exist else updates the existing VirtualWAN. </summary>
         /// <param name="subscriptionId"> The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The resource group name of the VirtualWan. </param>
         /// <param name="virtualWanName"> The name of the VirtualWAN being created or updated. </param>
@@ -197,7 +197,7 @@ namespace Azure.ResourceManager.Network
             }
         }
 
-        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string virtualWanName, TagsObject wanParameters)
+        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string virtualWanName, NetworkTagsObject wanParameters)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -215,7 +215,7 @@ namespace Azure.ResourceManager.Network
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(wanParameters);
+            content.JsonWriter.WriteObjectValue<NetworkTagsObject>(wanParameters, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -229,7 +229,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="virtualWanName"/> or <paramref name="wanParameters"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="virtualWanName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<VirtualWanData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string virtualWanName, TagsObject wanParameters, CancellationToken cancellationToken = default)
+        public async Task<Response<VirtualWanData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string virtualWanName, NetworkTagsObject wanParameters, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -260,7 +260,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="virtualWanName"/> or <paramref name="wanParameters"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="virtualWanName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<VirtualWanData> UpdateTags(string subscriptionId, string resourceGroupName, string virtualWanName, TagsObject wanParameters, CancellationToken cancellationToken = default)
+        public Response<VirtualWanData> UpdateTags(string subscriptionId, string resourceGroupName, string virtualWanName, NetworkTagsObject wanParameters, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));

@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity Azure Data Explorer sink. </summary>
     public partial class AzureDataExplorerSink : CopySink
     {
-        /// <summary> Initializes a new instance of AzureDataExplorerSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataExplorerSink"/>. </summary>
         public AzureDataExplorerSink()
         {
             CopySinkType = "AzureDataExplorerSink";
         }
 
-        /// <summary> Initializes a new instance of AzureDataExplorerSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataExplorerSink"/>. </summary>
         /// <param name="copySinkType"> Copy sink type. </param>
         /// <param name="writeBatchSize"> Write batch size. Type: integer (or Expression with resultType integer), minimum: 0. </param>
         /// <param name="writeBatchTimeout"> Write batch timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -31,7 +32,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="ingestionMappingName"> A name of a pre-created csv mapping that was defined on the target Kusto table. Type: string. </param>
         /// <param name="ingestionMappingAsJson"> An explicit column mapping description provided in a json format. Type: string. </param>
         /// <param name="flushImmediately"> If set to true, any aggregation will be skipped. Default is false. Type: boolean. </param>
-        internal AzureDataExplorerSink(string copySinkType, BinaryData writeBatchSize, BinaryData writeBatchTimeout, BinaryData sinkRetryCount, BinaryData sinkRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData ingestionMappingName, BinaryData ingestionMappingAsJson, BinaryData flushImmediately) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal AzureDataExplorerSink(string copySinkType, DataFactoryElement<int> writeBatchSize, DataFactoryElement<string> writeBatchTimeout, DataFactoryElement<int> sinkRetryCount, DataFactoryElement<string> sinkRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> ingestionMappingName, DataFactoryElement<string> ingestionMappingAsJson, DataFactoryElement<bool> flushImmediately) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             IngestionMappingName = ingestionMappingName;
             IngestionMappingAsJson = ingestionMappingAsJson;
@@ -40,10 +41,10 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> A name of a pre-created csv mapping that was defined on the target Kusto table. Type: string. </summary>
-        public BinaryData IngestionMappingName { get; set; }
+        public DataFactoryElement<string> IngestionMappingName { get; set; }
         /// <summary> An explicit column mapping description provided in a json format. Type: string. </summary>
-        public BinaryData IngestionMappingAsJson { get; set; }
+        public DataFactoryElement<string> IngestionMappingAsJson { get; set; }
         /// <summary> If set to true, any aggregation will be skipped. Default is false. Type: boolean. </summary>
-        public BinaryData FlushImmediately { get; set; }
+        public DataFactoryElement<bool> FlushImmediately { get; set; }
     }
 }

@@ -7,14 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Managed integration runtime status. </summary>
     public partial class ManagedIntegrationRuntimeStatus : IntegrationRuntimeStatus
     {
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeStatus"/>. </summary>
         internal ManagedIntegrationRuntimeStatus()
         {
             Nodes = new ChangeTrackingList<ManagedIntegrationRuntimeNode>();
@@ -22,18 +21,18 @@ namespace Azure.ResourceManager.DataFactory.Models
             RuntimeType = IntegrationRuntimeType.Managed;
         }
 
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeStatus"/>. </summary>
         /// <param name="runtimeType"> Type of integration runtime. </param>
         /// <param name="dataFactoryName"> The data factory name which the integration runtime belong to. </param>
         /// <param name="state"> The state of integration runtime. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="createOn"> The time at which the integration runtime was created, in ISO8601 format. </param>
+        /// <param name="createdOn"> The time at which the integration runtime was created, in ISO8601 format. </param>
         /// <param name="nodes"> The list of nodes for managed integration runtime. </param>
         /// <param name="otherErrors"> The errors that occurred on this integration runtime. </param>
         /// <param name="lastOperation"> The last operation result that occurred on this integration runtime. </param>
-        internal ManagedIntegrationRuntimeStatus(IntegrationRuntimeType runtimeType, string dataFactoryName, IntegrationRuntimeState? state, IReadOnlyDictionary<string, BinaryData> additionalProperties, DateTimeOffset? createOn, IReadOnlyList<ManagedIntegrationRuntimeNode> nodes, IReadOnlyList<ManagedIntegrationRuntimeError> otherErrors, ManagedIntegrationRuntimeOperationResult lastOperation) : base(runtimeType, dataFactoryName, state, additionalProperties)
+        internal ManagedIntegrationRuntimeStatus(IntegrationRuntimeType runtimeType, string dataFactoryName, IntegrationRuntimeState? state, IReadOnlyDictionary<string, BinaryData> additionalProperties, DateTimeOffset? createdOn, IReadOnlyList<ManagedIntegrationRuntimeNode> nodes, IReadOnlyList<ManagedIntegrationRuntimeError> otherErrors, ManagedIntegrationRuntimeOperationResult lastOperation) : base(runtimeType, dataFactoryName, state, additionalProperties)
         {
-            CreateOn = createOn;
+            CreatedOn = createdOn;
             Nodes = nodes;
             OtherErrors = otherErrors;
             LastOperation = lastOperation;
@@ -41,7 +40,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> The time at which the integration runtime was created, in ISO8601 format. </summary>
-        public DateTimeOffset? CreateOn { get; }
+        public DateTimeOffset? CreatedOn { get; }
         /// <summary> The list of nodes for managed integration runtime. </summary>
         public IReadOnlyList<ManagedIntegrationRuntimeNode> Nodes { get; }
         /// <summary> The errors that occurred on this integration runtime. </summary>

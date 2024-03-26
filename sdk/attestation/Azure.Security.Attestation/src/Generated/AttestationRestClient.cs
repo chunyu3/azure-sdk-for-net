@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -51,15 +50,16 @@ namespace Azure.Security.Attestation
             request0.Headers.Add("Accept", "application/json");
             request0.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(request);
+            content.JsonWriter.WriteObjectValue<AttestOpenEnclaveRequest>(request);
             request0.Content = content;
             return message;
         }
 
-        /// <summary> Processes an OpenEnclave report , producing an artifact. The type of artifact produced is dependent upon attestation policy. </summary>
+        /// <summary> Attest to an SGX enclave. </summary>
         /// <param name="request"> Request object containing the quote. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes an OpenEnclave report , producing an artifact. The type of artifact produced is dependent upon attestation policy. </remarks>
         public async Task<Response<AttestationResponse>> AttestOpenEnclaveAsync(AttestOpenEnclaveRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -79,14 +79,15 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Processes an OpenEnclave report , producing an artifact. The type of artifact produced is dependent upon attestation policy. </summary>
+        /// <summary> Attest to an SGX enclave. </summary>
         /// <param name="request"> Request object containing the quote. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes an OpenEnclave report , producing an artifact. The type of artifact produced is dependent upon attestation policy. </remarks>
         public Response<AttestationResponse> AttestOpenEnclave(AttestOpenEnclaveRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -106,7 +107,7 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -123,15 +124,16 @@ namespace Azure.Security.Attestation
             request0.Headers.Add("Accept", "application/json");
             request0.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(request);
+            content.JsonWriter.WriteObjectValue<AttestSgxEnclaveRequest>(request);
             request0.Content = content;
             return message;
         }
 
-        /// <summary> Processes an SGX enclave quote, producing an artifact. The type of artifact produced is dependent upon attestation policy. </summary>
+        /// <summary> Attest to an SGX enclave. </summary>
         /// <param name="request"> Request object containing the quote. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes an SGX enclave quote, producing an artifact. The type of artifact produced is dependent upon attestation policy. </remarks>
         public async Task<Response<AttestationResponse>> AttestSgxEnclaveAsync(AttestSgxEnclaveRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -151,14 +153,15 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Processes an SGX enclave quote, producing an artifact. The type of artifact produced is dependent upon attestation policy. </summary>
+        /// <summary> Attest to an SGX enclave. </summary>
         /// <param name="request"> Request object containing the quote. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes an SGX enclave quote, producing an artifact. The type of artifact produced is dependent upon attestation policy. </remarks>
         public Response<AttestationResponse> AttestSgxEnclave(AttestSgxEnclaveRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -178,7 +181,7 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -195,15 +198,16 @@ namespace Azure.Security.Attestation
             request0.Headers.Add("Accept", "application/json");
             request0.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(request);
+            content.JsonWriter.WriteObjectValue<TpmAttestationRequest>(request);
             request0.Content = content;
             return message;
         }
 
-        /// <summary> Processes attestation evidence from a VBS enclave, producing an attestation result. The attestation result produced is dependent upon the attestation policy. </summary>
+        /// <summary> Attest a Virtualization-based Security (VBS) enclave. </summary>
         /// <param name="request"> Request object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes attestation evidence from a VBS enclave, producing an attestation result. The attestation result produced is dependent upon the attestation policy. </remarks>
         public async Task<Response<TpmAttestationResponse>> AttestTpmAsync(TpmAttestationRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -223,14 +227,15 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Processes attestation evidence from a VBS enclave, producing an attestation result. The attestation result produced is dependent upon the attestation policy. </summary>
+        /// <summary> Attest a Virtualization-based Security (VBS) enclave. </summary>
         /// <param name="request"> Request object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="request"/> is null. </exception>
+        /// <remarks> Processes attestation evidence from a VBS enclave, producing an attestation result. The attestation result produced is dependent upon the attestation policy. </remarks>
         public Response<TpmAttestationResponse> AttestTpm(TpmAttestationRequest request, CancellationToken cancellationToken = default)
         {
             if (request == null)
@@ -250,7 +255,7 @@ namespace Azure.Security.Attestation
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

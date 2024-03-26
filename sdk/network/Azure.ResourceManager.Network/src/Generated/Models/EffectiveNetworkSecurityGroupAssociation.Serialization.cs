@@ -5,53 +5,153 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class EffectiveNetworkSecurityGroupAssociation
+    public partial class EffectiveNetworkSecurityGroupAssociation : IUtf8JsonSerializable, IJsonModel<EffectiveNetworkSecurityGroupAssociation>
     {
-        internal static EffectiveNetworkSecurityGroupAssociation DeserializeEffectiveNetworkSecurityGroupAssociation(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<EffectiveNetworkSecurityGroupAssociation>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<EffectiveNetworkSecurityGroupAssociation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<WritableSubResource> networkManager = default;
-            Optional<WritableSubResource> subnet = default;
-            Optional<WritableSubResource> networkInterface = default;
-            foreach (var property in element.EnumerateObject())
+            var format = options.Format == "W" ? ((IPersistableModel<EffectiveNetworkSecurityGroupAssociation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("networkManager"))
+                throw new FormatException($"The model {nameof(EffectiveNetworkSecurityGroupAssociation)} does not support writing '{format}' format.");
+            }
+
+            writer.WriteStartObject();
+            if (Optional.IsDefined(NetworkManager))
+            {
+                writer.WritePropertyName("networkManager"u8);
+                JsonSerializer.Serialize(writer, NetworkManager);
+            }
+            if (Optional.IsDefined(Subnet))
+            {
+                writer.WritePropertyName("subnet"u8);
+                JsonSerializer.Serialize(writer, Subnet);
+            }
+            if (Optional.IsDefined(NetworkInterface))
+            {
+                writer.WritePropertyName("networkInterface"u8);
+                JsonSerializer.Serialize(writer, NetworkInterface);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    networkManager = JsonSerializer.Deserialize<WritableSubResource>(property.Value.ToString());
-                    continue;
-                }
-                if (property.NameEquals("subnet"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    subnet = JsonSerializer.Deserialize<WritableSubResource>(property.Value.ToString());
-                    continue;
-                }
-                if (property.NameEquals("networkInterface"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    networkInterface = JsonSerializer.Deserialize<WritableSubResource>(property.Value.ToString());
-                    continue;
+#endif
                 }
             }
-            return new EffectiveNetworkSecurityGroupAssociation(networkManager, subnet, networkInterface);
+            writer.WriteEndObject();
         }
+
+        EffectiveNetworkSecurityGroupAssociation IJsonModel<EffectiveNetworkSecurityGroupAssociation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EffectiveNetworkSecurityGroupAssociation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EffectiveNetworkSecurityGroupAssociation)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeEffectiveNetworkSecurityGroupAssociation(document.RootElement, options);
+        }
+
+        internal static EffectiveNetworkSecurityGroupAssociation DeserializeEffectiveNetworkSecurityGroupAssociation(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            WritableSubResource networkManager = default;
+            WritableSubResource subnet = default;
+            WritableSubResource networkInterface = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
+            foreach (var property in element.EnumerateObject())
+            {
+                if (property.NameEquals("networkManager"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    networkManager = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
+                    continue;
+                }
+                if (property.NameEquals("subnet"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    subnet = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
+                    continue;
+                }
+                if (property.NameEquals("networkInterface"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    networkInterface = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
+            }
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new EffectiveNetworkSecurityGroupAssociation(networkManager, subnet, networkInterface, serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<EffectiveNetworkSecurityGroupAssociation>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EffectiveNetworkSecurityGroupAssociation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(EffectiveNetworkSecurityGroupAssociation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        EffectiveNetworkSecurityGroupAssociation IPersistableModel<EffectiveNetworkSecurityGroupAssociation>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EffectiveNetworkSecurityGroupAssociation>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeEffectiveNetworkSecurityGroupAssociation(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(EffectiveNetworkSecurityGroupAssociation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<EffectiveNetworkSecurityGroupAssociation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

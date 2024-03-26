@@ -7,7 +7,6 @@
 
 using System;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Monitor.Query.Models
 {
@@ -15,32 +14,34 @@ namespace Azure.Monitor.Query.Models
     {
         internal static MetricAvailability DeserializeMetricAvailability(JsonElement element)
         {
-            Optional<TimeSpan> timeGrain = default;
-            Optional<TimeSpan> retention = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            TimeSpan? timeGrain = default;
+            TimeSpan? retention = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("timeGrain"))
+                if (property.NameEquals("timeGrain"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     timeGrain = property.Value.GetTimeSpan("P");
                     continue;
                 }
-                if (property.NameEquals("retention"))
+                if (property.NameEquals("retention"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     retention = property.Value.GetTimeSpan("P");
                     continue;
                 }
             }
-            return new MetricAvailability(Optional.ToNullable(timeGrain), Optional.ToNullable(retention));
+            return new MetricAvailability(timeGrain, retention);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Azure.IoT.TimeSeriesInsights
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(InstanceFieldNames))
             {
-                writer.WritePropertyName("instanceFieldNames");
+                writer.WritePropertyName("instanceFieldNames"u8);
                 writer.WriteStartArray();
                 foreach (var item in InstanceFieldNames)
                 {
@@ -31,14 +31,17 @@ namespace Azure.IoT.TimeSeriesInsights
 
         internal static TimeSeriesHierarchySource DeserializeTimeSeriesHierarchySource(JsonElement element)
         {
-            Optional<IList<string>> instanceFieldNames = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<string> instanceFieldNames = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("instanceFieldNames"))
+                if (property.NameEquals("instanceFieldNames"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -50,7 +53,7 @@ namespace Azure.IoT.TimeSeriesInsights
                     continue;
                 }
             }
-            return new TimeSeriesHierarchySource(Optional.ToList(instanceFieldNames));
+            return new TimeSeriesHierarchySource(instanceFieldNames ?? new ChangeTrackingList<string>());
         }
     }
 }

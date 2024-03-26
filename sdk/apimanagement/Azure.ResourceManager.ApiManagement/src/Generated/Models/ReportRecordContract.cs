@@ -6,22 +6,56 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
+using Azure.Core;
 
 namespace Azure.ResourceManager.ApiManagement.Models
 {
     /// <summary> Report data. </summary>
     public partial class ReportRecordContract
     {
-        /// <summary> Initializes a new instance of ReportRecordContract. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ReportRecordContract"/>. </summary>
         internal ReportRecordContract()
         {
         }
 
-        /// <summary> Initializes a new instance of ReportRecordContract. </summary>
+        /// <summary> Initializes a new instance of <see cref="ReportRecordContract"/>. </summary>
         /// <param name="name"> Name depending on report endpoint specifies product, API, operation or developer name. </param>
         /// <param name="timestamp">
         /// Start of aggregation period. The date conforms to the following format: `yyyy-MM-ddTHH:mm:ssZ` as specified by the ISO 8601 standard.
-        /// 
+        ///
         /// </param>
         /// <param name="interval"> Length of aggregation period.  Interval must be multiple of 15 minutes and may not be zero. The value should be in ISO 8601 format (http://en.wikipedia.org/wiki/ISO_8601#Durations). </param>
         /// <param name="country"> Country to which this record data is related. </param>
@@ -32,7 +66,7 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <param name="apiId"> API identifier path. /apis/{apiId}. </param>
         /// <param name="operationId"> Operation identifier path. /apis/{apiId}/operations/{operationId}. </param>
         /// <param name="apiRegion"> API region identifier. </param>
-        /// <param name="subscriptionId"> Subscription identifier path. /subscriptions/{subscriptionId}. </param>
+        /// <param name="subscriptionResourceId"> Subscription identifier path. /subscriptions/{subscriptionId}. </param>
         /// <param name="callCountSuccess"> Number of successful calls. This includes calls returning HttpStatusCode &lt;= 301 and HttpStatusCode.NotModified and HttpStatusCode.TemporaryRedirect. </param>
         /// <param name="callCountBlocked"> Number of calls blocked due to invalid credentials. This includes calls returning HttpStatusCode.Unauthorized and HttpStatusCode.Forbidden and HttpStatusCode.TooManyRequests. </param>
         /// <param name="callCountFailed"> Number of calls failed due to proxy or backend errors. This includes calls returning HttpStatusCode.BadRequest(400) and any Code between HttpStatusCode.InternalServerError (500) and 600. </param>
@@ -47,7 +81,8 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <param name="serviceTimeAvg"> Average time it took to process request on backend. </param>
         /// <param name="serviceTimeMin"> Minimum time it took to process request on backend. </param>
         /// <param name="serviceTimeMax"> Maximum time it took to process request on backend. </param>
-        internal ReportRecordContract(string name, DateTimeOffset? timestamp, string interval, string country, string region, string zip, string userId, string productId, string apiId, string operationId, string apiRegion, string subscriptionId, int? callCountSuccess, int? callCountBlocked, int? callCountFailed, int? callCountOther, int? callCountTotal, long? bandwidth, int? cacheHitCount, int? cacheMissCount, double? apiTimeAvg, double? apiTimeMin, double? apiTimeMax, double? serviceTimeAvg, double? serviceTimeMin, double? serviceTimeMax)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ReportRecordContract(string name, DateTimeOffset? timestamp, string interval, string country, string region, string zip, string userId, string productId, string apiId, string operationId, string apiRegion, ResourceIdentifier subscriptionResourceId, int? callCountSuccess, int? callCountBlocked, int? callCountFailed, int? callCountOther, int? callCountTotal, long? bandwidth, int? cacheHitCount, int? cacheMissCount, double? apiTimeAvg, double? apiTimeMin, double? apiTimeMax, double? serviceTimeAvg, double? serviceTimeMin, double? serviceTimeMax, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Timestamp = timestamp;
@@ -60,7 +95,7 @@ namespace Azure.ResourceManager.ApiManagement.Models
             ApiId = apiId;
             OperationId = operationId;
             ApiRegion = apiRegion;
-            SubscriptionId = subscriptionId;
+            SubscriptionResourceId = subscriptionResourceId;
             CallCountSuccess = callCountSuccess;
             CallCountBlocked = callCountBlocked;
             CallCountFailed = callCountFailed;
@@ -75,13 +110,14 @@ namespace Azure.ResourceManager.ApiManagement.Models
             ServiceTimeAvg = serviceTimeAvg;
             ServiceTimeMin = serviceTimeMin;
             ServiceTimeMax = serviceTimeMax;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Name depending on report endpoint specifies product, API, operation or developer name. </summary>
         public string Name { get; }
         /// <summary>
         /// Start of aggregation period. The date conforms to the following format: `yyyy-MM-ddTHH:mm:ssZ` as specified by the ISO 8601 standard.
-        /// 
+        ///
         /// </summary>
         public DateTimeOffset? Timestamp { get; }
         /// <summary> Length of aggregation period.  Interval must be multiple of 15 minutes and may not be zero. The value should be in ISO 8601 format (http://en.wikipedia.org/wiki/ISO_8601#Durations). </summary>
@@ -103,7 +139,7 @@ namespace Azure.ResourceManager.ApiManagement.Models
         /// <summary> API region identifier. </summary>
         public string ApiRegion { get; }
         /// <summary> Subscription identifier path. /subscriptions/{subscriptionId}. </summary>
-        public string SubscriptionId { get; }
+        public ResourceIdentifier SubscriptionResourceId { get; }
         /// <summary> Number of successful calls. This includes calls returning HttpStatusCode &lt;= 301 and HttpStatusCode.NotModified and HttpStatusCode.TemporaryRedirect. </summary>
         public int? CallCountSuccess { get; }
         /// <summary> Number of calls blocked due to invalid credentials. This includes calls returning HttpStatusCode.Unauthorized and HttpStatusCode.Forbidden and HttpStatusCode.TooManyRequests. </summary>

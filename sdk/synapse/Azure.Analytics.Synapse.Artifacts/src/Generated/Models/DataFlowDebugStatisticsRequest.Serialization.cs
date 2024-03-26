@@ -21,22 +21,22 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(SessionId))
             {
-                writer.WritePropertyName("sessionId");
+                writer.WritePropertyName("sessionId"u8);
                 writer.WriteStringValue(SessionId);
             }
             if (Optional.IsDefined(DataFlowName))
             {
-                writer.WritePropertyName("dataFlowName");
+                writer.WritePropertyName("dataFlowName"u8);
                 writer.WriteStringValue(DataFlowName);
             }
             if (Optional.IsDefined(StreamName))
             {
-                writer.WritePropertyName("streamName");
+                writer.WritePropertyName("streamName"u8);
                 writer.WriteStringValue(StreamName);
             }
             if (Optional.IsCollectionDefined(Columns))
             {
-                writer.WritePropertyName("columns");
+                writer.WritePropertyName("columns"u8);
                 writer.WriteStartArray();
                 foreach (var item in Columns)
                 {
@@ -49,32 +49,35 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static DataFlowDebugStatisticsRequest DeserializeDataFlowDebugStatisticsRequest(JsonElement element)
         {
-            Optional<string> sessionId = default;
-            Optional<string> dataFlowName = default;
-            Optional<string> streamName = default;
-            Optional<IList<string>> columns = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string sessionId = default;
+            string dataFlowName = default;
+            string streamName = default;
+            IList<string> columns = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sessionId"))
+                if (property.NameEquals("sessionId"u8))
                 {
                     sessionId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("dataFlowName"))
+                if (property.NameEquals("dataFlowName"u8))
                 {
                     dataFlowName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("streamName"))
+                if (property.NameEquals("streamName"u8))
                 {
                     streamName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("columns"))
+                if (property.NameEquals("columns"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -86,14 +89,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new DataFlowDebugStatisticsRequest(sessionId.Value, dataFlowName.Value, streamName.Value, Optional.ToList(columns));
+            return new DataFlowDebugStatisticsRequest(sessionId, dataFlowName, streamName, columns ?? new ChangeTrackingList<string>());
         }
 
         internal partial class DataFlowDebugStatisticsRequestConverter : JsonConverter<DataFlowDebugStatisticsRequest>
         {
             public override void Write(Utf8JsonWriter writer, DataFlowDebugStatisticsRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DataFlowDebugStatisticsRequest>(model);
             }
             public override DataFlowDebugStatisticsRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

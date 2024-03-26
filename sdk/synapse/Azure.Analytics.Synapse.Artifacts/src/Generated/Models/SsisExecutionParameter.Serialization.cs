@@ -18,17 +18,21 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("value");
-            writer.WriteObjectValue(Value);
+            writer.WritePropertyName("value"u8);
+            writer.WriteObjectValue<object>(Value);
             writer.WriteEndObject();
         }
 
         internal static SsisExecutionParameter DeserializeSsisExecutionParameter(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             object value = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     value = property.Value.GetObject();
                     continue;
@@ -41,7 +45,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, SsisExecutionParameter model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SsisExecutionParameter>(model);
             }
             public override SsisExecutionParameter Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

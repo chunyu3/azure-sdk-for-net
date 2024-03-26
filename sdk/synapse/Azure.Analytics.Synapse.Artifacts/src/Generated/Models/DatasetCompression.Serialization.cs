@@ -19,39 +19,42 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
-            writer.WriteObjectValue(Type);
+            writer.WritePropertyName("type"u8);
+            writer.WriteObjectValue<object>(Type);
             if (Optional.IsDefined(Level))
             {
-                writer.WritePropertyName("level");
-                writer.WriteObjectValue(Level);
+                writer.WritePropertyName("level"u8);
+                writer.WriteObjectValue<object>(Level);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static DatasetCompression DeserializeDatasetCompression(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             object type = default;
-            Optional<object> level = default;
+            object level = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("level"))
+                if (property.NameEquals("level"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     level = property.Value.GetObject();
@@ -60,14 +63,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new DatasetCompression(type, level.Value, additionalProperties);
+            return new DatasetCompression(type, level, additionalProperties);
         }
 
         internal partial class DatasetCompressionConverter : JsonConverter<DatasetCompression>
         {
             public override void Write(Utf8JsonWriter writer, DatasetCompression model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DatasetCompression>(model);
             }
             public override DatasetCompression Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

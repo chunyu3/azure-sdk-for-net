@@ -21,11 +21,11 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(LinkTables))
             {
-                writer.WritePropertyName("linkTables");
+                writer.WritePropertyName("linkTables"u8);
                 writer.WriteStartArray();
                 foreach (var item in LinkTables)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<LinkTableRequest>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -34,14 +34,17 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static EditTablesRequest DeserializeEditTablesRequest(JsonElement element)
         {
-            Optional<IList<LinkTableRequest>> linkTables = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<LinkTableRequest> linkTables = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("linkTables"))
+                if (property.NameEquals("linkTables"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<LinkTableRequest> array = new List<LinkTableRequest>();
@@ -53,14 +56,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new EditTablesRequest(Optional.ToList(linkTables));
+            return new EditTablesRequest(linkTables ?? new ChangeTrackingList<LinkTableRequest>());
         }
 
         internal partial class EditTablesRequestConverter : JsonConverter<EditTablesRequest>
         {
             public override void Write(Utf8JsonWriter writer, EditTablesRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<EditTablesRequest>(model);
             }
             public override EditTablesRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

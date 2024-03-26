@@ -1,51 +1,59 @@
 parameters:
-- name: PreSteps
-  type: object
-  default: []
-- name: PostSteps
-  type: object
-  default: []
-- name: EnvVars
-  type: object
-  default: {}
-- name: MaxParallel
-  type: number
-  default: 0
-- name: BuildInParallel
-  type: boolean
-  default: true
-- name: TimeoutInMinutes
-  type: number
-  default: 60
-- name: Location
-  type: string
-  default: ''
-- name: SDKType
-  type: string
-  default: all
-- name: ServiceDirectory
-  type: string
-  default: not-specified
-- name: Project
-  type: string
-  default: '**'
-- name: TestSetupSteps
-  type: stepList
-  default: []
-- name: CloudConfig
-  type: object
-  default: {}
-- name: Platforms
-  type: object
-  default: {}
-- name: Matrix
-  type: string
-- name: DependsOn
-  type: string
-  default: ''
-- name: UsePlatformContainer
-  type: boolean
-  default: false
+  - name: PreSteps
+    type: object
+    default: []
+  - name: PostSteps
+    type: object
+    default: []
+  - name: EnvVars
+    type: object
+    default: {}
+  - name: MaxParallel
+    type: number
+    default: 0
+  - name: BuildInParallel
+    type: boolean
+    default: true
+  - name: TimeoutInMinutes
+    type: number
+    default: 60
+  - name: Location
+    type: string
+    default: ''
+  - name: SDKType
+    type: string
+    default: all
+  - name: ServiceDirectory
+    type: string
+    default: not-specified
+  - name: TestResourceDirectories
+    type: object
+    default:
+  - name: Project
+    type: string
+    default: '**'
+  - name: TestSetupSteps
+    type: stepList
+    default: []
+  - name: DeployTestResources
+    type: boolean
+    default: true
+  - name: CloudConfig
+    type: object
+    default: {}
+  - name: Platforms
+    type: object
+    default: {}
+  - name: Matrix
+    type: string
+  - name: DependsOn
+    type: string
+    default: ''
+  - name: UsePlatformContainer
+    type: boolean
+    default: false
+  - name: OSName
+    type: string
 
 jobs:
   - job:
@@ -69,8 +77,14 @@ jobs:
     timeoutInMinutes: ${{ parameters.TimeoutInMinutes }}
 
     pool:
+      # 1es pipeline templates converts `image` to demands: ImageOverride under the hood
+      # which is incompatible with image selection in the default non-1es hosted pools
+      ${{ if eq(parameters.OSName, 'macOS') }}:
+        vmImage: $(OSVmImage)
+      ${{ else }}:
+        image: $(OSVmImage)
       name: $(Pool)
-      vmImage: $(OSVmImage)
+      os: ${{ parameters.OSName }}
 
     ${{ if eq(parameters.UsePlatformContainer, 'true') }}:
       # Add a default so the job doesn't fail when the matrix is empty
@@ -88,7 +102,7 @@ jobs:
 
       - template: /eng/common/pipelines/templates/steps/verify-agent-os.yml
         parameters:
-          AgentImage: $(OSVmImage)
+          AgentImage: ${{ parameters.OSName }}
 
       - ${{ each step in parameters.TestSetupSteps }}:
         - ${{ each pair in step }}:
@@ -98,15 +112,37 @@ jobs:
         parameters:
           SubscriptionConfiguration: ${{ parameters.CloudConfig.SubscriptionConfiguration }}
           SubscriptionConfigurations: ${{ parameters.CloudConfig.SubscriptionConfigurations }}
+          EnvVars: ${{ parameters.EnvVars }}
+      - pwsh: |
+          $project = "${{ parameters.Project }}"
+          $directory = "${{ parameters.ServiceDirectory }}"
+          if ($project -and $project -ne "**" -and (Test-Path "$(Build.SourcesDirectory)/sdk/$directory/$project/test-resources.*")) {
+            $directory = "$directory/$project"
+          }
+          Write-Host "Setting TestResourcesDirectory to '$directory'"
+          Write-Host "##vso[task.setvariable variable=TestResourcesDirectory]$directory"
+        displayName: Set TestResources Location
 
-      - template: /eng/common/TestResources/deploy-test-resources.yml
-        parameters:
-          ${{ if or(parameters.Location, parameters.CloudConfig.Location) }}:
-            Location: ${{ coalesce(parameters.Location, parameters.CloudConfig.Location) }}
-          ServiceDirectory: '${{ parameters.ServiceDirectory }}'
-          SubscriptionConfiguration: $(SubscriptionConfiguration)
-          ArmTemplateParameters: $(ArmTemplateParameters)
-
+      - ${{ if parameters.DeployTestResources }}:
+        - ${{ if parameters.TestResourceDirectories }}:
+          - ${{ each directory in parameters.TestResourceDirectories }}:
+            - template: /eng/common/TestResources/deploy-test-resources.yml
+              parameters:
+                ${{ if or(parameters.Location, parameters.CloudConfig.Location) }}:
+                  Location: ${{ coalesce(parameters.Location, parameters.CloudConfig.Location) }}
+                ServiceDirectory: '${{ directory }}'
+                TestResourcesDirectory: '$(TestResourcesDirectory)'
+                SubscriptionConfiguration: $(SubscriptionConfiguration)
+                ArmTemplateParameters: $(ArmTemplateParameters)
+        - ${{ if not(parameters.TestResourceDirectories) }}:
+          - template: /eng/common/TestResources/deploy-test-resources.yml
+            parameters:
+              ${{ if or(parameters.Location, parameters.CloudConfig.Location) }}:
+                Location: ${{ coalesce(parameters.Location, parameters.CloudConfig.Location) }}
+              ServiceDirectory: '${{ parameters.ServiceDirectory }}'
+              TestResourcesDirectory: '$(TestResourcesDirectory)'
+              SubscriptionConfiguration: $(SubscriptionConfiguration)
+              ArmTemplateParameters: $(ArmTemplateParameters)
       - pwsh: |
           if ($env:SupportsRecording -and $env:Record) {
             Write-Host "Enabling Record mode"
@@ -116,17 +152,20 @@ jobs:
       - template: /eng/pipelines/templates/steps/install-dotnet.yml
         parameters:
           Container: ${{ parameters.UsePlatformContainer }}
-      - pwsh: >
+      - script: >
           dotnet test eng/service.proj
           --framework $(TestTargetFramework)
-          --filter "TestCategory!=Manually"
+          --filter "TestCategory!=Manually & ($(AdditionalTestFilters))"
           --logger "trx"
           --logger:"console;verbosity=normal"
           --blame-crash-dump-type full --blame-hang-dump-type full --blame-hang-timeout ${{parameters.TimeoutInMinutes}}minutes
           /p:SDKType=${{ parameters.SDKType }}
           /p:ServiceDirectory=${{ parameters.ServiceDirectory }}
           /p:Project=${{ parameters.Project }}
-          /p:IncludeSrc=false /p:IncludeSamples=false /p:IncludePerf=false /p:IncludeStress=false
+          /p:IncludeSrc=false
+          /p:IncludeSamples=false
+          /p:IncludePerf=false
+          /p:IncludeStress=false
           /p:BuildInParallel=${{ parameters.BuildInParallel }}
           /p:CollectCoverage=$(CollectCoverage) /p:CodeCoverageDirectory=$(Build.SourcesDirectory)\sdk\${{parameters.ServiceDirectory}}
           /p:EnableSourceLink=false
@@ -138,10 +177,18 @@ jobs:
           ${{ each var in parameters.EnvVars }}:
             ${{ var.key }}: ${{ var.value }}
 
-      - template: /eng/common/TestResources/remove-test-resources.yml
-        parameters:
-          ServiceDirectory: '${{ parameters.ServiceDirectory }}'
-          SubscriptionConfiguration: $(SubscriptionConfiguration)
+      - ${{ if parameters.DeployTestResources }}:
+        - ${{ if parameters.TestResourceDirectories }}:
+          - ${{ each directory in parameters.TestResourceDirectories }}:
+            - template: /eng/common/TestResources/remove-test-resources.yml
+              parameters:
+                ServiceDirectory: '${{ directory }}'
+                SubscriptionConfiguration: $(SubscriptionConfiguration)
+        - ${{ if not(parameters.TestResourceDirectories) }}:
+          - template: /eng/common/TestResources/remove-test-resources.yml
+            parameters:
+              ServiceDirectory: '${{ parameters.ServiceDirectory }}'
+              SubscriptionConfiguration: $(SubscriptionConfiguration)
 
       - task: PublishTestResults@2
         condition: always()
@@ -172,3 +219,4 @@ jobs:
           summaryFileLocation: $(Build.ArtifactStagingDirectory)\coverage\Cobertura.xml
 
       - ${{ parameters.PostSteps }}
+

@@ -5,68 +5,125 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class AppServiceEnvironmentPatch : IUtf8JsonSerializable
+    public partial class AppServiceEnvironmentPatch : IUtf8JsonSerializable, IJsonModel<AppServiceEnvironmentPatch>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AppServiceEnvironmentPatch>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AppServiceEnvironmentPatch>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AppServiceEnvironmentPatch)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Kind))
             {
-                writer.WritePropertyName("kind");
+                writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
             }
-            writer.WritePropertyName("properties");
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(ResourceType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SystemData))
+            {
+                writer.WritePropertyName("systemData"u8);
+                JsonSerializer.Serialize(writer, SystemData);
+            }
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToSerialString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(Status))
+            {
+                writer.WritePropertyName("status"u8);
+                writer.WriteStringValue(Status.Value.ToSerialString());
+            }
             if (Optional.IsDefined(VirtualNetwork))
             {
-                writer.WritePropertyName("virtualNetwork");
-                writer.WriteObjectValue(VirtualNetwork);
+                writer.WritePropertyName("virtualNetwork"u8);
+                writer.WriteObjectValue<AppServiceVirtualNetworkProfile>(VirtualNetwork, options);
             }
             if (Optional.IsDefined(InternalLoadBalancingMode))
             {
-                writer.WritePropertyName("internalLoadBalancingMode");
+                writer.WritePropertyName("internalLoadBalancingMode"u8);
                 writer.WriteStringValue(InternalLoadBalancingMode.Value.ToString());
             }
             if (Optional.IsDefined(MultiSize))
             {
-                writer.WritePropertyName("multiSize");
+                writer.WritePropertyName("multiSize"u8);
                 writer.WriteStringValue(MultiSize);
             }
-            if (Optional.IsDefined(IpsslAddressCount))
+            if (options.Format != "W" && Optional.IsDefined(MultiRoleCount))
             {
-                writer.WritePropertyName("ipsslAddressCount");
-                writer.WriteNumberValue(IpsslAddressCount.Value);
+                writer.WritePropertyName("multiRoleCount"u8);
+                writer.WriteNumberValue(MultiRoleCount.Value);
+            }
+            if (Optional.IsDefined(IPSslAddressCount))
+            {
+                writer.WritePropertyName("ipsslAddressCount"u8);
+                writer.WriteNumberValue(IPSslAddressCount.Value);
             }
             if (Optional.IsDefined(DnsSuffix))
             {
-                writer.WritePropertyName("dnsSuffix");
+                writer.WritePropertyName("dnsSuffix"u8);
                 writer.WriteStringValue(DnsSuffix);
+            }
+            if (options.Format != "W" && Optional.IsDefined(MaximumNumberOfMachines))
+            {
+                writer.WritePropertyName("maximumNumberOfMachines"u8);
+                writer.WriteNumberValue(MaximumNumberOfMachines.Value);
             }
             if (Optional.IsDefined(FrontEndScaleFactor))
             {
-                writer.WritePropertyName("frontEndScaleFactor");
+                writer.WritePropertyName("frontEndScaleFactor"u8);
                 writer.WriteNumberValue(FrontEndScaleFactor.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(IsSuspended))
+            {
+                writer.WritePropertyName("suspended"u8);
+                writer.WriteBooleanValue(IsSuspended.Value);
             }
             if (Optional.IsCollectionDefined(ClusterSettings))
             {
-                writer.WritePropertyName("clusterSettings");
+                writer.WritePropertyName("clusterSettings"u8);
                 writer.WriteStartArray();
                 foreach (var item in ClusterSettings)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<AppServiceNameValuePair>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(UserWhitelistedIPRanges))
             {
-                writer.WritePropertyName("userWhitelistedIpRanges");
+                writer.WritePropertyName("userWhitelistedIpRanges"u8);
                 writer.WriteStartArray();
                 foreach (var item in UserWhitelistedIPRanges)
                 {
@@ -74,76 +131,115 @@ namespace Azure.ResourceManager.AppService.Models
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && Optional.IsDefined(HasLinuxWorkers))
+            {
+                writer.WritePropertyName("hasLinuxWorkers"u8);
+                writer.WriteBooleanValue(HasLinuxWorkers.Value);
+            }
             if (Optional.IsDefined(DedicatedHostCount))
             {
-                writer.WritePropertyName("dedicatedHostCount");
+                writer.WritePropertyName("dedicatedHostCount"u8);
                 writer.WriteNumberValue(DedicatedHostCount.Value);
             }
-            if (Optional.IsDefined(ZoneRedundant))
+            if (Optional.IsDefined(IsZoneRedundant))
             {
-                writer.WritePropertyName("zoneRedundant");
-                writer.WriteBooleanValue(ZoneRedundant.Value);
+                writer.WritePropertyName("zoneRedundant"u8);
+                writer.WriteBooleanValue(IsZoneRedundant.Value);
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static AppServiceEnvironmentPatch DeserializeAppServiceEnvironmentPatch(JsonElement element)
+        AppServiceEnvironmentPatch IJsonModel<AppServiceEnvironmentPatch>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> kind = default;
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AppServiceEnvironmentPatch)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAppServiceEnvironmentPatch(document.RootElement, options);
+        }
+
+        internal static AppServiceEnvironmentPatch DeserializeAppServiceEnvironmentPatch(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<ProvisioningState> provisioningState = default;
-            Optional<HostingEnvironmentStatus> status = default;
-            Optional<VirtualNetworkProfile> virtualNetwork = default;
-            Optional<LoadBalancingMode> internalLoadBalancingMode = default;
-            Optional<string> multiSize = default;
-            Optional<int> multiRoleCount = default;
-            Optional<int> ipsslAddressCount = default;
-            Optional<string> dnsSuffix = default;
-            Optional<int> maximumNumberOfMachines = default;
-            Optional<int> frontEndScaleFactor = default;
-            Optional<bool> suspended = default;
-            Optional<IList<NameValuePair>> clusterSettings = default;
-            Optional<IList<string>> userWhitelistedIpRanges = default;
-            Optional<bool> hasLinuxWorkers = default;
-            Optional<int> dedicatedHostCount = default;
-            Optional<bool> zoneRedundant = default;
+            SystemData systemData = default;
+            ProvisioningState? provisioningState = default;
+            HostingEnvironmentStatus? status = default;
+            AppServiceVirtualNetworkProfile virtualNetwork = default;
+            LoadBalancingMode? internalLoadBalancingMode = default;
+            string multiSize = default;
+            int? multiRoleCount = default;
+            int? ipSslAddressCount = default;
+            string dnsSuffix = default;
+            int? maximumNumberOfMachines = default;
+            int? frontEndScaleFactor = default;
+            bool? suspended = default;
+            IList<AppServiceNameValuePair> clusterSettings = default;
+            IList<string> userWhitelistedIPRanges = default;
+            bool? hasLinuxWorkers = default;
+            int? dedicatedHostCount = default;
+            bool? zoneRedundant = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.ToString());
+                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -152,126 +248,115 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = property0.Value.GetString().ToProvisioningState();
                             continue;
                         }
-                        if (property0.NameEquals("status"))
+                        if (property0.NameEquals("status"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             status = property0.Value.GetString().ToHostingEnvironmentStatus();
                             continue;
                         }
-                        if (property0.NameEquals("virtualNetwork"))
+                        if (property0.NameEquals("virtualNetwork"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            virtualNetwork = VirtualNetworkProfile.DeserializeVirtualNetworkProfile(property0.Value);
+                            virtualNetwork = AppServiceVirtualNetworkProfile.DeserializeAppServiceVirtualNetworkProfile(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("internalLoadBalancingMode"))
+                        if (property0.NameEquals("internalLoadBalancingMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             internalLoadBalancingMode = new LoadBalancingMode(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("multiSize"))
+                        if (property0.NameEquals("multiSize"u8))
                         {
                             multiSize = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("multiRoleCount"))
+                        if (property0.NameEquals("multiRoleCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             multiRoleCount = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("ipsslAddressCount"))
+                        if (property0.NameEquals("ipsslAddressCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            ipsslAddressCount = property0.Value.GetInt32();
+                            ipSslAddressCount = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("dnsSuffix"))
+                        if (property0.NameEquals("dnsSuffix"u8))
                         {
                             dnsSuffix = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("maximumNumberOfMachines"))
+                        if (property0.NameEquals("maximumNumberOfMachines"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             maximumNumberOfMachines = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("frontEndScaleFactor"))
+                        if (property0.NameEquals("frontEndScaleFactor"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             frontEndScaleFactor = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("suspended"))
+                        if (property0.NameEquals("suspended"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             suspended = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("clusterSettings"))
+                        if (property0.NameEquals("clusterSettings"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            List<NameValuePair> array = new List<NameValuePair>();
+                            List<AppServiceNameValuePair> array = new List<AppServiceNameValuePair>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(NameValuePair.DeserializeNameValuePair(item));
+                                array.Add(AppServiceNameValuePair.DeserializeAppServiceNameValuePair(item, options));
                             }
                             clusterSettings = array;
                             continue;
                         }
-                        if (property0.NameEquals("userWhitelistedIpRanges"))
+                        if (property0.NameEquals("userWhitelistedIpRanges"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -279,34 +364,31 @@ namespace Azure.ResourceManager.AppService.Models
                             {
                                 array.Add(item.GetString());
                             }
-                            userWhitelistedIpRanges = array;
+                            userWhitelistedIPRanges = array;
                             continue;
                         }
-                        if (property0.NameEquals("hasLinuxWorkers"))
+                        if (property0.NameEquals("hasLinuxWorkers"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             hasLinuxWorkers = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("dedicatedHostCount"))
+                        if (property0.NameEquals("dedicatedHostCount"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             dedicatedHostCount = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("zoneRedundant"))
+                        if (property0.NameEquals("zoneRedundant"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             zoneRedundant = property0.Value.GetBoolean();
@@ -315,8 +397,430 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AppServiceEnvironmentPatch(id, name, type, systemData.Value, Optional.ToNullable(provisioningState), Optional.ToNullable(status), virtualNetwork.Value, Optional.ToNullable(internalLoadBalancingMode), multiSize.Value, Optional.ToNullable(multiRoleCount), Optional.ToNullable(ipsslAddressCount), dnsSuffix.Value, Optional.ToNullable(maximumNumberOfMachines), Optional.ToNullable(frontEndScaleFactor), Optional.ToNullable(suspended), Optional.ToList(clusterSettings), Optional.ToList(userWhitelistedIpRanges), Optional.ToNullable(hasLinuxWorkers), Optional.ToNullable(dedicatedHostCount), Optional.ToNullable(zoneRedundant), kind.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AppServiceEnvironmentPatch(
+                id,
+                name,
+                type,
+                systemData,
+                provisioningState,
+                status,
+                virtualNetwork,
+                internalLoadBalancingMode,
+                multiSize,
+                multiRoleCount,
+                ipSslAddressCount,
+                dnsSuffix,
+                maximumNumberOfMachines,
+                frontEndScaleFactor,
+                suspended,
+                clusterSettings ?? new ChangeTrackingList<AppServiceNameValuePair>(),
+                userWhitelistedIPRanges ?? new ChangeTrackingList<string>(),
+                hasLinuxWorkers,
+                dedicatedHostCount,
+                zoneRedundant,
+                kind,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (Optional.IsDefined(Name) || hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (Optional.IsDefined(Kind) || hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Kind.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Kind}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Kind}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (Optional.IsDefined(Id) || hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (Optional.IsDefined(SystemData) || hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (Optional.IsDefined(ProvisioningState) || hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ProvisioningState.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Status), out propertyOverride);
+            if (Optional.IsDefined(Status) || hasPropertyOverride)
+            {
+                builder.Append("    status: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Status.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VirtualNetwork), out propertyOverride);
+            if (Optional.IsDefined(VirtualNetwork) || hasPropertyOverride)
+            {
+                builder.Append("    virtualNetwork: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, VirtualNetwork, options, 4, false, "    virtualNetwork: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(InternalLoadBalancingMode), out propertyOverride);
+            if (Optional.IsDefined(InternalLoadBalancingMode) || hasPropertyOverride)
+            {
+                builder.Append("    internalLoadBalancingMode: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{InternalLoadBalancingMode.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MultiSize), out propertyOverride);
+            if (Optional.IsDefined(MultiSize) || hasPropertyOverride)
+            {
+                builder.Append("    multiSize: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (MultiSize.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{MultiSize}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{MultiSize}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MultiRoleCount), out propertyOverride);
+            if (Optional.IsDefined(MultiRoleCount) || hasPropertyOverride)
+            {
+                builder.Append("    multiRoleCount: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{MultiRoleCount.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPSslAddressCount), out propertyOverride);
+            if (Optional.IsDefined(IPSslAddressCount) || hasPropertyOverride)
+            {
+                builder.Append("    ipsslAddressCount: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{IPSslAddressCount.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DnsSuffix), out propertyOverride);
+            if (Optional.IsDefined(DnsSuffix) || hasPropertyOverride)
+            {
+                builder.Append("    dnsSuffix: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (DnsSuffix.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DnsSuffix}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DnsSuffix}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MaximumNumberOfMachines), out propertyOverride);
+            if (Optional.IsDefined(MaximumNumberOfMachines) || hasPropertyOverride)
+            {
+                builder.Append("    maximumNumberOfMachines: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{MaximumNumberOfMachines.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(FrontEndScaleFactor), out propertyOverride);
+            if (Optional.IsDefined(FrontEndScaleFactor) || hasPropertyOverride)
+            {
+                builder.Append("    frontEndScaleFactor: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{FrontEndScaleFactor.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsSuspended), out propertyOverride);
+            if (Optional.IsDefined(IsSuspended) || hasPropertyOverride)
+            {
+                builder.Append("    suspended: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = IsSuspended.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ClusterSettings), out propertyOverride);
+            if (Optional.IsCollectionDefined(ClusterSettings) || hasPropertyOverride)
+            {
+                if (ClusterSettings.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    clusterSettings: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in ClusterSettings)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    clusterSettings: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UserWhitelistedIPRanges), out propertyOverride);
+            if (Optional.IsCollectionDefined(UserWhitelistedIPRanges) || hasPropertyOverride)
+            {
+                if (UserWhitelistedIPRanges.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    userWhitelistedIpRanges: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in UserWhitelistedIPRanges)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HasLinuxWorkers), out propertyOverride);
+            if (Optional.IsDefined(HasLinuxWorkers) || hasPropertyOverride)
+            {
+                builder.Append("    hasLinuxWorkers: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = HasLinuxWorkers.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DedicatedHostCount), out propertyOverride);
+            if (Optional.IsDefined(DedicatedHostCount) || hasPropertyOverride)
+            {
+                builder.Append("    dedicatedHostCount: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"{DedicatedHostCount.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsZoneRedundant), out propertyOverride);
+            if (Optional.IsDefined(IsZoneRedundant) || hasPropertyOverride)
+            {
+                builder.Append("    zoneRedundant: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = IsZoneRedundant.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<AppServiceEnvironmentPatch>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(AppServiceEnvironmentPatch)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AppServiceEnvironmentPatch IPersistableModel<AppServiceEnvironmentPatch>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AppServiceEnvironmentPatch>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAppServiceEnvironmentPatch(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AppServiceEnvironmentPatch)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AppServiceEnvironmentPatch>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

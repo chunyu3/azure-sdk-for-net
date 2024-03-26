@@ -5,89 +5,134 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.StreamAnalytics.Models
 {
-    public partial class BlobOutputDataSource : IUtf8JsonSerializable
+    public partial class BlobOutputDataSource : IUtf8JsonSerializable, IJsonModel<BlobOutputDataSource>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<BlobOutputDataSource>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<BlobOutputDataSource>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobOutputDataSource)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(OutputDataSourceType);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(StorageAccounts))
             {
-                writer.WritePropertyName("storageAccounts");
+                writer.WritePropertyName("storageAccounts"u8);
                 writer.WriteStartArray();
                 foreach (var item in StorageAccounts)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<StreamAnalyticsStorageAccount>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(Container))
             {
-                writer.WritePropertyName("container");
+                writer.WritePropertyName("container"u8);
                 writer.WriteStringValue(Container);
             }
             if (Optional.IsDefined(PathPattern))
             {
-                writer.WritePropertyName("pathPattern");
+                writer.WritePropertyName("pathPattern"u8);
                 writer.WriteStringValue(PathPattern);
             }
             if (Optional.IsDefined(DateFormat))
             {
-                writer.WritePropertyName("dateFormat");
+                writer.WritePropertyName("dateFormat"u8);
                 writer.WriteStringValue(DateFormat);
             }
             if (Optional.IsDefined(TimeFormat))
             {
-                writer.WritePropertyName("timeFormat");
+                writer.WritePropertyName("timeFormat"u8);
                 writer.WriteStringValue(TimeFormat);
             }
             if (Optional.IsDefined(AuthenticationMode))
             {
-                writer.WritePropertyName("authenticationMode");
+                writer.WritePropertyName("authenticationMode"u8);
                 writer.WriteStringValue(AuthenticationMode.Value.ToString());
             }
             if (Optional.IsDefined(BlobPathPrefix))
             {
-                writer.WritePropertyName("blobPathPrefix");
+                writer.WritePropertyName("blobPathPrefix"u8);
                 writer.WriteStringValue(BlobPathPrefix);
             }
             if (Optional.IsDefined(BlobWriteMode))
             {
-                writer.WritePropertyName("blobWriteMode");
+                writer.WritePropertyName("blobWriteMode"u8);
                 writer.WriteStringValue(BlobWriteMode.Value.ToString());
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static BlobOutputDataSource DeserializeBlobOutputDataSource(JsonElement element)
+        BlobOutputDataSource IJsonModel<BlobOutputDataSource>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(BlobOutputDataSource)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeBlobOutputDataSource(document.RootElement, options);
+        }
+
+        internal static BlobOutputDataSource DeserializeBlobOutputDataSource(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<IList<StorageAccount>> storageAccounts = default;
-            Optional<string> container = default;
-            Optional<string> pathPattern = default;
-            Optional<string> dateFormat = default;
-            Optional<string> timeFormat = default;
-            Optional<AuthenticationMode> authenticationMode = default;
-            Optional<string> blobPathPrefix = default;
-            Optional<BlobWriteMode> blobWriteMode = default;
+            IList<StreamAnalyticsStorageAccount> storageAccounts = default;
+            string container = default;
+            string pathPattern = default;
+            string dateFormat = default;
+            string timeFormat = default;
+            StreamAnalyticsAuthenticationMode? authenticationMode = default;
+            string blobPathPrefix = default;
+            BlobOutputWriteMode? blobWriteMode = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -96,71 +141,114 @@ namespace Azure.ResourceManager.StreamAnalytics.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("storageAccounts"))
+                        if (property0.NameEquals("storageAccounts"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            List<StorageAccount> array = new List<StorageAccount>();
+                            List<StreamAnalyticsStorageAccount> array = new List<StreamAnalyticsStorageAccount>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(StorageAccount.DeserializeStorageAccount(item));
+                                array.Add(StreamAnalyticsStorageAccount.DeserializeStreamAnalyticsStorageAccount(item, options));
                             }
                             storageAccounts = array;
                             continue;
                         }
-                        if (property0.NameEquals("container"))
+                        if (property0.NameEquals("container"u8))
                         {
                             container = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("pathPattern"))
+                        if (property0.NameEquals("pathPattern"u8))
                         {
                             pathPattern = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("dateFormat"))
+                        if (property0.NameEquals("dateFormat"u8))
                         {
                             dateFormat = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("timeFormat"))
+                        if (property0.NameEquals("timeFormat"u8))
                         {
                             timeFormat = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("authenticationMode"))
+                        if (property0.NameEquals("authenticationMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            authenticationMode = new AuthenticationMode(property0.Value.GetString());
+                            authenticationMode = new StreamAnalyticsAuthenticationMode(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("blobPathPrefix"))
+                        if (property0.NameEquals("blobPathPrefix"u8))
                         {
                             blobPathPrefix = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("blobWriteMode"))
+                        if (property0.NameEquals("blobWriteMode"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            blobWriteMode = new BlobWriteMode(property0.Value.GetString());
+                            blobWriteMode = new BlobOutputWriteMode(property0.Value.GetString());
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new BlobOutputDataSource(type, Optional.ToList(storageAccounts), container.Value, pathPattern.Value, dateFormat.Value, timeFormat.Value, Optional.ToNullable(authenticationMode), blobPathPrefix.Value, Optional.ToNullable(blobWriteMode));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new BlobOutputDataSource(
+                type,
+                serializedAdditionalRawData,
+                storageAccounts ?? new ChangeTrackingList<StreamAnalyticsStorageAccount>(),
+                container,
+                pathPattern,
+                dateFormat,
+                timeFormat,
+                authenticationMode,
+                blobPathPrefix,
+                blobWriteMode);
         }
+
+        BinaryData IPersistableModel<BlobOutputDataSource>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(BlobOutputDataSource)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        BlobOutputDataSource IPersistableModel<BlobOutputDataSource>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<BlobOutputDataSource>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeBlobOutputDataSource(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(BlobOutputDataSource)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<BlobOutputDataSource>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -21,85 +21,85 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(BucketName))
             {
-                writer.WritePropertyName("bucketName");
-                writer.WriteObjectValue(BucketName);
+                writer.WritePropertyName("bucketName"u8);
+                writer.WriteObjectValue<object>(BucketName);
             }
             if (Optional.IsDefined(Version))
             {
-                writer.WritePropertyName("version");
-                writer.WriteObjectValue(Version);
+                writer.WritePropertyName("version"u8);
+                writer.WriteObjectValue<object>(Version);
             }
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(FolderPath))
             {
-                writer.WritePropertyName("folderPath");
-                writer.WriteObjectValue(FolderPath);
+                writer.WritePropertyName("folderPath"u8);
+                writer.WriteObjectValue<object>(FolderPath);
             }
             if (Optional.IsDefined(FileName))
             {
-                writer.WritePropertyName("fileName");
-                writer.WriteObjectValue(FileName);
+                writer.WritePropertyName("fileName"u8);
+                writer.WriteObjectValue<object>(FileName);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static AmazonS3Location DeserializeAmazonS3Location(JsonElement element)
         {
-            Optional<object> bucketName = default;
-            Optional<object> version = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object bucketName = default;
+            object version = default;
             string type = default;
-            Optional<object> folderPath = default;
-            Optional<object> fileName = default;
+            object folderPath = default;
+            object fileName = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("bucketName"))
+                if (property.NameEquals("bucketName"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     bucketName = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("version"))
+                if (property.NameEquals("version"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     version = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("folderPath"))
+                if (property.NameEquals("folderPath"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     folderPath = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("fileName"))
+                if (property.NameEquals("fileName"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     fileName = property.Value.GetObject();
@@ -108,14 +108,20 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new AmazonS3Location(type, folderPath.Value, fileName.Value, additionalProperties, bucketName.Value, version.Value);
+            return new AmazonS3Location(
+                type,
+                folderPath,
+                fileName,
+                additionalProperties,
+                bucketName,
+                version);
         }
 
         internal partial class AmazonS3LocationConverter : JsonConverter<AmazonS3Location>
         {
             public override void Write(Utf8JsonWriter writer, AmazonS3Location model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AmazonS3Location>(model);
             }
             public override AmazonS3Location Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

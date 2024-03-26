@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ContainerRegistry.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-09-01";
+            _apiVersion = apiVersion ?? "2022-12-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -59,17 +59,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> List all private endpoint connections in a container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response<ContainerRegistryPrivateEndpointConnectionListResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -88,17 +88,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> List all private endpoint connections in a container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response<ContainerRegistryPrivateEndpointConnectionListResult> List(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);
@@ -139,8 +139,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Get the specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -148,10 +148,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response<ContainerRegistryPrivateEndpointConnectionData>> GetAsync(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -172,8 +172,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Get the specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -181,10 +181,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response<ContainerRegistryPrivateEndpointConnectionData> Get(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName);
             _pipeline.Send(message, cancellationToken);
@@ -224,15 +224,15 @@ namespace Azure.ResourceManager.ContainerRegistry
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ContainerRegistryPrivateEndpointConnectionData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Update the state of specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="data"> The parameters for creating a private endpoint connection. </param>
@@ -241,11 +241,11 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, ContainerRegistryPrivateEndpointConnectionData data, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
-            Core.Argument.AssertNotNull(data, nameof(data));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName, data);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -260,8 +260,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Update the state of specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="data"> The parameters for creating a private endpoint connection. </param>
@@ -270,11 +270,11 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response CreateOrUpdate(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, ContainerRegistryPrivateEndpointConnectionData data, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
-            Core.Argument.AssertNotNull(data, nameof(data));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName, data);
             _pipeline.Send(message, cancellationToken);
@@ -310,8 +310,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes the specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -319,10 +319,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -338,8 +338,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes the specified private endpoint connection associated with the container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="privateEndpointConnectionName"> The name of the private endpoint connection. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -347,10 +347,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="privateEndpointConnectionName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response Delete(string subscriptionId, string resourceGroupName, string registryName, string privateEndpointConnectionName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(privateEndpointConnectionName, nameof(privateEndpointConnectionName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, privateEndpointConnectionName);
             _pipeline.Send(message, cancellationToken);
@@ -381,18 +381,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> List all private endpoint connections in a container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response<ContainerRegistryPrivateEndpointConnectionListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -412,18 +412,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> List all private endpoint connections in a container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response<ContainerRegistryPrivateEndpointConnectionListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);

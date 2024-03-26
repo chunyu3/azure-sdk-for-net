@@ -147,6 +147,119 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        public async Task Ctor_DefaultAudience()
+        {
+            // Arrange
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            PageBlobClient blob = InstrumentClient(test.Container.GetPageBlobClient(GetNewBlobName()));
+            await blob.CreateIfNotExistsAsync(Constants.KB);
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            BlobClientOptions options = GetOptionsWithAudience(BlobAudience.DefaultAudience);
+
+            BlobUriBuilder uriBuilder = new BlobUriBuilder(new Uri(Tenants.TestConfigOAuth.BlobServiceEndpoint))
+            {
+                BlobContainerName = blob.BlobContainerName,
+                BlobName = blob.Name
+            };
+
+            PageBlobClient aadBlob = InstrumentClient(new PageBlobClient(
+                uriBuilder.ToUri(),
+                Tenants.GetOAuthCredential(),
+                options));
+
+            // Assert
+            bool exists = await aadBlob.ExistsAsync();
+            Assert.IsTrue(exists);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_CustomAudience()
+        {
+            // Arrange
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            PageBlobClient blob = InstrumentClient(test.Container.GetPageBlobClient(GetNewBlobName()));
+            await blob.CreateIfNotExistsAsync(Constants.KB);
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            BlobClientOptions options = GetOptionsWithAudience(new BlobAudience($"https://{test.Container.AccountName}.blob.core.windows.net/"));
+
+            BlobUriBuilder uriBuilder = new BlobUriBuilder(new Uri(Tenants.TestConfigOAuth.BlobServiceEndpoint))
+            {
+                BlobContainerName = blob.BlobContainerName,
+                BlobName = blob.Name
+            };
+
+            PageBlobClient aadBlob = InstrumentClient(new PageBlobClient(
+                uriBuilder.ToUri(),
+                Tenants.GetOAuthCredential(),
+                options));
+
+            // Assert
+            bool exists = await aadBlob.ExistsAsync();
+            Assert.IsTrue(exists);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_StorageAccountAudience()
+        {
+            // Arrange
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            PageBlobClient blob = InstrumentClient(test.Container.GetPageBlobClient(GetNewBlobName()));
+            await blob.CreateIfNotExistsAsync(Constants.KB);
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            BlobClientOptions options = GetOptionsWithAudience(BlobAudience.CreateBlobServiceAccountAudience(test.Container.AccountName));
+
+            BlobUriBuilder uriBuilder = new BlobUriBuilder(new Uri(Tenants.TestConfigOAuth.BlobServiceEndpoint))
+            {
+                BlobContainerName = blob.BlobContainerName,
+                BlobName = blob.Name
+            };
+
+            PageBlobClient aadBlob = InstrumentClient(new PageBlobClient(
+                uriBuilder.ToUri(),
+                Tenants.GetOAuthCredential(),
+                options));
+
+            // Assert
+            bool exists = await aadBlob.ExistsAsync();
+            Assert.IsTrue(exists);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_AudienceError()
+        {
+            // Arrange
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            PageBlobClient blob = InstrumentClient(test.Container.GetPageBlobClient(GetNewBlobName()));
+            await blob.CreateIfNotExistsAsync(Constants.KB);
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            BlobClientOptions options = GetOptionsWithAudience(new BlobAudience("https://badaudience.blob.core.windows.net"));
+
+            BlobUriBuilder uriBuilder = new BlobUriBuilder(new Uri(Tenants.TestConfigOAuth.BlobServiceEndpoint))
+            {
+                BlobContainerName = blob.BlobContainerName,
+                BlobName = blob.Name
+            };
+
+            PageBlobClient aadBlob = InstrumentClient(new PageBlobClient(
+                uriBuilder.ToUri(),
+                new MockCredential(),
+                options));
+
+            // Assert
+            await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
+                aadBlob.ExistsAsync(),
+                e => Assert.AreEqual(BlobErrorCode.InvalidAuthenticationInfo.ToString(), e.ErrorCode));
+        }
+
+        [RecordedTest]
         public async Task CreateAsync_Min()
         {
             await using DisposingContainer test = await GetTestContainerAsync();
@@ -657,7 +770,10 @@ namespace Azure.Storage.Blobs.Test
                     Response<PageInfo> response = await blob.UploadPagesAsync(
                         content: stream,
                         offset: 0,
-                        conditions: accessConditions);
+                        options: new PageBlobUploadPagesOptions
+                        {
+                            Conditions = accessConditions
+                        });
 
                     // Assert
                     Assert.IsNotNull(response.GetRawResponse().Headers.RequestId);
@@ -705,7 +821,10 @@ namespace Azure.Storage.Blobs.Test
                         blob.UploadPagesAsync(
                             content: stream,
                             offset: 0,
-                            conditions: accessConditions),
+                            options: new PageBlobUploadPagesOptions
+                            {
+                                Conditions = accessConditions
+                            }),
                         e => Assert.IsTrue(true));
                 }
             }
@@ -739,7 +858,10 @@ namespace Azure.Storage.Blobs.Test
             await blob.UploadPagesAsync(
                 content: stream,
                 offset: Constants.KB,
-                conditions: conditions);
+                options: new PageBlobUploadPagesOptions
+                {
+                    Conditions = conditions
+                });
         }
 
         [RecordedTest]
@@ -765,7 +887,10 @@ namespace Azure.Storage.Blobs.Test
                 blob.UploadPagesAsync(
                     content: stream,
                     offset: Constants.KB,
-                    conditions: conditions),
+                    options: new PageBlobUploadPagesOptions
+                    {
+                        Conditions = conditions
+                    }),
                 e => Assert.AreEqual("ConditionNotMet", e.ErrorCode));
         }
 
@@ -806,7 +931,10 @@ namespace Azure.Storage.Blobs.Test
                 new IOException("Simulated stream fault"),
                 () => timesFaulted++))
             {
-                await blobFaulty.UploadPagesAsync(stream, offset, progressHandler: progressHandler);
+                await blobFaulty.UploadPagesAsync(stream, offset, new PageBlobUploadPagesOptions
+                {
+                    ProgressHandler = progressHandler
+                });
 
                 await WaitForProgressAsync(progressBag, data.LongLength);
                 Assert.IsTrue(progressBag.Count > 1, "Too few progress received");
@@ -841,7 +969,10 @@ namespace Azure.Storage.Blobs.Test
                 await blob.UploadPagesAsync(
                     content: stream,
                     offset: 0,
-                    progressHandler: progress);
+                    new PageBlobUploadPagesOptions
+                    {
+                        ProgressHandler = progress
+                    });
             }
 
             // Assert
@@ -3097,6 +3228,7 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        [Category("NonVirtualized")]
         public async Task StartCopyIncrementalAsync_AccessTier()
         {
             BlobServiceClient premiumService = BlobsClientBuilder.GetServiceClient_PremiumBlobAccount_SharedKey();
@@ -3137,6 +3269,7 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        [Category("NonVirtualized")]
         public async Task StartCopyIncrementalAsync_AccessTierFail()
         {
             BlobServiceClient premiumService = BlobsClientBuilder.GetServiceClient_PremiumBlobAccount_SharedKey();
@@ -3172,6 +3305,7 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        [Category("NonVirtualized")]
         public async Task SetTierAsync_AccessTier()
         {
             BlobServiceClient premiumService = BlobsClientBuilder.GetServiceClient_PremiumBlobAccount_SharedKey();
@@ -3189,6 +3323,7 @@ namespace Azure.Storage.Blobs.Test
         }
 
         [RecordedTest]
+        [Category("NonVirtualized")]
         public async Task SetTierAsync_AccessTierFail()
         {
             BlobServiceClient premiumService = BlobsClientBuilder.GetServiceClient_PremiumBlobAccount_SharedKey();
@@ -3985,6 +4120,44 @@ namespace Azure.Storage.Blobs.Test
             mock = new Mock<PageBlobClient>(new Uri("https://test/test"), Tenants.GetNewSharedKeyCredentials(), new BlobClientOptions()).Object;
             mock = new Mock<PageBlobClient>(new Uri("https://test/test"), new AzureSasCredential("foo"), new BlobClientOptions()).Object;
             mock = new Mock<PageBlobClient>(new Uri("https://test/test"), Tenants.GetOAuthCredential(Tenants.TestConfigHierarchicalNamespace), new BlobClientOptions()).Object;
+        }
+
+        [RecordedTest]
+        public async Task DownloadAsync_UnevenPageRanges()
+        {
+            // Arrange
+            await using DisposingContainer test = await GetTestContainerAsync();
+
+            // Create Page Blob with different page ranges
+            int pageBlobSize = 10 * Constants.KB;
+            StorageTransferOptions transferOptions = new()
+            {
+                InitialTransferLength = 4 * Constants.KB,
+                MaximumTransferSize = 4 * Constants.KB,
+            };
+            PageBlobClient pageBlobClient = test.Container.GetPageBlobClient(GetNewBlobName());
+            await pageBlobClient.CreateIfNotExistsAsync(pageBlobSize);
+            int offset = 2 * Constants.KB + 512;
+            int length = Constants.KB;
+            var data = GetRandomBuffer(length);
+
+            using (var stream = new MemoryStream(data))
+            {
+                await pageBlobClient.UploadPagesAsync(
+                    content: stream,
+                    offset: offset);
+            }
+            // Act
+            Response<BlobDownloadStreamingResult> result = await pageBlobClient.DownloadStreamingAsync();
+
+            // Assert
+            var actual = new MemoryStream();
+            await result.Value.Content.CopyToAsync(actual);
+            actual.Seek(offset, SeekOrigin.Begin);
+            byte[] resultArray = new byte[length];
+            await actual.ReadAsync(resultArray, 0, length, CancellationToken.None);
+            Assert.AreEqual(pageBlobSize, actual.Length);
+            Assert.That(data, Is.EqualTo(resultArray));
         }
 
         public static PageBlobRequestConditions BuildAccessConditions(

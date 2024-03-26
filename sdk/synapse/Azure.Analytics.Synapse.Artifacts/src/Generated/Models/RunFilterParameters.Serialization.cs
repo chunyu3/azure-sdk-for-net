@@ -20,30 +20,30 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ContinuationToken))
             {
-                writer.WritePropertyName("continuationToken");
+                writer.WritePropertyName("continuationToken"u8);
                 writer.WriteStringValue(ContinuationToken);
             }
-            writer.WritePropertyName("lastUpdatedAfter");
+            writer.WritePropertyName("lastUpdatedAfter"u8);
             writer.WriteStringValue(LastUpdatedAfter, "O");
-            writer.WritePropertyName("lastUpdatedBefore");
+            writer.WritePropertyName("lastUpdatedBefore"u8);
             writer.WriteStringValue(LastUpdatedBefore, "O");
             if (Optional.IsCollectionDefined(Filters))
             {
-                writer.WritePropertyName("filters");
+                writer.WritePropertyName("filters"u8);
                 writer.WriteStartArray();
                 foreach (var item in Filters)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<RunQueryFilter>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(OrderBy))
             {
-                writer.WritePropertyName("orderBy");
+                writer.WritePropertyName("orderBy"u8);
                 writer.WriteStartArray();
                 foreach (var item in OrderBy)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<RunQueryOrderBy>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -54,7 +54,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, RunFilterParameters model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<RunFilterParameters>(model);
             }
             public override RunFilterParameters Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.MetricsAdvisor.Models
 {
@@ -15,15 +14,18 @@ namespace Azure.AI.MetricsAdvisor.Models
     {
         internal static AnomalyAlertingConfigurationList DeserializeAnomalyAlertingConfigurationList(JsonElement element)
         {
-            Optional<IReadOnlyList<AnomalyAlertConfiguration>> value = default;
-            Optional<string> nextLink = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<AnomalyAlertConfiguration> value = default;
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<AnomalyAlertConfiguration> array = new List<AnomalyAlertConfiguration>();
@@ -34,13 +36,13 @@ namespace Azure.AI.MetricsAdvisor.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("@nextLink"))
+                if (property.NameEquals("@nextLink"u8))
                 {
                     nextLink = property.Value.GetString();
                     continue;
                 }
             }
-            return new AnomalyAlertingConfigurationList(Optional.ToList(value), nextLink.Value);
+            return new AnomalyAlertingConfigurationList(value ?? new ChangeTrackingList<AnomalyAlertConfiguration>(), nextLink);
         }
     }
 }

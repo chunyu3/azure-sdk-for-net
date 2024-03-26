@@ -14,20 +14,17 @@ namespace Azure.AI.MetricsAdvisor.Models
     /// <summary> The EmailHookParameter. </summary>
     internal partial class EmailHookParameter
     {
-        /// <summary> Initializes a new instance of EmailHookParameter. </summary>
+        /// <summary> Initializes a new instance of <see cref="EmailHookParameter"/>. </summary>
         /// <param name="toList"> Email TO: list. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="toList"/> is null. </exception>
         public EmailHookParameter(IEnumerable<string> toList)
         {
-            if (toList == null)
-            {
-                throw new ArgumentNullException(nameof(toList));
-            }
+            Argument.AssertNotNull(toList, nameof(toList));
 
             ToList = toList.ToList();
         }
 
-        /// <summary> Initializes a new instance of EmailHookParameter. </summary>
+        /// <summary> Initializes a new instance of <see cref="EmailHookParameter"/>. </summary>
         /// <param name="toList"> Email TO: list. </param>
         internal EmailHookParameter(IList<string> toList)
         {

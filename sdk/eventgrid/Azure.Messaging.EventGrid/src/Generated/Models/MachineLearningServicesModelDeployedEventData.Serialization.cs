@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -17,50 +16,52 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static MachineLearningServicesModelDeployedEventData DeserializeMachineLearningServicesModelDeployedEventData(JsonElement element)
         {
-            Optional<string> serviceName = default;
-            Optional<string> serviceComputeType = default;
-            Optional<string> modelIds = default;
-            Optional<object> serviceTags = default;
-            Optional<object> serviceProperties = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string serviceName = default;
+            string serviceComputeType = default;
+            string modelIds = default;
+            object serviceTags = default;
+            object serviceProperties = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("serviceName"))
+                if (property.NameEquals("serviceName"u8))
                 {
                     serviceName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("serviceComputeType"))
+                if (property.NameEquals("serviceComputeType"u8))
                 {
                     serviceComputeType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("modelIds"))
+                if (property.NameEquals("modelIds"u8))
                 {
                     modelIds = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("serviceTags"))
+                if (property.NameEquals("serviceTags"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     serviceTags = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("serviceProperties"))
+                if (property.NameEquals("serviceProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     serviceProperties = property.Value.GetObject();
                     continue;
                 }
             }
-            return new MachineLearningServicesModelDeployedEventData(serviceName.Value, serviceComputeType.Value, modelIds.Value, serviceTags.Value, serviceProperties.Value);
+            return new MachineLearningServicesModelDeployedEventData(serviceName, serviceComputeType, modelIds, serviceTags, serviceProperties);
         }
 
         internal partial class MachineLearningServicesModelDeployedEventDataConverter : JsonConverter<MachineLearningServicesModelDeployedEventData>

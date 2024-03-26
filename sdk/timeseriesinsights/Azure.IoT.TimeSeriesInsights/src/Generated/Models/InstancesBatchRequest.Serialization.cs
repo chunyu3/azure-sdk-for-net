@@ -17,33 +17,33 @@ namespace Azure.IoT.TimeSeriesInsights
             writer.WriteStartObject();
             if (Optional.IsDefined(Get))
             {
-                writer.WritePropertyName("get");
-                writer.WriteObjectValue(Get);
+                writer.WritePropertyName("get"u8);
+                writer.WriteObjectValue<InstancesRequestBatchGetOrDelete>(Get);
             }
             if (Optional.IsCollectionDefined(Put))
             {
-                writer.WritePropertyName("put");
+                writer.WritePropertyName("put"u8);
                 writer.WriteStartArray();
                 foreach (var item in Put)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<TimeSeriesInstance>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(Update))
             {
-                writer.WritePropertyName("update");
+                writer.WritePropertyName("update"u8);
                 writer.WriteStartArray();
                 foreach (var item in Update)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<TimeSeriesInstance>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(Delete))
             {
-                writer.WritePropertyName("delete");
-                writer.WriteObjectValue(Delete);
+                writer.WritePropertyName("delete"u8);
+                writer.WriteObjectValue<InstancesRequestBatchGetOrDelete>(Delete);
             }
             writer.WriteEndObject();
         }

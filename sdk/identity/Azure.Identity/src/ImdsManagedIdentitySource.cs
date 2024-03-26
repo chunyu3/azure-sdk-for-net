@@ -2,19 +2,16 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Sockets;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
-using Azure.Core.Pipeline;
 
 namespace Azure.Identity
 {
     internal class ImdsManagedIdentitySource : ManagedIdentitySource
     {
-        // IMDS constants. Docs for IMDS are available here https://docs.microsoft.com/azure/active-directory/managed-identities-azure-resources/how-to-use-vm-token#get-a-token-using-http
+        // IMDS constants. Docs for IMDS are available at https://learn.microsoft.com/entra/identity/managed-identities-azure-resources/how-to-use-vm-token#get-a-token-using-http
         private static readonly Uri s_imdsEndpoint = new Uri("http://169.254.169.254/metadata/identity/oauth2/token");
         internal const string imddsTokenPath = "/metadata/identity/oauth2/token";
 
@@ -39,15 +36,15 @@ namespace Azure.Identity
             _imdsNetworkTimeout = options.InitialImdsConnectionTimeout;
 
             if (!string.IsNullOrEmpty(EnvironmentVariables.PodIdentityEndpoint))
-			{
-				var builder = new UriBuilder(EnvironmentVariables.PodIdentityEndpoint);
-            	builder.Path = imddsTokenPath;
+            {
+                var builder = new UriBuilder(EnvironmentVariables.PodIdentityEndpoint);
+                builder.Path = imddsTokenPath;
                 _imdsEndpoint = builder.Uri;
-			}
-			else
-			{
-            	_imdsEndpoint = s_imdsEndpoint;
-			}
+            }
+            else
+            {
+                _imdsEndpoint = s_imdsEndpoint;
+            }
         }
 
         protected override Request CreateRequest(string[] scopes)
@@ -90,6 +87,11 @@ namespace Azure.Identity
             {
                 return await base.AuthenticateAsync(async, context, cancellationToken).ConfigureAwait(false);
             }
+            catch (RequestFailedException e) when (e.Status == 200)
+            {
+                // This is a rare case where the request times out but the response was successful.
+                throw new RequestFailedException("Response from IMDS was successful, but the operation timed out prior to completion.", e.InnerException);
+            }
             catch (RequestFailedException e) when (e.Status == 0)
             {
                 throw new CredentialUnavailableException(NoResponseError, e);
@@ -101,6 +103,10 @@ namespace Azure.Identity
             catch (AggregateException e)
             {
                 throw new CredentialUnavailableException(AggregateError, e);
+            }
+            catch (CredentialUnavailableException)
+            {
+                throw;
             }
         }
 
@@ -120,7 +126,7 @@ namespace Azure.Identity
 
             if (baseMessage != null)
             {
-                string message = await Pipeline.Diagnostics.CreateRequestFailedMessageAsync(response, new ResponseError(null, baseMessage), null, async).ConfigureAwait(false);
+                string message = new RequestFailedException(response, null, new ImdsRequestFailedDetailsParser(baseMessage)).Message;
 
                 var errorContentMessage = await GetMessageFromResponse(response, async, cancellationToken).ConfigureAwait(false);
 
@@ -133,6 +139,23 @@ namespace Azure.Identity
             }
 
             return await base.HandleResponseAsync(async, context, response, cancellationToken).ConfigureAwait(false);
+        }
+
+        private class ImdsRequestFailedDetailsParser : RequestFailedDetailsParser
+        {
+            private readonly string _baseMessage;
+
+            public ImdsRequestFailedDetailsParser(string baseMessage)
+            {
+                _baseMessage = baseMessage;
+            }
+
+            public override bool TryParse(Response response, out ResponseError error, out IDictionary<string, string> data)
+            {
+                error = new ResponseError(null, _baseMessage);
+                data = null;
+                return true;
+            }
         }
     }
 }

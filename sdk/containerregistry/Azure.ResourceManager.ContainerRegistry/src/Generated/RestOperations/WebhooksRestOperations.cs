@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ContainerRegistry.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.ContainerRegistry
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-09-01";
+            _apiVersion = apiVersion ?? "2022-12-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -59,17 +59,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists all the webhooks for the specified container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<WebhookListResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookListResult>> ListAsync(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -77,9 +77,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookListResult value = default;
+                        ContainerRegistryWebhookListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebhookListResult.DeserializeWebhookListResult(document.RootElement);
+                        value = ContainerRegistryWebhookListResult.DeserializeContainerRegistryWebhookListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -88,17 +88,17 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists all the webhooks for the specified container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<WebhookListResult> List(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookListResult> List(string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListRequest(subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);
@@ -106,9 +106,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookListResult value = default;
+                        ContainerRegistryWebhookListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebhookListResult.DeserializeWebhookListResult(document.RootElement);
+                        value = ContainerRegistryWebhookListResult.DeserializeContainerRegistryWebhookListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -139,19 +139,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the properties of the specified webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<WebhookData>> GetAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookData>> GetAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -159,32 +159,32 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookData value = default;
+                        ContainerRegistryWebhookData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebhookData.DeserializeWebhookData(document.RootElement);
+                        value = ContainerRegistryWebhookData.DeserializeContainerRegistryWebhookData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((WebhookData)null, message.Response);
+                    return Response.FromValue((ContainerRegistryWebhookData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the properties of the specified webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<WebhookData> Get(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookData> Get(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateGetRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -192,19 +192,19 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookData value = default;
+                        ContainerRegistryWebhookData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebhookData.DeserializeWebhookData(document.RootElement);
+                        value = ContainerRegistryWebhookData.DeserializeContainerRegistryWebhookData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((WebhookData)null, message.Response);
+                    return Response.FromValue((ContainerRegistryWebhookData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookCreateOrUpdateContent content)
+        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookCreateOrUpdateContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -224,28 +224,28 @@ namespace Azure.ResourceManager.ContainerRegistry
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<ContainerRegistryWebhookCreateOrUpdateContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates a webhook for a container registry with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="content"> The parameters for creating a webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="webhookName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookCreateOrUpdateContent content, CancellationToken cancellationToken = default)
+        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookCreateOrUpdateContent content, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
-            Core.Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var message = CreateCreateRequest(subscriptionId, resourceGroupName, registryName, webhookName, content);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -260,21 +260,21 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Creates a webhook for a container registry with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="content"> The parameters for creating a webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="webhookName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Create(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookCreateOrUpdateContent content, CancellationToken cancellationToken = default)
+        public Response Create(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookCreateOrUpdateContent content, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
-            Core.Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var message = CreateCreateRequest(subscriptionId, resourceGroupName, registryName, webhookName, content);
             _pipeline.Send(message, cancellationToken);
@@ -310,8 +310,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes a webhook from a container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -319,10 +319,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
         public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -338,8 +338,8 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Deletes a webhook from a container registry. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -347,10 +347,10 @@ namespace Azure.ResourceManager.ContainerRegistry
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
         public Response Delete(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -365,7 +365,7 @@ namespace Azure.ResourceManager.ContainerRegistry
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookPatch patch)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookPatch patch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -384,29 +384,29 @@ namespace Azure.ResourceManager.ContainerRegistry
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
-            var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(patch);
-            request.Content = content0;
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<ContainerRegistryWebhookPatch>(patch, new ModelReaderWriterOptions("W"));
+            request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Updates a webhook with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="patch"> The parameters for updating a webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="webhookName"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookPatch patch, CancellationToken cancellationToken = default)
+        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookPatch patch, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
-            Core.Argument.AssertNotNull(patch, nameof(patch));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, registryName, webhookName, patch);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -421,21 +421,21 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Updates a webhook with the specified parameters. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="patch"> The parameters for updating a webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/>, <paramref name="webhookName"/> or <paramref name="patch"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Update(string subscriptionId, string resourceGroupName, string registryName, string webhookName, WebhookPatch patch, CancellationToken cancellationToken = default)
+        public Response Update(string subscriptionId, string resourceGroupName, string registryName, string webhookName, ContainerRegistryWebhookPatch patch, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
-            Core.Argument.AssertNotNull(patch, nameof(patch));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(patch, nameof(patch));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, registryName, webhookName, patch);
             _pipeline.Send(message, cancellationToken);
@@ -473,19 +473,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Triggers a ping event to be sent to the webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<EventInfo>> PingAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookEventInfo>> PingAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreatePingRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -493,9 +493,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventInfo value = default;
+                        ContainerRegistryWebhookEventInfo value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = EventInfo.DeserializeEventInfo(document.RootElement);
+                        value = ContainerRegistryWebhookEventInfo.DeserializeContainerRegistryWebhookEventInfo(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -504,19 +504,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Triggers a ping event to be sent to the webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<EventInfo> Ping(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookEventInfo> Ping(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreatePingRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -524,9 +524,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventInfo value = default;
+                        ContainerRegistryWebhookEventInfo value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = EventInfo.DeserializeEventInfo(document.RootElement);
+                        value = ContainerRegistryWebhookEventInfo.DeserializeContainerRegistryWebhookEventInfo(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -558,19 +558,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists recent events for the specified webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<EventListResult>> ListEventsAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookEventListResult>> ListEventsAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateListEventsRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -578,9 +578,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventListResult value = default;
+                        ContainerRegistryWebhookEventListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = EventListResult.DeserializeEventListResult(document.RootElement);
+                        value = ContainerRegistryWebhookEventListResult.DeserializeContainerRegistryWebhookEventListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -589,19 +589,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Lists recent events for the specified webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<EventListResult> ListEvents(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookEventListResult> ListEvents(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateListEventsRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -609,9 +609,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventListResult value = default;
+                        ContainerRegistryWebhookEventListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = EventListResult.DeserializeEventListResult(document.RootElement);
+                        value = ContainerRegistryWebhookEventListResult.DeserializeContainerRegistryWebhookEventListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -643,19 +643,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the configuration of service URI and custom headers for the webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CallbackConfig>> GetCallbackConfigAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookCallbackConfig>> GetCallbackConfigAsync(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateGetCallbackConfigRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -663,9 +663,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        CallbackConfig value = default;
+                        ContainerRegistryWebhookCallbackConfig value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CallbackConfig.DeserializeCallbackConfig(document.RootElement);
+                        value = ContainerRegistryWebhookCallbackConfig.DeserializeContainerRegistryWebhookCallbackConfig(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -674,19 +674,19 @@ namespace Azure.ResourceManager.ContainerRegistry
         }
 
         /// <summary> Gets the configuration of service URI and custom headers for the webhook. </summary>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CallbackConfig> GetCallbackConfig(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookCallbackConfig> GetCallbackConfig(string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateGetCallbackConfigRequest(subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -694,9 +694,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        CallbackConfig value = default;
+                        ContainerRegistryWebhookCallbackConfig value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CallbackConfig.DeserializeCallbackConfig(document.RootElement);
+                        value = ContainerRegistryWebhookCallbackConfig.DeserializeContainerRegistryWebhookCallbackConfig(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -720,18 +720,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists all the webhooks for the specified container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<WebhookListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -739,9 +739,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookListResult value = default;
+                        ContainerRegistryWebhookListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebhookListResult.DeserializeWebhookListResult(document.RootElement);
+                        value = ContainerRegistryWebhookListResult.DeserializeContainerRegistryWebhookListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -751,18 +751,18 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists all the webhooks for the specified container registry. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="registryName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<WebhookListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
 
             using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName);
             _pipeline.Send(message, cancellationToken);
@@ -770,9 +770,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        WebhookListResult value = default;
+                        ContainerRegistryWebhookListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebhookListResult.DeserializeWebhookListResult(document.RootElement);
+                        value = ContainerRegistryWebhookListResult.DeserializeContainerRegistryWebhookListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -796,20 +796,20 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists recent events for the specified webhook. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<EventListResult>> ListEventsNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public async Task<Response<ContainerRegistryWebhookEventListResult>> ListEventsNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateListEventsNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, webhookName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -817,9 +817,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventListResult value = default;
+                        ContainerRegistryWebhookEventListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = EventListResult.DeserializeEventListResult(document.RootElement);
+                        value = ContainerRegistryWebhookEventListResult.DeserializeContainerRegistryWebhookEventListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -829,20 +829,20 @@ namespace Azure.ResourceManager.ContainerRegistry
 
         /// <summary> Lists recent events for the specified webhook. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The Microsoft Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> The name of the resource group to which the container registry belongs. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="registryName"> The name of the container registry. </param>
         /// <param name="webhookName"> The name of the webhook. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="registryName"/> or <paramref name="webhookName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<EventListResult> ListEventsNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
+        public Response<ContainerRegistryWebhookEventListResult> ListEventsNextPage(string nextLink, string subscriptionId, string resourceGroupName, string registryName, string webhookName, CancellationToken cancellationToken = default)
         {
-            Core.Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Core.Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Core.Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Core.Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
-            Core.Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
+            Argument.AssertNotNull(nextLink, nameof(nextLink));
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(registryName, nameof(registryName));
+            Argument.AssertNotNullOrEmpty(webhookName, nameof(webhookName));
 
             using var message = CreateListEventsNextPageRequest(nextLink, subscriptionId, resourceGroupName, registryName, webhookName);
             _pipeline.Send(message, cancellationToken);
@@ -850,9 +850,9 @@ namespace Azure.ResourceManager.ContainerRegistry
             {
                 case 200:
                     {
-                        EventListResult value = default;
+                        ContainerRegistryWebhookEventListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = EventListResult.DeserializeEventListResult(document.RootElement);
+                        value = ContainerRegistryWebhookEventListResult.DeserializeContainerRegistryWebhookEventListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

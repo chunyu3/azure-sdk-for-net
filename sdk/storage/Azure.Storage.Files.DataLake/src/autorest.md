@@ -4,10 +4,12 @@ Run `dotnet build /t:GenerateCode` to generate code.
 
 ``` yaml
 input-file:
-    - https://github.com/Azure/azure-rest-api-specs/blob/e515b6251fdc21015282d2e84b85beec7c091763/specification/storage/data-plane/Azure.Storage.Files.DataLake/preview/2021-06-08/DataLakeStorage.json
+    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/5da3c08b92d05858b728b013b69502dc93485373/specification/storage/data-plane/Azure.Storage.Files.DataLake/stable/2023-05-03/DataLakeStorage.json
 generation1-convenience-client: true
 modelerfour:
     seal-single-value-enum-by-default: true
+
+helper-namespace: Azure.Storage.Common
 ```
 
 ### Don't include file system or path in path - we have direct URIs.
@@ -81,6 +83,10 @@ directive:
     $.Path.properties.isDirectory = {
         "type": "string"
     };
+    delete $.Path.properties.eTag;
+    $.Path.properties.etag = {
+        "type": "string"
+    };
 ```
 
 ### Fix append file consumes
@@ -147,4 +153,17 @@ directive:
       "None",
       "AES256"
     ];
+```
+
+### Rename LeaseAction
+``` yaml
+directive:
+- from: swagger-document
+  where: $.parameters
+  transform: >
+    delete $.LeaseAction["x-ms-enum"];
+    $.LeaseAction["x-ms-enum"] = {
+        "name": "DataLakeLeaseAction",
+        "modelAsString": false
+    };
 ```

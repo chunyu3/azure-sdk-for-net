@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
@@ -15,21 +14,24 @@ namespace Azure.Containers.ContainerRegistry
     {
         internal static ManifestList DeserializeManifestList(JsonElement element)
         {
-            Optional<string> mediaType = default;
-            Optional<IReadOnlyList<ManifestListAttributes>> manifests = default;
-            Optional<int> schemaVersion = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string mediaType = default;
+            IReadOnlyList<ManifestListAttributes> manifests = default;
+            int? schemaVersion = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("mediaType"))
+                if (property.NameEquals("mediaType"u8))
                 {
                     mediaType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("manifests"))
+                if (property.NameEquals("manifests"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ManifestListAttributes> array = new List<ManifestListAttributes>();
@@ -40,18 +42,17 @@ namespace Azure.Containers.ContainerRegistry
                     manifests = array;
                     continue;
                 }
-                if (property.NameEquals("schemaVersion"))
+                if (property.NameEquals("schemaVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     schemaVersion = property.Value.GetInt32();
                     continue;
                 }
             }
-            return new ManifestList(Optional.ToNullable(schemaVersion), mediaType.Value, Optional.ToList(manifests));
+            return new ManifestList(schemaVersion, mediaType, manifests ?? new ChangeTrackingList<ManifestListAttributes>());
         }
     }
 }

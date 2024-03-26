@@ -6,61 +6,139 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
-    public partial class WebClientCertificateAuthentication : IUtf8JsonSerializable
+    public partial class WebClientCertificateAuthentication : IUtf8JsonSerializable, IJsonModel<WebClientCertificateAuthentication>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<WebClientCertificateAuthentication>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<WebClientCertificateAuthentication>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<WebClientCertificateAuthentication>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WebClientCertificateAuthentication)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("pfx");
-            writer.WriteObjectValue(Pfx);
-            writer.WritePropertyName("password");
-            writer.WriteObjectValue(Password);
-            writer.WritePropertyName("url");
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(Uri);
-#else
-            JsonSerializer.Serialize(writer, JsonDocument.Parse(Uri.ToString()).RootElement);
-#endif
-            writer.WritePropertyName("authenticationType");
+            writer.WritePropertyName("pfx"u8);
+            JsonSerializer.Serialize(writer, Pfx);
+            writer.WritePropertyName("password"u8);
+            JsonSerializer.Serialize(writer, Password);
+            writer.WritePropertyName("url"u8);
+            JsonSerializer.Serialize(writer, Uri);
+            writer.WritePropertyName("authenticationType"u8);
             writer.WriteStringValue(AuthenticationType.ToString());
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static WebClientCertificateAuthentication DeserializeWebClientCertificateAuthentication(JsonElement element)
+        WebClientCertificateAuthentication IJsonModel<WebClientCertificateAuthentication>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            SecretBase pfx = default;
-            SecretBase password = default;
-            BinaryData url = default;
+            var format = options.Format == "W" ? ((IPersistableModel<WebClientCertificateAuthentication>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WebClientCertificateAuthentication)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWebClientCertificateAuthentication(document.RootElement, options);
+        }
+
+        internal static WebClientCertificateAuthentication DeserializeWebClientCertificateAuthentication(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataFactorySecret pfx = default;
+            DataFactorySecret password = default;
+            DataFactoryElement<string> url = default;
             WebAuthenticationType authenticationType = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("pfx"))
+                if (property.NameEquals("pfx"u8))
                 {
-                    pfx = SecretBase.DeserializeSecretBase(property.Value);
+                    pfx = JsonSerializer.Deserialize<DataFactorySecret>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("password"))
+                if (property.NameEquals("password"u8))
                 {
-                    password = SecretBase.DeserializeSecretBase(property.Value);
+                    password = JsonSerializer.Deserialize<DataFactorySecret>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("url"))
+                if (property.NameEquals("url"u8))
                 {
-                    url = BinaryData.FromString(property.Value.GetRawText());
+                    url = JsonSerializer.Deserialize<DataFactoryElement<string>>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("authenticationType"))
+                if (property.NameEquals("authenticationType"u8))
                 {
                     authenticationType = new WebAuthenticationType(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new WebClientCertificateAuthentication(url, authenticationType, pfx, password);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new WebClientCertificateAuthentication(url, authenticationType, serializedAdditionalRawData, pfx, password);
         }
+
+        BinaryData IPersistableModel<WebClientCertificateAuthentication>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WebClientCertificateAuthentication>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(WebClientCertificateAuthentication)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        WebClientCertificateAuthentication IPersistableModel<WebClientCertificateAuthentication>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WebClientCertificateAuthentication>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeWebClientCertificateAuthentication(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WebClientCertificateAuthentication)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<WebClientCertificateAuthentication>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

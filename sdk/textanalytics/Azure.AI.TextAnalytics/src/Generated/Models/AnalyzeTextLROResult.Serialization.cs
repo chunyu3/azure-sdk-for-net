@@ -5,9 +5,7 @@
 
 #nullable disable
 
-using System;
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
@@ -17,26 +15,31 @@ namespace Azure.AI.TextAnalytics.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("kind");
+            writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind.ToString());
             if (Optional.IsDefined(TaskName))
             {
-                writer.WritePropertyName("taskName");
+                writer.WritePropertyName("taskName"u8);
                 writer.WriteStringValue(TaskName);
             }
-            writer.WritePropertyName("lastUpdateDateTime");
+            writer.WritePropertyName("lastUpdateDateTime"u8);
             writer.WriteStringValue(LastUpdateDateTime, "O");
-            writer.WritePropertyName("status");
+            writer.WritePropertyName("status"u8);
             writer.WriteStringValue(Status.ToString());
             writer.WriteEndObject();
         }
 
         internal static AnalyzeTextLROResult DeserializeAnalyzeTextLROResult(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("kind", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
+                    case "AbstractiveSummarizationLROResults": return AbstractiveSummarizationLROResult.DeserializeAbstractiveSummarizationLROResult(element);
                     case "CustomEntityRecognitionLROResults": return CustomEntityRecognitionLROResult.DeserializeCustomEntityRecognitionLROResult(element);
                     case "CustomMultiLabelClassificationLROResults": return CustomMultiLabelClassificationLROResult.DeserializeCustomMultiLabelClassificationLROResult(element);
                     case "CustomSingleLabelClassificationLROResults": return CustomSingleLabelClassificationLROResult.DeserializeCustomSingleLabelClassificationLROResult(element);
@@ -49,34 +52,7 @@ namespace Azure.AI.TextAnalytics.Models
                     case "SentimentAnalysisLROResults": return SentimentLROResult.DeserializeSentimentLROResult(element);
                 }
             }
-            AnalyzeTextLROResultsKind kind = default;
-            Optional<string> taskName = default;
-            DateTimeOffset lastUpdateDateTime = default;
-            TextAnalyticsOperationStatus status = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals("kind"))
-                {
-                    kind = new AnalyzeTextLROResultsKind(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("taskName"))
-                {
-                    taskName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("lastUpdateDateTime"))
-                {
-                    lastUpdateDateTime = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("status"))
-                {
-                    status = new TextAnalyticsOperationStatus(property.Value.GetString());
-                    continue;
-                }
-            }
-            return new AnalyzeTextLROResult(lastUpdateDateTime, status, kind, taskName.Value);
+            return UnknownAnalyzeTextLROResult.DeserializeUnknownAnalyzeTextLROResult(element);
         }
     }
 }

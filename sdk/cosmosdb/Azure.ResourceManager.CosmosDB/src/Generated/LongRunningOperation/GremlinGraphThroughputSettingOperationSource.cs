@@ -9,9 +9,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.CosmosDB
 {
@@ -35,18 +33,18 @@ namespace Azure.ResourceManager.CosmosDB
         GremlinGraphThroughputSettingResource IOperationSource<GremlinGraphThroughputSettingResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
             using var document = JsonDocument.Parse(response.ContentStream);
-            var data = ScrubId(ThroughputSettingsData.DeserializeThroughputSettingsData(document.RootElement));
+            var data = ScrubId(ThroughputSettingData.DeserializeThroughputSettingData(document.RootElement));
             return new GremlinGraphThroughputSettingResource(_client, data);
         }
 
         async ValueTask<GremlinGraphThroughputSettingResource> IOperationSource<GremlinGraphThroughputSettingResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
             using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = ScrubId(ThroughputSettingsData.DeserializeThroughputSettingsData(document.RootElement));
+            var data = ScrubId(ThroughputSettingData.DeserializeThroughputSettingData(document.RootElement));
             return new GremlinGraphThroughputSettingResource(_client, data);
         }
 
-        private ThroughputSettingsData ScrubId(ThroughputSettingsData data)
+        private ThroughputSettingData ScrubId(ThroughputSettingData data)
         {
             if (data.Id.ResourceType == GremlinGraphThroughputSettingResource.ResourceType)
                 return data;
@@ -58,14 +56,16 @@ namespace Azure.ResourceManager.CosmosDB
                 GetName("databaseName", data.Id),
                 GetName("graphName", data.Id));
 
-            return new ThroughputSettingsData(
+            return new ThroughputSettingData(
                 newId,
                 newId.Name,
                 newId.ResourceType,
                 data.SystemData,
                 data.Tags,
                 data.Location,
-                data.Resource);
+                data.Resource,
+                data.Identity,
+                null);
         }
 
         private string GetName(string param, ResourceIdentifier id)

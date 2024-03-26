@@ -15,12 +15,12 @@ namespace Azure.AI.FormRecognizer.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("targetResourceId");
+            writer.WritePropertyName("targetResourceId"u8);
             writer.WriteStringValue(TargetResourceId);
-            writer.WritePropertyName("targetResourceRegion");
+            writer.WritePropertyName("targetResourceRegion"u8);
             writer.WriteStringValue(TargetResourceRegion);
-            writer.WritePropertyName("copyAuthorization");
-            writer.WriteObjectValue(CopyAuthorization);
+            writer.WritePropertyName("copyAuthorization"u8);
+            writer.WriteObjectValue<CopyAuthorizationResult>(CopyAuthorization);
             writer.WriteEndObject();
         }
     }

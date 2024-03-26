@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> SAP Business Warehouse Open Hub Destination Linked Service. </summary>
-    public partial class SapOpenHubLinkedService : LinkedService
+    public partial class SapOpenHubLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of SapOpenHubLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapOpenHubLinkedService"/>. </summary>
         public SapOpenHubLinkedService()
         {
             LinkedServiceType = "SapOpenHub";
         }
 
-        /// <summary> Initializes a new instance of SapOpenHubLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapOpenHubLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -32,16 +33,12 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="language"> Language of the BW system where the open hub destination is located. The default value is EN. Type: string (or Expression with resultType string). </param>
         /// <param name="systemId"> SystemID of the SAP system where the table is located. Type: string (or Expression with resultType string). </param>
         /// <param name="userName"> Username to access the SAP BW server where the open hub destination is located. Type: string (or Expression with resultType string). </param>
-        /// <param name="password">
-        /// Password to access the SAP BW server where the open hub destination is located.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="password"> Password to access the SAP BW server where the open hub destination is located. </param>
         /// <param name="messageServer"> The hostname of the SAP Message Server. Type: string (or Expression with resultType string). </param>
         /// <param name="messageServerService"> The service name or port number of the Message Server. Type: string (or Expression with resultType string). </param>
         /// <param name="logonGroup"> The Logon Group for the SAP System. Type: string (or Expression with resultType string). </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal SapOpenHubLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData server, BinaryData systemNumber, BinaryData clientId, BinaryData language, BinaryData systemId, BinaryData userName, SecretBase password, BinaryData messageServer, BinaryData messageServerService, BinaryData logonGroup, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal SapOpenHubLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> server, DataFactoryElement<string> systemNumber, DataFactoryElement<string> clientId, DataFactoryElement<string> language, DataFactoryElement<string> systemId, DataFactoryElement<string> userName, DataFactorySecret password, DataFactoryElement<string> messageServer, DataFactoryElement<string> messageServerService, DataFactoryElement<string> logonGroup, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Server = server;
             SystemNumber = systemNumber;
@@ -58,30 +55,26 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> Host name of the SAP BW instance where the open hub destination is located. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Server { get; set; }
+        public DataFactoryElement<string> Server { get; set; }
         /// <summary> System number of the BW system where the open hub destination is located. (Usually a two-digit decimal number represented as a string.) Type: string (or Expression with resultType string). </summary>
-        public BinaryData SystemNumber { get; set; }
+        public DataFactoryElement<string> SystemNumber { get; set; }
         /// <summary> Client ID of the client on the BW system where the open hub destination is located. (Usually a three-digit decimal number represented as a string) Type: string (or Expression with resultType string). </summary>
-        public BinaryData ClientId { get; set; }
+        public DataFactoryElement<string> ClientId { get; set; }
         /// <summary> Language of the BW system where the open hub destination is located. The default value is EN. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Language { get; set; }
+        public DataFactoryElement<string> Language { get; set; }
         /// <summary> SystemID of the SAP system where the table is located. Type: string (or Expression with resultType string). </summary>
-        public BinaryData SystemId { get; set; }
+        public DataFactoryElement<string> SystemId { get; set; }
         /// <summary> Username to access the SAP BW server where the open hub destination is located. Type: string (or Expression with resultType string). </summary>
-        public BinaryData UserName { get; set; }
-        /// <summary>
-        /// Password to access the SAP BW server where the open hub destination is located.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
+        public DataFactoryElement<string> UserName { get; set; }
+        /// <summary> Password to access the SAP BW server where the open hub destination is located. </summary>
+        public DataFactorySecret Password { get; set; }
         /// <summary> The hostname of the SAP Message Server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData MessageServer { get; set; }
+        public DataFactoryElement<string> MessageServer { get; set; }
         /// <summary> The service name or port number of the Message Server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData MessageServerService { get; set; }
+        public DataFactoryElement<string> MessageServerService { get; set; }
         /// <summary> The Logon Group for the SAP System. Type: string (or Expression with resultType string). </summary>
-        public BinaryData LogonGroup { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> LogonGroup { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

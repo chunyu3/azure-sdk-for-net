@@ -7,27 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> File system linked service. </summary>
-    public partial class FileServerLinkedService : LinkedService
+    public partial class FileServerLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of FileServerLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="FileServerLinkedService"/>. </summary>
         /// <param name="host"> Host name of the server. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="host"/> is null. </exception>
-        public FileServerLinkedService(BinaryData host)
+        public FileServerLinkedService(DataFactoryElement<string> host)
         {
-            if (host == null)
-            {
-                throw new ArgumentNullException(nameof(host));
-            }
+            Argument.AssertNotNull(host, nameof(host));
 
             Host = host;
             LinkedServiceType = "FileServer";
         }
 
-        /// <summary> Initializes a new instance of FileServerLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="FileServerLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -36,13 +34,9 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="host"> Host name of the server. Type: string (or Expression with resultType string). </param>
         /// <param name="userId"> User ID to logon the server. Type: string (or Expression with resultType string). </param>
-        /// <param name="password">
-        /// Password to logon the server.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal FileServerLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData host, BinaryData userId, SecretBase password, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="password"> Password to logon the server. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal FileServerLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> host, DataFactoryElement<string> userId, DataFactorySecret password, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Host = host;
             UserId = userId;
@@ -51,17 +45,18 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "FileServer";
         }
 
+        /// <summary> Initializes a new instance of <see cref="FileServerLinkedService"/> for deserialization. </summary>
+        internal FileServerLinkedService()
+        {
+        }
+
         /// <summary> Host name of the server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Host { get; set; }
+        public DataFactoryElement<string> Host { get; set; }
         /// <summary> User ID to logon the server. Type: string (or Expression with resultType string). </summary>
-        public BinaryData UserId { get; set; }
-        /// <summary>
-        /// Password to logon the server.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> UserId { get; set; }
+        /// <summary> Password to logon the server. </summary>
+        public DataFactorySecret Password { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

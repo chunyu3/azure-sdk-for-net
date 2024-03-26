@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.AlertsManagement.Models;
@@ -12,60 +13,71 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AlertsManagement
 {
-    /// <summary> A class representing the AlertProcessingRule data model. </summary>
+    /// <summary>
+    /// A class representing the AlertProcessingRule data model.
+    /// Alert processing rule object containing target scopes, conditions and scheduling logic.
+    /// </summary>
     public partial class AlertProcessingRuleData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of AlertProcessingRuleData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="AlertProcessingRuleData"/>. </summary>
         /// <param name="location"> The location. </param>
         public AlertProcessingRuleData(AzureLocation location) : base(location)
         {
-            Scopes = new ChangeTrackingList<string>();
-            Conditions = new ChangeTrackingList<AlertProcessingRuleCondition>();
-            Actions = new ChangeTrackingList<AlertProcessingRuleAction>();
         }
 
-        /// <summary> Initializes a new instance of AlertProcessingRuleData. </summary>
+        /// <summary> Initializes a new instance of <see cref="AlertProcessingRuleData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="tags"> The tags. </param>
         /// <param name="location"> The location. </param>
-        /// <param name="scopes"> Scopes on which alert processing rule will apply. </param>
-        /// <param name="conditions"> Conditions on which alerts will be filtered. </param>
-        /// <param name="schedule"> Scheduling for alert processing rule. </param>
-        /// <param name="actions">
-        /// Actions to be applied.
-        /// Please note <see cref="AlertProcessingRuleAction"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AddActionGroups"/> and <see cref="RemoveAllActionGroups"/>.
-        /// </param>
-        /// <param name="description"> Description of alert processing rule. </param>
-        /// <param name="enabled"> Indicates if the given alert processing rule is enabled or disabled. </param>
-        internal AlertProcessingRuleData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, IList<string> scopes, IList<AlertProcessingRuleCondition> conditions, AlertProcessingRuleSchedule schedule, IList<AlertProcessingRuleAction> actions, string description, bool? enabled) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="properties"> Alert processing rule properties. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal AlertProcessingRuleData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, AlertProcessingRuleProperties properties, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
-            Scopes = scopes;
-            Conditions = conditions;
-            Schedule = schedule;
-            Actions = actions;
-            Description = description;
-            Enabled = enabled;
+            Properties = properties;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Scopes on which alert processing rule will apply. </summary>
-        public IList<string> Scopes { get; }
-        /// <summary> Conditions on which alerts will be filtered. </summary>
-        public IList<AlertProcessingRuleCondition> Conditions { get; }
-        /// <summary> Scheduling for alert processing rule. </summary>
-        public AlertProcessingRuleSchedule Schedule { get; set; }
-        /// <summary>
-        /// Actions to be applied.
-        /// Please note <see cref="AlertProcessingRuleAction"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AddActionGroups"/> and <see cref="RemoveAllActionGroups"/>.
-        /// </summary>
-        public IList<AlertProcessingRuleAction> Actions { get; }
-        /// <summary> Description of alert processing rule. </summary>
-        public string Description { get; set; }
-        /// <summary> Indicates if the given alert processing rule is enabled or disabled. </summary>
-        public bool? Enabled { get; set; }
+        /// <summary> Initializes a new instance of <see cref="AlertProcessingRuleData"/> for deserialization. </summary>
+        internal AlertProcessingRuleData()
+        {
+        }
+
+        /// <summary> Alert processing rule properties. </summary>
+        public AlertProcessingRuleProperties Properties { get; set; }
     }
 }

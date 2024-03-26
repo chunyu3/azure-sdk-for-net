@@ -15,11 +15,11 @@ namespace Azure.Monitor.Query.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("requests");
+            writer.WritePropertyName("requests"u8);
             writer.WriteStartArray();
             foreach (var item in Requests)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<BatchQueryRequest>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();

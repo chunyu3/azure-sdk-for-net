@@ -17,47 +17,50 @@ namespace Azure.Analytics.Synapse.ManagedPrivateEndpoints.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Properties))
             {
-                writer.WritePropertyName("properties");
-                writer.WriteObjectValue(Properties);
+                writer.WritePropertyName("properties"u8);
+                writer.WriteObjectValue<ManagedPrivateEndpointProperties>(Properties);
             }
             writer.WriteEndObject();
         }
 
         internal static ManagedPrivateEndpoint DeserializeManagedPrivateEndpoint(JsonElement element)
         {
-            Optional<string> id = default;
-            Optional<string> name = default;
-            Optional<string> type = default;
-            Optional<ManagedPrivateEndpointProperties> properties = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string id = default;
+            string name = default;
+            string type = default;
+            ManagedPrivateEndpointProperties properties = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     properties = ManagedPrivateEndpointProperties.DeserializeManagedPrivateEndpointProperties(property.Value);
                     continue;
                 }
             }
-            return new ManagedPrivateEndpoint(id.Value, name.Value, type.Value, properties.Value);
+            return new ManagedPrivateEndpoint(id, name, type, properties);
         }
     }
 }

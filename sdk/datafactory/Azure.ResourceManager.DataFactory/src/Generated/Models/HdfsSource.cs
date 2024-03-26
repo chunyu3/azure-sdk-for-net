@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity HDFS source. </summary>
-    public partial class HdfsSource : CopySource
+    public partial class HdfsSource : CopyActivitySource
     {
-        /// <summary> Initializes a new instance of HdfsSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="HdfsSource"/>. </summary>
         public HdfsSource()
         {
             CopySourceType = "HdfsSource";
         }
 
-        /// <summary> Initializes a new instance of HdfsSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="HdfsSource"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -28,7 +29,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="recursive"> If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression with resultType boolean). </param>
         /// <param name="distcpSettings"> Specifies Distcp-related settings. </param>
-        internal HdfsSource(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData recursive, DistcpSettings distcpSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal HdfsSource(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<bool> recursive, DistcpSettings distcpSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             Recursive = recursive;
             DistcpSettings = distcpSettings;
@@ -36,7 +37,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression with resultType boolean). </summary>
-        public BinaryData Recursive { get; set; }
+        public DataFactoryElement<bool> Recursive { get; set; }
         /// <summary> Specifies Distcp-related settings. </summary>
         public DistcpSettings DistcpSettings { get; set; }
     }

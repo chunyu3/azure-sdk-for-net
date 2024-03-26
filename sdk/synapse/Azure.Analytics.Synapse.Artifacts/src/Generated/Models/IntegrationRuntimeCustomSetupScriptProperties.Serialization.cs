@@ -20,47 +20,50 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(BlobContainerUri))
             {
-                writer.WritePropertyName("blobContainerUri");
+                writer.WritePropertyName("blobContainerUri"u8);
                 writer.WriteStringValue(BlobContainerUri);
             }
             if (Optional.IsDefined(SasToken))
             {
-                writer.WritePropertyName("sasToken");
-                writer.WriteObjectValue(SasToken);
+                writer.WritePropertyName("sasToken"u8);
+                writer.WriteObjectValue<SecureString>(SasToken);
             }
             writer.WriteEndObject();
         }
 
         internal static IntegrationRuntimeCustomSetupScriptProperties DeserializeIntegrationRuntimeCustomSetupScriptProperties(JsonElement element)
         {
-            Optional<string> blobContainerUri = default;
-            Optional<SecureString> sasToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string blobContainerUri = default;
+            SecureString sasToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("blobContainerUri"))
+                if (property.NameEquals("blobContainerUri"u8))
                 {
                     blobContainerUri = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sasToken"))
+                if (property.NameEquals("sasToken"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sasToken = SecureString.DeserializeSecureString(property.Value);
                     continue;
                 }
             }
-            return new IntegrationRuntimeCustomSetupScriptProperties(blobContainerUri.Value, sasToken.Value);
+            return new IntegrationRuntimeCustomSetupScriptProperties(blobContainerUri, sasToken);
         }
 
         internal partial class IntegrationRuntimeCustomSetupScriptPropertiesConverter : JsonConverter<IntegrationRuntimeCustomSetupScriptProperties>
         {
             public override void Write(Utf8JsonWriter writer, IntegrationRuntimeCustomSetupScriptProperties model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<IntegrationRuntimeCustomSetupScriptProperties>(model);
             }
             public override IntegrationRuntimeCustomSetupScriptProperties Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

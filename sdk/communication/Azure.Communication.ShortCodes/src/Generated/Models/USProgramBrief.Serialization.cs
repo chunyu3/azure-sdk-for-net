@@ -17,111 +17,113 @@ namespace Azure.Communication.ShortCodes.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("id");
+            writer.WritePropertyName("id"u8);
             writer.WriteStringValue(Id);
             if (Optional.IsDefined(Status))
             {
-                writer.WritePropertyName("status");
+                writer.WritePropertyName("status"u8);
                 writer.WriteStringValue(Status.Value.ToString());
             }
             if (Optional.IsDefined(Number))
             {
-                writer.WritePropertyName("number");
+                writer.WritePropertyName("number"u8);
                 writer.WriteStringValue(Number);
             }
             if (Optional.IsCollectionDefined(ReviewNotes))
             {
-                writer.WritePropertyName("reviewNotes");
+                writer.WritePropertyName("reviewNotes"u8);
                 writer.WriteStartArray();
                 foreach (var item in ReviewNotes)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ReviewNote>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(Costs))
             {
-                writer.WritePropertyName("costs");
+                writer.WritePropertyName("costs"u8);
                 writer.WriteStartArray();
                 foreach (var item in Costs)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ShortCodeCost>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(SubmissionDate))
             {
-                writer.WritePropertyName("submissionDate");
+                writer.WritePropertyName("submissionDate"u8);
                 writer.WriteStringValue(SubmissionDate.Value, "O");
             }
             if (Optional.IsDefined(StatusUpdatedDate))
             {
-                writer.WritePropertyName("statusUpdatedDate");
+                writer.WritePropertyName("statusUpdatedDate"u8);
                 writer.WriteStringValue(StatusUpdatedDate.Value, "O");
             }
             if (Optional.IsDefined(ProgramDetails))
             {
-                writer.WritePropertyName("programDetails");
-                writer.WriteObjectValue(ProgramDetails);
+                writer.WritePropertyName("programDetails"u8);
+                writer.WriteObjectValue<ProgramDetails>(ProgramDetails);
             }
             if (Optional.IsDefined(CompanyInformation))
             {
-                writer.WritePropertyName("companyInformation");
-                writer.WriteObjectValue(CompanyInformation);
+                writer.WritePropertyName("companyInformation"u8);
+                writer.WriteObjectValue<CompanyInformation>(CompanyInformation);
             }
             if (Optional.IsDefined(MessageDetails))
             {
-                writer.WritePropertyName("messageDetails");
-                writer.WriteObjectValue(MessageDetails);
+                writer.WritePropertyName("messageDetails"u8);
+                writer.WriteObjectValue<MessageDetails>(MessageDetails);
             }
             if (Optional.IsDefined(TrafficDetails))
             {
-                writer.WritePropertyName("trafficDetails");
-                writer.WriteObjectValue(TrafficDetails);
+                writer.WritePropertyName("trafficDetails"u8);
+                writer.WriteObjectValue<TrafficDetails>(TrafficDetails);
             }
             writer.WriteEndObject();
         }
 
         internal static USProgramBrief DeserializeUSProgramBrief(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             Guid id = default;
-            Optional<ProgramBriefStatus> status = default;
-            Optional<string> number = default;
-            Optional<IList<ReviewNote>> reviewNotes = default;
-            Optional<IList<ShortCodeCost>> costs = default;
-            Optional<DateTimeOffset> submissionDate = default;
-            Optional<DateTimeOffset> statusUpdatedDate = default;
-            Optional<ProgramDetails> programDetails = default;
-            Optional<CompanyInformation> companyInformation = default;
-            Optional<MessageDetails> messageDetails = default;
-            Optional<TrafficDetails> trafficDetails = default;
+            ProgramBriefStatus? status = default;
+            string number = default;
+            IList<ReviewNote> reviewNotes = default;
+            IList<ShortCodeCost> costs = default;
+            DateTimeOffset? submissionDate = default;
+            DateTimeOffset? statusUpdatedDate = default;
+            ProgramDetails programDetails = default;
+            CompanyInformation companyInformation = default;
+            MessageDetails messageDetails = default;
+            TrafficDetails trafficDetails = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetGuid();
                     continue;
                 }
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     status = new ProgramBriefStatus(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("number"))
+                if (property.NameEquals("number"u8))
                 {
                     number = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("reviewNotes"))
+                if (property.NameEquals("reviewNotes"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ReviewNote> array = new List<ReviewNote>();
@@ -132,11 +134,10 @@ namespace Azure.Communication.ShortCodes.Models
                     reviewNotes = array;
                     continue;
                 }
-                if (property.NameEquals("costs"))
+                if (property.NameEquals("costs"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ShortCodeCost> array = new List<ShortCodeCost>();
@@ -147,68 +148,73 @@ namespace Azure.Communication.ShortCodes.Models
                     costs = array;
                     continue;
                 }
-                if (property.NameEquals("submissionDate"))
+                if (property.NameEquals("submissionDate"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     submissionDate = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("statusUpdatedDate"))
+                if (property.NameEquals("statusUpdatedDate"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     statusUpdatedDate = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("programDetails"))
+                if (property.NameEquals("programDetails"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     programDetails = ProgramDetails.DeserializeProgramDetails(property.Value);
                     continue;
                 }
-                if (property.NameEquals("companyInformation"))
+                if (property.NameEquals("companyInformation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     companyInformation = CompanyInformation.DeserializeCompanyInformation(property.Value);
                     continue;
                 }
-                if (property.NameEquals("messageDetails"))
+                if (property.NameEquals("messageDetails"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     messageDetails = MessageDetails.DeserializeMessageDetails(property.Value);
                     continue;
                 }
-                if (property.NameEquals("trafficDetails"))
+                if (property.NameEquals("trafficDetails"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     trafficDetails = TrafficDetails.DeserializeTrafficDetails(property.Value);
                     continue;
                 }
             }
-            return new USProgramBrief(id, Optional.ToNullable(status), number.Value, Optional.ToList(reviewNotes), Optional.ToList(costs), Optional.ToNullable(submissionDate), Optional.ToNullable(statusUpdatedDate), programDetails.Value, companyInformation.Value, messageDetails.Value, trafficDetails.Value);
+            return new USProgramBrief(
+                id,
+                status,
+                number,
+                reviewNotes ?? new ChangeTrackingList<ReviewNote>(),
+                costs ?? new ChangeTrackingList<ShortCodeCost>(),
+                submissionDate,
+                statusUpdatedDate,
+                programDetails,
+                companyInformation,
+                messageDetails,
+                trafficDetails);
         }
     }
 }

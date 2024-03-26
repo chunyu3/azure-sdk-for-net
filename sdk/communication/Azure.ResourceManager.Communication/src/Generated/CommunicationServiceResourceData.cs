@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Communication.Models;
@@ -12,23 +13,59 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Communication
 {
-    /// <summary> A class representing the CommunicationServiceResource data model. </summary>
+    /// <summary>
+    /// A class representing the CommunicationServiceResource data model.
+    /// A class representing a CommunicationService resource.
+    /// </summary>
     public partial class CommunicationServiceResourceData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of CommunicationServiceResourceData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="CommunicationServiceResourceData"/>. </summary>
         /// <param name="location"> The location. </param>
         public CommunicationServiceResourceData(AzureLocation location) : base(location)
         {
             LinkedDomains = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of CommunicationServiceResourceData. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommunicationServiceResourceData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="tags"> The tags. </param>
         /// <param name="location"> The location. </param>
+        /// <param name="identity"> Managed service identity (system assigned and/or user assigned identities). </param>
         /// <param name="provisioningState"> Provisioning state of the resource. </param>
         /// <param name="hostName"> FQDN of the CommunicationService instance. </param>
         /// <param name="dataLocation"> The location where the communication service stores its data at rest. </param>
@@ -36,8 +73,10 @@ namespace Azure.ResourceManager.Communication
         /// <param name="version"> Version of the CommunicationService resource. Probably you need the same or higher version of client SDKs. </param>
         /// <param name="immutableResourceId"> The immutable resource Id of the communication service. </param>
         /// <param name="linkedDomains"> List of email Domain resource Ids. </param>
-        internal CommunicationServiceResourceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, CommunicationServicesProvisioningState? provisioningState, string hostName, string dataLocation, string notificationHubId, string version, string immutableResourceId, IList<string> linkedDomains) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal CommunicationServiceResourceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ManagedServiceIdentity identity, CommunicationServicesProvisioningState? provisioningState, string hostName, string dataLocation, ResourceIdentifier notificationHubId, string version, Guid? immutableResourceId, IList<string> linkedDomains, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
+            Identity = identity;
             ProvisioningState = provisioningState;
             HostName = hostName;
             DataLocation = dataLocation;
@@ -45,8 +84,16 @@ namespace Azure.ResourceManager.Communication
             Version = version;
             ImmutableResourceId = immutableResourceId;
             LinkedDomains = linkedDomains;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
+        /// <summary> Initializes a new instance of <see cref="CommunicationServiceResourceData"/> for deserialization. </summary>
+        internal CommunicationServiceResourceData()
+        {
+        }
+
+        /// <summary> Managed service identity (system assigned and/or user assigned identities). </summary>
+        public ManagedServiceIdentity Identity { get; set; }
         /// <summary> Provisioning state of the resource. </summary>
         public CommunicationServicesProvisioningState? ProvisioningState { get; }
         /// <summary> FQDN of the CommunicationService instance. </summary>
@@ -54,11 +101,11 @@ namespace Azure.ResourceManager.Communication
         /// <summary> The location where the communication service stores its data at rest. </summary>
         public string DataLocation { get; set; }
         /// <summary> Resource ID of an Azure Notification Hub linked to this resource. </summary>
-        public string NotificationHubId { get; }
+        public ResourceIdentifier NotificationHubId { get; }
         /// <summary> Version of the CommunicationService resource. Probably you need the same or higher version of client SDKs. </summary>
         public string Version { get; }
         /// <summary> The immutable resource Id of the communication service. </summary>
-        public string ImmutableResourceId { get; }
+        public Guid? ImmutableResourceId { get; }
         /// <summary> List of email Domain resource Ids. </summary>
         public IList<string> LinkedDomains { get; }
     }

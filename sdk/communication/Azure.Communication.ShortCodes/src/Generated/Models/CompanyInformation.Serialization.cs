@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Text.Json;
 using Azure.Core;
 
@@ -17,78 +18,84 @@ namespace Azure.Communication.ShortCodes.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             if (Optional.IsDefined(Url))
             {
-                writer.WritePropertyName("url");
-                writer.WriteStringValue(Url);
+                writer.WritePropertyName("url"u8);
+                writer.WriteStringValue(Url.AbsoluteUri);
             }
             if (Optional.IsDefined(Address))
             {
-                writer.WritePropertyName("address");
+                writer.WritePropertyName("address"u8);
                 writer.WriteStringValue(Address);
             }
             if (Optional.IsDefined(ContactInformation))
             {
-                writer.WritePropertyName("contactInformation");
-                writer.WriteObjectValue(ContactInformation);
+                writer.WritePropertyName("contactInformation"u8);
+                writer.WriteObjectValue<ContactInformation>(ContactInformation);
             }
             if (Optional.IsDefined(CustomerCareInformation))
             {
-                writer.WritePropertyName("customerCareInformation");
-                writer.WriteObjectValue(CustomerCareInformation);
+                writer.WritePropertyName("customerCareInformation"u8);
+                writer.WriteObjectValue<CustomerCareInformation>(CustomerCareInformation);
             }
             writer.WriteEndObject();
         }
 
         internal static CompanyInformation DeserializeCompanyInformation(JsonElement element)
         {
-            Optional<string> name = default;
-            Optional<string> url = default;
-            Optional<string> address = default;
-            Optional<ContactInformation> contactInformation = default;
-            Optional<CustomerCareInformation> customerCareInformation = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            Uri url = default;
+            string address = default;
+            ContactInformation contactInformation = default;
+            CustomerCareInformation customerCareInformation = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("url"))
+                if (property.NameEquals("url"u8))
                 {
-                    url = property.Value.GetString();
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    url = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("address"))
+                if (property.NameEquals("address"u8))
                 {
                     address = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("contactInformation"))
+                if (property.NameEquals("contactInformation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     contactInformation = ContactInformation.DeserializeContactInformation(property.Value);
                     continue;
                 }
-                if (property.NameEquals("customerCareInformation"))
+                if (property.NameEquals("customerCareInformation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     customerCareInformation = CustomerCareInformation.DeserializeCustomerCareInformation(property.Value);
                     continue;
                 }
             }
-            return new CompanyInformation(name.Value, url.Value, address.Value, contactInformation.Value, customerCareInformation.Value);
+            return new CompanyInformation(name, url, address, contactInformation, customerCareInformation);
         }
     }
 }

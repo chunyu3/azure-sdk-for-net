@@ -11,11 +11,10 @@ See the [Contributing guidelines](https://github.com/Azure/azure-sdk-for-net/blo
 ```yaml
 title: SearchServiceClient
 input-file:
- - https://github.com/Azure/azure-rest-api-specs/blob/d850f41f89530917000d8e6bb463f42bb745b930/specification/search/data-plane/Azure.Search/preview/2021-04-30-Preview/searchindex.json
- - https://github.com/Azure/azure-rest-api-specs/blob/d850f41f89530917000d8e6bb463f42bb745b930/specification/search/data-plane/Azure.Search/preview/2021-04-30-Preview/searchservice.json
+ - https://github.com/Azure/azure-rest-api-specs/blob/a0151afd7cd14913fc86cb793bde49c71122eb1e/specification/search/data-plane/Azure.Search/preview/2024-03-01-Preview/searchindex.json
+ - https://github.com/Azure/azure-rest-api-specs/blob/a0151afd7cd14913fc86cb793bde49c71122eb1e/specification/search/data-plane/Azure.Search/preview/2024-03-01-Preview/searchservice.json
 generation1-convenience-client: true
-modelerfour:
-    seal-single-value-enum-by-default: true
+deserialize-null-collection-as-null-value: true
 ```
 
 ## Release hacks
@@ -26,6 +25,25 @@ directive:
 - remove-operation: Documents_SearchGet
 - remove-operation: Documents_SuggestGet
 ```
+
+### Suppress Abstract Base Class
+
+``` yaml
+suppress-abstract-base-class:
+- CharFilter
+- CognitiveServicesAccount
+- DataChangeDetectionPolicy
+- DataDeletionDetectionPolicy
+- LexicalAnalyzer
+- LexicalNormalizer
+- LexicalTokenizer
+- ScoringFunction
+- SearchIndexerDataIdentity
+- SearchIndexerSkill
+- Similarity
+- TokenFilter
+```
+
 
 ## CodeGen hacks
 These should eventually be fixed in the code generator.
@@ -63,15 +81,87 @@ directive:
     $.additionalProperties = true;
 ```
 
-### Rename one of SearchError definitions
+### Enable `RawVectorQuery.vector` as embedding field
 
-SearchError is duplicated between two swaggers, rename one of them
+```yaml
+directive:
+- from: searchindex.json
+  where: $.definitions.RawVectorQuery.properties.vector
+  transform: $["x-ms-embedding-vector"] = true;
+```
 
-``` yaml
+### Make `VectorSearchAlgorithmKind` internal
+
+```yaml
 directive:
 - from: searchservice.json
-  where: $.definitions.SearchError
-  transform: $["x-ms-client-name"] = "SearchServiceError"
+  where: $.definitions.VectorSearchAlgorithmKind
+  transform: $["x-accessibility"] = "internal"
+```
+
+### Make `VectorSearchCompressionKind` internal
+
+```yaml
+directive:
+- from: searchservice.json
+  where: $.definitions.VectorSearchCompressionKind
+  transform: $["x-accessibility"] = "internal"
+```
+
+### Make `VectorSearchCompressionKind` internal
+
+```yaml
+directive:
+- from: searchservice.json
+  where: $.definitions.VectorSearchCompressionKind
+  transform: $["x-accessibility"] = "internal"
+```
+
+### Make `VectorQueryKind` internal
+
+```yaml
+directive:
+- from: searchindex.json
+  where: $.definitions.VectorQueryKind
+  transform: $["x-accessibility"] = "internal"
+```
+
+### Make `VectorSearchVectorizerKind` internal
+
+```yaml
+directive:
+- from: searchservice.json
+  where: $.definitions.VectorSearchVectorizerKind
+  transform: $["x-accessibility"] = "internal"
+```
+
+### Rename `RawVectorQuery` to `VectorizedQuery`
+
+```yaml
+directive:
+- from: searchindex.json
+  where: $.definitions.RawVectorQuery
+  transform: $["x-ms-client-name"] = "VectorizedQuery";
+```
+
+### Rename `PIIDetectionSkill.minimumPrecision` to `PIIDetectionSkill.MinPrecision`
+
+```yaml
+directive:
+  - from: searchservice.json
+    where: $.definitions.PIIDetectionSkill
+    transform: $.properties.minimumPrecision["x-ms-client-name"] = "MinPrecision";
+```
+
+### Rename `VectorQuery` property `K`
+
+ Rename `VectorQuery` property `K` to `KNearestNeighborsCount`
+
+```yaml
+directive:
+- from: searchindex.json
+  where: $.definitions.VectorQuery.properties.k
+  transform: $["x-ms-client-name"] = "KNearestNeighborsCount";
 ```
 
 ### Rename one of SearchMode definitions
@@ -300,6 +390,7 @@ directive:
           required: true,
           type: "string",
           enum: [ accept ],
+          "x-ms-enum": { "modelAsString": false },
           "x-ms-parameter-location": "method"
         });
       }
@@ -331,4 +422,18 @@ directive:
   from: swagger-document
   where: $.parameters.ClientRequestIdParameter
   transform: $["x-ms-parameter-location"] = "client";
+```
+
+## Seal single value enums
+
+Prevents the creation of single-value extensible enum in generated code. The following single-value enum will be generated as string constant.
+
+```yaml
+directive:
+  from: swagger-document
+  where: $.parameters.PreferHeaderParameter
+  transform: >
+    $["x-ms-enum"] = {
+      "modelAsString": false
+    }
 ```

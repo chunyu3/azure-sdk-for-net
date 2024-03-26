@@ -15,14 +15,14 @@ namespace Azure.AI.MetricsAdvisor.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("startTime");
+            writer.WritePropertyName("startTime"u8);
             writer.WriteStringValue(StartTime, "O");
-            writer.WritePropertyName("endTime");
+            writer.WritePropertyName("endTime"u8);
             writer.WriteStringValue(EndTime, "O");
             if (Optional.IsDefined(Filter))
             {
-                writer.WritePropertyName("filter");
-                writer.WriteObjectValue(Filter);
+                writer.WritePropertyName("filter"u8);
+                writer.WriteObjectValue<DetectionIncidentFilterCondition>(Filter);
             }
             writer.WriteEndObject();
         }

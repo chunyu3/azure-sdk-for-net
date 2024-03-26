@@ -12,25 +12,15 @@ namespace Azure.Containers.ContainerRegistry
     /// <summary> Properties of this repository. </summary>
     public partial class ContainerRepositoryProperties
     {
-        /// <summary> Initializes a new instance of ContainerRepositoryProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContainerRepositoryProperties"/>. </summary>
         /// <param name="registryLoginServer"> Registry login server name. This is likely to be similar to {registry-name}.azurecr.io. </param>
         /// <param name="name"> Image name. </param>
         /// <param name="createdOn"> Image created time. </param>
         /// <param name="lastUpdatedOn"> Image last update time. </param>
         /// <param name="manifestCount"> Number of the manifests. </param>
         /// <param name="tagCount"> Number of the tags. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="registryLoginServer"/> or <paramref name="name"/> is null. </exception>
         internal ContainerRepositoryProperties(string registryLoginServer, string name, DateTimeOffset createdOn, DateTimeOffset lastUpdatedOn, int manifestCount, int tagCount)
         {
-            if (registryLoginServer == null)
-            {
-                throw new ArgumentNullException(nameof(registryLoginServer));
-            }
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
             RegistryLoginServer = registryLoginServer;
             Name = name;
             CreatedOn = createdOn;
@@ -39,7 +29,7 @@ namespace Azure.Containers.ContainerRegistry
             TagCount = tagCount;
         }
 
-        /// <summary> Initializes a new instance of ContainerRepositoryProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="ContainerRepositoryProperties"/>. </summary>
         /// <param name="registryLoginServer"> Registry login server name. This is likely to be similar to {registry-name}.azurecr.io. </param>
         /// <param name="name"> Image name. </param>
         /// <param name="createdOn"> Image created time. </param>

@@ -34,6 +34,7 @@ namespace Azure.Core.TestFramework.Tests
             StringAssert.Contains("Expected some diagnostic scopes to be created other than the Azure.Core scopes", ex.Message);
         }
 
+#if NET5_0_OR_GREATER
         [Test]
         public void ThrowsWhenDuplicateDiagnosticScope_DirectAncestor()
         {
@@ -49,6 +50,7 @@ namespace Azure.Core.TestFramework.Tests
             InvalidOperationException ex = Assert.ThrowsAsync<InvalidOperationException>(async () => await client.DuplicateScopeAncestorAsync());
             StringAssert.Contains($"A scope has already started for event '{typeof(InvalidDiagnosticScopeTestClient).Name}.{nameof(client.DuplicateScopeAncestor)}'", ex.Message);
         }
+#endif
 
         [Test]
         public async Task DoesNotThrowWhenDuplicateDiagnosticScopeProperlyDisposed()
@@ -114,7 +116,8 @@ namespace Azure.Core.TestFramework.Tests
         {
             private DiagnosticScope CreateScope(string method)
             {
-                DiagnosticScopeFactory clientDiagnostics = new DiagnosticScopeFactory("Azure.Core.Tests", "random", true, false);
+                // intentionally does not suppress nested activities
+                DiagnosticScopeFactory clientDiagnostics = new DiagnosticScopeFactory("Azure.Core.Tests", "random", true, false, true);
                 string activityName = $"{typeof(InvalidDiagnosticScopeTestClient).Name}.{method}";
                 DiagnosticScope scope = clientDiagnostics.CreateScope(activityName);
                 return scope;
@@ -133,8 +136,8 @@ namespace Azure.Core.TestFramework.Tests
                     "Azure.Core.Http.Request",
                     new DiagnosticListener("Azure.Core"),
                     null,
-                    ActivityExtensions.CreateActivitySource("Azure.Core.Http"),
-                    DiagnosticScope.ActivityKind.Client,
+                    new ActivitySource("Azure.Core.Http"),
+                    ActivityKind.Client,
                     false);
                 coreScope.Start();
             }

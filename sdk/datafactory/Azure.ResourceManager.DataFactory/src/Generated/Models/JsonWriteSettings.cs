@@ -7,29 +7,30 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Json write settings. </summary>
     public partial class JsonWriteSettings : FormatWriteSettings
     {
-        /// <summary> Initializes a new instance of JsonWriteSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="JsonWriteSettings"/>. </summary>
         public JsonWriteSettings()
         {
             FormatWriteSettingsType = "JsonWriteSettings";
         }
 
-        /// <summary> Initializes a new instance of JsonWriteSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="JsonWriteSettings"/>. </summary>
         /// <param name="formatWriteSettingsType"> The write setting type. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="filePattern"> File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default value is &apos;setOfObjects&apos;. It is case-sensitive. </param>
-        internal JsonWriteSettings(string formatWriteSettingsType, IDictionary<string, BinaryData> additionalProperties, BinaryData filePattern) : base(formatWriteSettingsType, additionalProperties)
+        /// <param name="filePattern"> File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default value is 'setOfObjects'. It is case-sensitive. </param>
+        internal JsonWriteSettings(string formatWriteSettingsType, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> filePattern) : base(formatWriteSettingsType, additionalProperties)
         {
             FilePattern = filePattern;
             FormatWriteSettingsType = formatWriteSettingsType ?? "JsonWriteSettings";
         }
 
-        /// <summary> File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default value is &apos;setOfObjects&apos;. It is case-sensitive. </summary>
-        public BinaryData FilePattern { get; set; }
+        /// <summary> File pattern of JSON. This setting controls the way a collection of JSON objects will be treated. The default value is 'setOfObjects'. It is case-sensitive. </summary>
+        public DataFactoryElement<string> FilePattern { get; set; }
     }
 }

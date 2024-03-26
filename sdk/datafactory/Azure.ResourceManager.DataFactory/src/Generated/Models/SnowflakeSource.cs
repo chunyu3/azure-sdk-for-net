@@ -7,19 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity snowflake source. </summary>
-    public partial class SnowflakeSource : CopySource
+    public partial class SnowflakeSource : CopyActivitySource
     {
-        /// <summary> Initializes a new instance of SnowflakeSource. </summary>
-        public SnowflakeSource()
+        /// <summary> Initializes a new instance of <see cref="SnowflakeSource"/>. </summary>
+        /// <param name="exportSettings"> Snowflake export settings. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="exportSettings"/> is null. </exception>
+        public SnowflakeSource(SnowflakeExportCopyCommand exportSettings)
         {
+            Argument.AssertNotNull(exportSettings, nameof(exportSettings));
+
+            ExportSettings = exportSettings;
             CopySourceType = "SnowflakeSource";
         }
 
-        /// <summary> Initializes a new instance of SnowflakeSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="SnowflakeSource"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -28,15 +34,20 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="query"> Snowflake Sql query. Type: string (or Expression with resultType string). </param>
         /// <param name="exportSettings"> Snowflake export settings. </param>
-        internal SnowflakeSource(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData query, SnowflakeExportCopyCommand exportSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal SnowflakeSource(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> query, SnowflakeExportCopyCommand exportSettings) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             Query = query;
             ExportSettings = exportSettings;
             CopySourceType = copySourceType ?? "SnowflakeSource";
         }
 
+        /// <summary> Initializes a new instance of <see cref="SnowflakeSource"/> for deserialization. </summary>
+        internal SnowflakeSource()
+        {
+        }
+
         /// <summary> Snowflake Sql query. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Query { get; set; }
+        public DataFactoryElement<string> Query { get; set; }
         /// <summary> Snowflake export settings. </summary>
         public SnowflakeExportCopyCommand ExportSettings { get; set; }
     }

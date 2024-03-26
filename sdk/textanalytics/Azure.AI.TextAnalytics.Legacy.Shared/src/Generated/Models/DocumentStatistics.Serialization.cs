@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy
 {
@@ -14,16 +13,20 @@ namespace Azure.AI.TextAnalytics.Legacy
     {
         internal static DocumentStatistics DeserializeDocumentStatistics(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             int charactersCount = default;
             int transactionsCount = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("charactersCount"))
+                if (property.NameEquals("charactersCount"u8))
                 {
                     charactersCount = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("transactionsCount"))
+                if (property.NameEquals("transactionsCount"u8))
                 {
                     transactionsCount = property.Value.GetInt32();
                     continue;

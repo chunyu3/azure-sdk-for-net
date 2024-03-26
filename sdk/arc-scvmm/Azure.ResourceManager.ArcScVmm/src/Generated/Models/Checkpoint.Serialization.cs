@@ -5,69 +5,151 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ArcScVmm.Models
 {
-    public partial class Checkpoint : IUtf8JsonSerializable
+    public partial class Checkpoint : IUtf8JsonSerializable, IJsonModel<Checkpoint>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<Checkpoint>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<Checkpoint>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<Checkpoint>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(Checkpoint)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(ParentCheckpointId))
             {
-                writer.WritePropertyName("parentCheckpointID");
+                writer.WritePropertyName("parentCheckpointID"u8);
                 writer.WriteStringValue(ParentCheckpointId);
             }
             if (Optional.IsDefined(CheckpointId))
             {
-                writer.WritePropertyName("checkpointID");
+                writer.WritePropertyName("checkpointID"u8);
                 writer.WriteStringValue(CheckpointId);
             }
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
+                writer.WritePropertyName("description"u8);
                 writer.WriteStringValue(Description);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static Checkpoint DeserializeCheckpoint(JsonElement element)
+        Checkpoint IJsonModel<Checkpoint>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> parentCheckpointID = default;
-            Optional<string> checkpointID = default;
-            Optional<string> name = default;
-            Optional<string> description = default;
+            var format = options.Format == "W" ? ((IPersistableModel<Checkpoint>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(Checkpoint)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeCheckpoint(document.RootElement, options);
+        }
+
+        internal static Checkpoint DeserializeCheckpoint(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string parentCheckpointId = default;
+            string checkpointId = default;
+            string name = default;
+            string description = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("parentCheckpointID"))
+                if (property.NameEquals("parentCheckpointID"u8))
                 {
-                    parentCheckpointID = property.Value.GetString();
+                    parentCheckpointId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("checkpointID"))
+                if (property.NameEquals("checkpointID"u8))
                 {
-                    checkpointID = property.Value.GetString();
+                    checkpointId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     description = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new Checkpoint(parentCheckpointID.Value, checkpointID.Value, name.Value, description.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new Checkpoint(parentCheckpointId, checkpointId, name, description, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<Checkpoint>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<Checkpoint>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(Checkpoint)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        Checkpoint IPersistableModel<Checkpoint>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<Checkpoint>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeCheckpoint(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(Checkpoint)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<Checkpoint>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

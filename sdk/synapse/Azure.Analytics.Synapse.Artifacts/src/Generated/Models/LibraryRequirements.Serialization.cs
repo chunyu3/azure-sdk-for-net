@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Content))
             {
-                writer.WritePropertyName("content");
+                writer.WritePropertyName("content"u8);
                 writer.WriteStringValue(Content);
             }
             if (Optional.IsDefined(Filename))
             {
-                writer.WritePropertyName("filename");
+                writer.WritePropertyName("filename"u8);
                 writer.WriteStringValue(Filename);
             }
             writer.WriteEndObject();
@@ -33,40 +33,43 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static LibraryRequirements DeserializeLibraryRequirements(JsonElement element)
         {
-            Optional<DateTimeOffset> time = default;
-            Optional<string> content = default;
-            Optional<string> filename = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? time = default;
+            string content = default;
+            string filename = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("time"))
+                if (property.NameEquals("time"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     time = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("content"))
+                if (property.NameEquals("content"u8))
                 {
                     content = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("filename"))
+                if (property.NameEquals("filename"u8))
                 {
                     filename = property.Value.GetString();
                     continue;
                 }
             }
-            return new LibraryRequirements(Optional.ToNullable(time), content.Value, filename.Value);
+            return new LibraryRequirements(time, content, filename);
         }
 
         internal partial class LibraryRequirementsConverter : JsonConverter<LibraryRequirements>
         {
             public override void Write(Utf8JsonWriter writer, LibraryRequirements model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LibraryRequirements>(model);
             }
             public override LibraryRequirements Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

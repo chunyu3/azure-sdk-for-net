@@ -7,36 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Amazon Marketplace Web Service linked service. </summary>
-    public partial class AmazonMwsLinkedService : LinkedService
+    public partial class AmazonMwsLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of AmazonMwsLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonMwsLinkedService"/>. </summary>
         /// <param name="endpoint"> The endpoint of the Amazon MWS server, (i.e. mws.amazonservices.com). </param>
         /// <param name="marketplaceId"> The Amazon Marketplace ID you want to retrieve data from. To retrieve data from multiple Marketplace IDs, separate them with a comma (,). (i.e. A2EUQ1WTGCTBG2). </param>
         /// <param name="sellerId"> The Amazon seller ID. </param>
         /// <param name="accessKeyId"> The access key id used to access data. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/>, <paramref name="marketplaceId"/>, <paramref name="sellerId"/> or <paramref name="accessKeyId"/> is null. </exception>
-        public AmazonMwsLinkedService(BinaryData endpoint, BinaryData marketplaceId, BinaryData sellerId, BinaryData accessKeyId)
+        public AmazonMwsLinkedService(DataFactoryElement<string> endpoint, DataFactoryElement<string> marketplaceId, DataFactoryElement<string> sellerId, DataFactoryElement<string> accessKeyId)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
-            if (marketplaceId == null)
-            {
-                throw new ArgumentNullException(nameof(marketplaceId));
-            }
-            if (sellerId == null)
-            {
-                throw new ArgumentNullException(nameof(sellerId));
-            }
-            if (accessKeyId == null)
-            {
-                throw new ArgumentNullException(nameof(accessKeyId));
-            }
+            Argument.AssertNotNull(endpoint, nameof(endpoint));
+            Argument.AssertNotNull(marketplaceId, nameof(marketplaceId));
+            Argument.AssertNotNull(sellerId, nameof(sellerId));
+            Argument.AssertNotNull(accessKeyId, nameof(accessKeyId));
 
             Endpoint = endpoint;
             MarketplaceId = marketplaceId;
@@ -45,7 +34,7 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = "AmazonMWS";
         }
 
-        /// <summary> Initializes a new instance of AmazonMwsLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonMwsLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
@@ -55,22 +44,14 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="endpoint"> The endpoint of the Amazon MWS server, (i.e. mws.amazonservices.com). </param>
         /// <param name="marketplaceId"> The Amazon Marketplace ID you want to retrieve data from. To retrieve data from multiple Marketplace IDs, separate them with a comma (,). (i.e. A2EUQ1WTGCTBG2). </param>
         /// <param name="sellerId"> The Amazon seller ID. </param>
-        /// <param name="mwsAuthToken">
-        /// The Amazon MWS authentication token.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="mwsAuthToken"> The Amazon MWS authentication token. </param>
         /// <param name="accessKeyId"> The access key id used to access data. </param>
-        /// <param name="secretKey">
-        /// The secret key used to access data.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="secretKey"> The secret key used to access data. </param>
         /// <param name="useEncryptedEndpoints"> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </param>
-        /// <param name="useHostVerification"> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
+        /// <param name="useHostVerification"> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </param>
         /// <param name="usePeerVerification"> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal AmazonMwsLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData endpoint, BinaryData marketplaceId, BinaryData sellerId, SecretBase mwsAuthToken, BinaryData accessKeyId, SecretBase secretKey, BinaryData useEncryptedEndpoints, BinaryData useHostVerification, BinaryData usePeerVerification, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal AmazonMwsLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> endpoint, DataFactoryElement<string> marketplaceId, DataFactoryElement<string> sellerId, DataFactorySecret mwsAuthToken, DataFactoryElement<string> accessKeyId, DataFactorySecret secretKey, DataFactoryElement<bool> useEncryptedEndpoints, DataFactoryElement<bool> useHostVerification, DataFactoryElement<bool> usePeerVerification, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             Endpoint = endpoint;
             MarketplaceId = marketplaceId;
@@ -85,33 +66,30 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "AmazonMWS";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AmazonMwsLinkedService"/> for deserialization. </summary>
+        internal AmazonMwsLinkedService()
+        {
+        }
+
         /// <summary> The endpoint of the Amazon MWS server, (i.e. mws.amazonservices.com). </summary>
-        public BinaryData Endpoint { get; set; }
+        public DataFactoryElement<string> Endpoint { get; set; }
         /// <summary> The Amazon Marketplace ID you want to retrieve data from. To retrieve data from multiple Marketplace IDs, separate them with a comma (,). (i.e. A2EUQ1WTGCTBG2). </summary>
-        public BinaryData MarketplaceId { get; set; }
+        public DataFactoryElement<string> MarketplaceId { get; set; }
         /// <summary> The Amazon seller ID. </summary>
-        public BinaryData SellerId { get; set; }
-        /// <summary>
-        /// The Amazon MWS authentication token.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase MwsAuthToken { get; set; }
+        public DataFactoryElement<string> SellerId { get; set; }
+        /// <summary> The Amazon MWS authentication token. </summary>
+        public DataFactorySecret MwsAuthToken { get; set; }
         /// <summary> The access key id used to access data. </summary>
-        public BinaryData AccessKeyId { get; set; }
-        /// <summary>
-        /// The secret key used to access data.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase SecretKey { get; set; }
+        public DataFactoryElement<string> AccessKeyId { get; set; }
+        /// <summary> The secret key used to access data. </summary>
+        public DataFactorySecret SecretKey { get; set; }
         /// <summary> Specifies whether the data source endpoints are encrypted using HTTPS. The default value is true. </summary>
-        public BinaryData UseEncryptedEndpoints { get; set; }
-        /// <summary> Specifies whether to require the host name in the server&apos;s certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UseHostVerification { get; set; }
+        public DataFactoryElement<bool> UseEncryptedEndpoints { get; set; }
+        /// <summary> Specifies whether to require the host name in the server's certificate to match the host name of the server when connecting over SSL. The default value is true. </summary>
+        public DataFactoryElement<bool> UseHostVerification { get; set; }
         /// <summary> Specifies whether to verify the identity of the server when connecting over SSL. The default value is true. </summary>
-        public BinaryData UsePeerVerification { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<bool> UsePeerVerification { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

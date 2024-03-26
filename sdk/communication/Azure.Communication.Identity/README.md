@@ -68,7 +68,7 @@ We guarantee that all client instance methods are thread-safe and independent of
 [Long-running operations](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#consuming-long-running-operations-using-operationt) |
 [Handling failures](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#reporting-errors-requestfailedexception) |
 [Diagnostics](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/Diagnostics.md) |
-[Mocking](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#mocking) |
+[Mocking](https://learn.microsoft.com/dotnet/azure/sdk/unit-testing-mocking) |
 [Client lifetime](https://devblogs.microsoft.com/azure-sdk/lifetime-management-and-thread-safety-guarantees-of-azure-sdk-net-clients/)
 <!-- CLIENT COMMON BAR -->
 
@@ -92,9 +92,38 @@ Console.WriteLine($"Token: {token}");
 Console.WriteLine($"Expires On: {expiresOn}");
 ```
 
+The `GetToken` function takes in a list of `CommunicationTokenScope`. Scope options include:
+- `Chat` (Use this for full access to Chat APIs)
+- `VoIP` (Use this for full access to Calling APIs)
+- `ChatJoin` (Access to Chat APIs but without the authorization to create, delete or update chat threads)
+- `ChatJoinLimited` (A more limited version of ChatJoin that doesn't allow to add or remove participants)
+- `VoIPJoin` (Access to Calling APIs but without the authorization to start new calls)
+
+
+It's also possible to create a Communication Identity access token by customizing the expiration time. Validity period of the token must be within [1,24] hours range. If not provided, the default value of 24 hours will be used.
+
+```C# Snippet:CreateCommunicationTokenAsyncWithCustomExpiration
+TimeSpan tokenExpiresIn = TimeSpan.FromHours(1);
+Response<AccessToken> tokenResponse = await client.GetTokenAsync(user, scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn);
+string token = tokenResponse.Value.Token;
+DateTimeOffset expiresOn = tokenResponse.Value.ExpiresOn;
+Console.WriteLine($"Token: {token}");
+Console.WriteLine($"Expires On: {expiresOn}");
+```
+
 ### Creating a user and a token in the same request
 ```C# Snippet:CreateCommunicationUserAndToken
 Response<CommunicationUserIdentifierAndToken> response = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat });
+var (user, token) = response.Value;
+Console.WriteLine($"User id: {user.Id}");
+Console.WriteLine($"Token: {token.Token}");
+```
+
+It's also possible to create a Communication Identity access token by customizing the expiration time. Validity period of the token must be within [1,24] hours range. If not provided, the default value of 24 hours will be used.
+
+```C# Snippet:CreateCommunicationUserAndTokenWithCustomExpirationAsync
+TimeSpan tokenExpiresIn = TimeSpan.FromHours(1);
+Response<CommunicationUserIdentifierAndToken> response = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn);
 var (user, token) = response.Value;
 Console.WriteLine($"User id: {user.Id}");
 Console.WriteLine($"Token: {token.Token}");

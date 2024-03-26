@@ -23,59 +23,70 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static LibraryResourceProperties DeserializeLibraryResourceProperties(JsonElement element)
         {
-            Optional<string> name = default;
-            Optional<string> path = default;
-            Optional<string> containerName = default;
-            Optional<string> uploadedTimestamp = default;
-            Optional<string> type = default;
-            Optional<string> provisioningStatus = default;
-            Optional<string> creatorId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            string path = default;
+            string containerName = default;
+            string uploadedTimestamp = default;
+            string type = default;
+            string provisioningStatus = default;
+            string creatorId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("path"))
+                if (property.NameEquals("path"u8))
                 {
                     path = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("containerName"))
+                if (property.NameEquals("containerName"u8))
                 {
                     containerName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("uploadedTimestamp"))
+                if (property.NameEquals("uploadedTimestamp"u8))
                 {
                     uploadedTimestamp = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("provisioningStatus"))
+                if (property.NameEquals("provisioningStatus"u8))
                 {
                     provisioningStatus = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("creatorId"))
+                if (property.NameEquals("creatorId"u8))
                 {
                     creatorId = property.Value.GetString();
                     continue;
                 }
             }
-            return new LibraryResourceProperties(name.Value, path.Value, containerName.Value, uploadedTimestamp.Value, type.Value, provisioningStatus.Value, creatorId.Value);
+            return new LibraryResourceProperties(
+                name,
+                path,
+                containerName,
+                uploadedTimestamp,
+                type,
+                provisioningStatus,
+                creatorId);
         }
 
         internal partial class LibraryResourcePropertiesConverter : JsonConverter<LibraryResourceProperties>
         {
             public override void Write(Utf8JsonWriter writer, LibraryResourceProperties model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LibraryResourceProperties>(model);
             }
             public override LibraryResourceProperties Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

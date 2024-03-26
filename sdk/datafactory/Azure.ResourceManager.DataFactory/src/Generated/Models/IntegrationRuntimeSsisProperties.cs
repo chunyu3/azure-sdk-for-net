@@ -7,22 +7,21 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> SSIS properties for managed integration runtime. </summary>
     public partial class IntegrationRuntimeSsisProperties
     {
-        /// <summary> Initializes a new instance of IntegrationRuntimeSsisProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="IntegrationRuntimeSsisProperties"/>. </summary>
         public IntegrationRuntimeSsisProperties()
         {
             ExpressCustomSetupProperties = new ChangeTrackingList<CustomSetupBase>();
-            PackageStores = new ChangeTrackingList<PackageStore>();
+            PackageStores = new ChangeTrackingList<DataFactoryPackageStore>();
             AdditionalProperties = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of IntegrationRuntimeSsisProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="IntegrationRuntimeSsisProperties"/>. </summary>
         /// <param name="catalogInfo"> Catalog information for managed dedicated integration runtime. </param>
         /// <param name="licenseType"> License type for bringing your own license scenario. </param>
         /// <param name="customSetupScriptProperties"> Custom setup script properties for a managed dedicated integration runtime. </param>
@@ -36,7 +35,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="packageStores"> Package stores for the SSIS Integration Runtime. </param>
         /// <param name="credential"> The credential reference containing authentication information. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        internal IntegrationRuntimeSsisProperties(IntegrationRuntimeSsisCatalogInfo catalogInfo, IntegrationRuntimeLicenseType? licenseType, IntegrationRuntimeCustomSetupScriptProperties customSetupScriptProperties, IntegrationRuntimeDataProxyProperties dataProxyProperties, IntegrationRuntimeEdition? edition, IList<CustomSetupBase> expressCustomSetupProperties, IList<PackageStore> packageStores, CredentialReference credential, IDictionary<string, BinaryData> additionalProperties)
+        internal IntegrationRuntimeSsisProperties(IntegrationRuntimeSsisCatalogInfo catalogInfo, IntegrationRuntimeLicenseType? licenseType, IntegrationRuntimeCustomSetupScriptProperties customSetupScriptProperties, IntegrationRuntimeDataProxyProperties dataProxyProperties, IntegrationRuntimeEdition? edition, IList<CustomSetupBase> expressCustomSetupProperties, IList<DataFactoryPackageStore> packageStores, DataFactoryCredentialReference credential, IDictionary<string, BinaryData> additionalProperties)
         {
             CatalogInfo = catalogInfo;
             LicenseType = licenseType;
@@ -66,10 +65,39 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// </summary>
         public IList<CustomSetupBase> ExpressCustomSetupProperties { get; }
         /// <summary> Package stores for the SSIS Integration Runtime. </summary>
-        public IList<PackageStore> PackageStores { get; }
+        public IList<DataFactoryPackageStore> PackageStores { get; }
         /// <summary> The credential reference containing authentication information. </summary>
-        public CredentialReference Credential { get; set; }
-        /// <summary> Additional Properties. </summary>
+        public DataFactoryCredentialReference Credential { get; set; }
+        /// <summary>
+        /// Additional Properties
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IDictionary<string, BinaryData> AdditionalProperties { get; }
     }
 }

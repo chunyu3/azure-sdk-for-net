@@ -12,7 +12,7 @@ namespace Azure.AI.FormRecognizer.Training
     /// <summary> Basic custom model information. </summary>
     public partial class CustomFormModelInfo
     {
-        /// <summary> Initializes a new instance of CustomFormModelInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="CustomFormModelInfo"/>. </summary>
         /// <param name="modelId"> Model identifier. </param>
         /// <param name="status"> Status of the model. </param>
         /// <param name="trainingStartedOn"> Date and time (UTC) when the model was created. </param>
@@ -20,10 +20,7 @@ namespace Azure.AI.FormRecognizer.Training
         /// <exception cref="ArgumentNullException"> <paramref name="modelId"/> is null. </exception>
         internal CustomFormModelInfo(string modelId, CustomFormModelStatus status, DateTimeOffset trainingStartedOn, DateTimeOffset trainingCompletedOn)
         {
-            if (modelId == null)
-            {
-                throw new ArgumentNullException(nameof(modelId));
-            }
+            Argument.AssertNotNull(modelId, nameof(modelId));
 
             ModelId = modelId;
             Status = status;

@@ -5,6 +5,9 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Network.Models
 {
     /// <summary>
@@ -12,22 +15,56 @@ namespace Azure.ResourceManager.Network.Models
     /// Please note <see cref="FirewallPolicyRuleCollectionInfo"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
     /// The available derived classes include <see cref="FirewallPolicyFilterRuleCollectionInfo"/> and <see cref="FirewallPolicyNatRuleCollectionInfo"/>.
     /// </summary>
-    public partial class FirewallPolicyRuleCollectionInfo
+    public abstract partial class FirewallPolicyRuleCollectionInfo
     {
-        /// <summary> Initializes a new instance of FirewallPolicyRuleCollectionInfo. </summary>
-        public FirewallPolicyRuleCollectionInfo()
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private protected IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="FirewallPolicyRuleCollectionInfo"/>. </summary>
+        protected FirewallPolicyRuleCollectionInfo()
         {
         }
 
-        /// <summary> Initializes a new instance of FirewallPolicyRuleCollectionInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="FirewallPolicyRuleCollectionInfo"/>. </summary>
         /// <param name="ruleCollectionType"> The type of the rule collection. </param>
         /// <param name="name"> The name of the rule collection. </param>
         /// <param name="priority"> Priority of the Firewall Policy Rule Collection resource. </param>
-        internal FirewallPolicyRuleCollectionInfo(FirewallPolicyRuleCollectionType ruleCollectionType, string name, int? priority)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal FirewallPolicyRuleCollectionInfo(FirewallPolicyRuleCollectionType ruleCollectionType, string name, int? priority, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             RuleCollectionType = ruleCollectionType;
             Name = name;
             Priority = priority;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The type of the rule collection. </summary>

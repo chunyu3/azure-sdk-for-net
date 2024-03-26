@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.AI.TextAnalytics.Legacy;
@@ -25,13 +26,13 @@ namespace Azure.AI.TextAnalytics.ServiceClients
         private static readonly AnalyzeSentimentOptions DefaultAnalyzeSentimentOptions = new();
 
         private readonly TextAnalyticsRestClient _serviceRestClient;
-        private readonly TextAnalyticsClientOptions _options;
         private readonly ClientDiagnostics _clientDiagnostics;
         private readonly Uri _baseUri;
 
         public override ClientDiagnostics Diagnostics => _clientDiagnostics;
 
         public LegacyServiceClient(Uri endpoint, TokenCredential credential, string authorizationScope, string serviceVersion, TextAnalyticsClientOptions options)
+            : base(options)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));
             Argument.AssertNotNull(credential, nameof(credential));
@@ -41,14 +42,18 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(serviceVersion, nameof(serviceVersion));
 
             _baseUri = endpoint;
-            _clientDiagnostics = new TextAnalyticsClientDiagnostics(options);
-            _options = options;
+            _clientDiagnostics = new ClientDiagnostics(options);
 
-            var pipeline = HttpPipelineBuilder.Build(options, new BearerTokenAuthenticationPolicy(credential, authorizationScope));
+            var pipeline = HttpPipelineBuilder.Build(new HttpPipelineOptions(options)
+            {
+                PerRetryPolicies = { new BearerTokenAuthenticationPolicy(credential, authorizationScope) },
+                RequestFailedDetailsParser = new TextAnalyticsFailedDetailsParser()
+            });
             _serviceRestClient = new TextAnalyticsRestClient(_clientDiagnostics, pipeline, endpoint.AbsoluteUri, serviceVersion);
         }
 
         public LegacyServiceClient(Uri endpoint, AzureKeyCredential credential, string serviceVersion, TextAnalyticsClientOptions options)
+            : base(options)
         {
             Argument.AssertNotNull(endpoint, nameof(endpoint));
             Argument.AssertNotNull(credential, nameof(credential));
@@ -57,10 +62,13 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(serviceVersion, nameof(serviceVersion));
 
             _baseUri = endpoint;
-            _clientDiagnostics = new TextAnalyticsClientDiagnostics(options);
-            _options = options;
+            _clientDiagnostics = new ClientDiagnostics(options);
 
-            var pipeline = HttpPipelineBuilder.Build(options, new AzureKeyCredentialPolicy(credential, Constants.AuthorizationHeader));
+            var pipeline = HttpPipelineBuilder.Build(new HttpPipelineOptions(options)
+            {
+                PerRetryPolicies = { new AzureKeyCredentialPolicy(credential, Constants.AuthorizationHeader) },
+                RequestFailedDetailsParser = new TextAnalyticsFailedDetailsParser()
+            });
             _serviceRestClient = new TextAnalyticsRestClient(_clientDiagnostics, pipeline, endpoint.AbsoluteUri, serviceVersion);
         }
 
@@ -71,21 +79,18 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(DetectLanguage)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<LanguageInput>() { ConvertToLanguageInput(document, countryHint) };
+                IEnumerable<LanguageInput> documents = new List<LanguageInput>() { ConvertToLanguageInput(document, countryHint) };
 
                 Response<LanguageResult> result = await _serviceRestClient.LanguagesAsync(new LanguageBatchInput(documents), cancellationToken: cancellationToken).ConfigureAwait(false);
                 Response response = result.GetRawResponse();
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToDetectedLanguage(result.Value.Documents[0]), response);
@@ -102,20 +107,17 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(DetectLanguage)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<LanguageInput>() { ConvertToLanguageInput(document, countryHint) };
+                IEnumerable<LanguageInput> documents = new List<LanguageInput>() { ConvertToLanguageInput(document, countryHint) };
                 Response<LanguageResult> result = _serviceRestClient.Languages(new LanguageBatchInput(documents), cancellationToken: cancellationToken);
                 Response response = result.GetRawResponse();
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToDetectedLanguage(result.Value.Documents[0]), response);
@@ -224,12 +226,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizeEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
 
                 Response<EntitiesResult> result = await _serviceRestClient.EntitiesRecognitionGeneralAsync(
                     new MultiLanguageBatchInput(documents),
@@ -239,9 +240,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToCategorizedEntityCollection(result.Value.Documents[0]), response);
@@ -258,12 +257,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizeEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
 
                 Response<EntitiesResult> result = _serviceRestClient.EntitiesRecognitionGeneral(
                     new MultiLanguageBatchInput(documents),
@@ -273,9 +271,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToCategorizedEntityCollection(result.Value.Documents[0]), response);
@@ -384,15 +380,16 @@ namespace Azure.AI.TextAnalytics.ServiceClients
         public override async Task<Response<PiiEntityCollection>> RecognizePiiEntitiesAsync(string document, string language = default, RecognizePiiEntitiesOptions options = default, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(document, nameof(document));
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.RecognizePiiEntitiesAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
             options ??= DefaultPiiEntitiesOptions;
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizePiiEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 var filters = options.CategoriesFilter.Count > 0 ? new List<Legacy.Models.PiiEntityLegacyCategory>(options.CategoriesFilter.Count) : null;
 
                 foreach (var filter in options.CategoriesFilter)
@@ -413,9 +410,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToPiiEntityCollection(result.Value.Documents[0]), response);
@@ -430,15 +425,16 @@ namespace Azure.AI.TextAnalytics.ServiceClients
         public override Response<PiiEntityCollection> RecognizePiiEntities(string document, string language = default, RecognizePiiEntitiesOptions options = default, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(document, nameof(document));
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.RecognizePiiEntities)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
             options ??= DefaultPiiEntitiesOptions;
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizePiiEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 var filters = options.CategoriesFilter.Count > 0 ? new List<Legacy.Models.PiiEntityLegacyCategory>(options.CategoriesFilter.Count) : null;
 
                 foreach (var filter in options.CategoriesFilter)
@@ -459,9 +455,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToPiiEntityCollection(result.Value.Documents[0]), response);
@@ -511,6 +505,8 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
         private async Task<Response<RecognizePiiEntitiesResultCollection>> RecognizePiiEntitiesBatchAsync(MultiLanguageBatchInput batchInput, RecognizePiiEntitiesOptions options, CancellationToken cancellationToken)
         {
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.RecognizePiiEntitiesBatchAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizePiiEntitiesBatch)}");
             scope.Start();
 
@@ -547,6 +543,8 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
         private Response<RecognizePiiEntitiesResultCollection> RecognizePiiEntitiesBatch(MultiLanguageBatchInput batchInput, RecognizePiiEntitiesOptions options, CancellationToken cancellationToken)
         {
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.RecognizePiiEntitiesBatch)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizePiiEntitiesBatch)}");
             scope.Start();
 
@@ -559,15 +557,15 @@ namespace Azure.AI.TextAnalytics.ServiceClients
                     filters.Add(new Legacy.Models.PiiEntityLegacyCategory(filter.ToString()));
                 }
 
-               var result = _serviceRestClient.EntitiesRecognitionPii(
-                    batchInput,
-                    options.ModelVersion,
-                    options.IncludeStatistics,
-                    options.DisableServiceLogs,
-                    options.DomainFilter.GetString(),
-                    Constants.DefaultLegacyStringIndexType,
-                    filters,
-                    cancellationToken);
+                var result = _serviceRestClient.EntitiesRecognitionPii(
+                     batchInput,
+                     options.ModelVersion,
+                     options.IncludeStatistics,
+                     options.DisableServiceLogs,
+                     options.DomainFilter.GetString(),
+                     Constants.DefaultLegacyStringIndexType,
+                     filters,
+                     cancellationToken);
                 var response = result.GetRawResponse();
 
                 IDictionary<string, int> map = CreateIdToIndexMap(batchInput.Documents);
@@ -591,12 +589,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             options ??= DefaultAnalyzeSentimentOptions;
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(AnalyzeSentiment)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 Response<SentimentResponse> result = await _serviceRestClient.SentimentAsync(
                     new MultiLanguageBatchInput(documents),
                     options.ModelVersion,
@@ -609,9 +606,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToDocumentSentiment(result.Value.Documents[0]), response);
@@ -629,12 +624,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             options ??= DefaultAnalyzeSentimentOptions;
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(AnalyzeSentiment)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 Response<SentimentResponse> result = _serviceRestClient.Sentiment(
                     new MultiLanguageBatchInput(documents),
                     options.ModelVersion,
@@ -647,9 +641,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToDocumentSentiment(result.Value.Documents[0]), response);
@@ -762,20 +754,17 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(ExtractKeyPhrases)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 Response<KeyPhraseResult> result = await _serviceRestClient.KeyPhrasesAsync(new MultiLanguageBatchInput(documents), cancellationToken: cancellationToken).ConfigureAwait(false);
                 Response response = result.GetRawResponse();
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToKeyPhraseCollection(result.Value.Documents[0]), response);
@@ -792,20 +781,17 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(ExtractKeyPhrases)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
                 Response<KeyPhraseResult> result = _serviceRestClient.KeyPhrases(new MultiLanguageBatchInput(documents), cancellationToken: cancellationToken);
                 Response response = result.GetRawResponse();
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToKeyPhraseCollection(result.Value.Documents[0]), response);
@@ -914,12 +900,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizeLinkedEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
 
                 Response<EntityLinkingResult> result = await _serviceRestClient.EntitiesLinkingAsync(
                     new MultiLanguageBatchInput(documents),
@@ -929,9 +914,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error)).ConfigureAwait(false);
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToLinkedEntityCollection(result.Value.Documents[0]), response);
@@ -948,12 +931,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(document, nameof(document));
 
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(RecognizeLinkedEntities)}");
-            scope.AddAttribute("document", document);
             scope.Start();
 
             try
             {
-                var documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
+                IEnumerable<MultiLanguageInput> documents = new List<MultiLanguageInput>() { ConvertToMultiLanguageInput(document, language) };
 
                 Response<EntityLinkingResult> result = _serviceRestClient.EntitiesLinking(
                     new MultiLanguageBatchInput(documents),
@@ -963,9 +945,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 if (result.Value.Errors.Count > 0)
                 {
-                    // only one document, so we can ignore the id and grab the first error message.
-                    var error = Transforms.ConvertToError(result.Value.Errors[0].Error);
-                    throw _clientDiagnostics.CreateRequestFailedException(response, new ResponseError(error.ErrorCode.ToString(), error.Message), CreateAdditionalInformation(error));
+                    throw new RequestFailedException(response);
                 }
 
                 return Response.FromValue(Transforms.ConvertToLinkedEntityCollection(result.Value.Documents[0]), response);
@@ -1069,14 +1049,64 @@ namespace Azure.AI.TextAnalytics.ServiceClients
         #endregion
 
         #region Healthcare
+        public override AnalyzeHealthcareEntitiesOperation AnalyzeHealthcareEntities(WaitUntil waitUntil, IEnumerable<string> documents, string language = default, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            options ??= DefaultHeathcareEntitiesOptions;
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeHealthcareEntities(scopeName, waitUntil, documentInputs, options, cancellationToken);
+        }
+
+        public override AnalyzeHealthcareEntitiesOperation AnalyzeHealthcareEntities(WaitUntil waitUntil, IEnumerable<TextDocumentInput> documents, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(documents, nameof(documents));
+            options ??= DefaultHeathcareEntitiesOptions;
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeHealthcareEntities(scopeName, waitUntil, documentInputs, options, cancellationToken);
+        }
+
+        public override async Task<AnalyzeHealthcareEntitiesOperation> AnalyzeHealthcareEntitiesAsync(WaitUntil waitUntil, IEnumerable<string> documents, string language = default, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            options ??= DefaultHeathcareEntitiesOptions;
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntitiesAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeHealthcareEntitiesAsync(scopeName, waitUntil, documentInputs, options, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<AnalyzeHealthcareEntitiesOperation> AnalyzeHealthcareEntitiesAsync(WaitUntil waitUntil, IEnumerable<TextDocumentInput> documents, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(documents, nameof(documents));
+            options ??= DefaultHeathcareEntitiesOptions;
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntities)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeHealthcareEntitiesAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeHealthcareEntitiesAsync(scopeName, waitUntil, documentInputs, options, cancellationToken).ConfigureAwait(false);
+        }
 
         public override async Task<AnalyzeHealthcareEntitiesOperation> StartAnalyzeHealthcareEntitiesAsync(IEnumerable<string> documents, string language = default, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             options ??= DefaultHeathcareEntitiesOptions;
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}";
 
-            return await StartAnalyzeHealthcareEntitiesAsync(documentInputs, options, cancellationToken).ConfigureAwait(false);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntitiesAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeHealthcareEntitiesAsync(scopeName, WaitUntil.Started, documentInputs, options, cancellationToken).ConfigureAwait(false);
         }
 
         public override AnalyzeHealthcareEntitiesOperation StartAnalyzeHealthcareEntities(IEnumerable<string> documents, string language = default, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
@@ -1084,8 +1114,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             options ??= DefaultHeathcareEntitiesOptions;
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}";
 
-            return StartAnalyzeHealthcareEntities(documentInputs, options, cancellationToken);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeHealthcareEntities(scopeName, WaitUntil.Started, documentInputs, options, cancellationToken);
         }
 
         public override AnalyzeHealthcareEntitiesOperation StartAnalyzeHealthcareEntities(IEnumerable<TextDocumentInput> documents, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
@@ -1093,8 +1126,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNull(documents, nameof(documents));
             options ??= DefaultHeathcareEntitiesOptions;
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}";
 
-            return StartAnalyzeHealthcareEntities(documentInputs, options, cancellationToken);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeHealthcareEntities(scopeName, WaitUntil.Started, documentInputs, options, cancellationToken);
         }
 
         public override async Task<AnalyzeHealthcareEntitiesOperation> StartAnalyzeHealthcareEntitiesAsync(IEnumerable<TextDocumentInput> documents, AnalyzeHealthcareEntitiesOptions options = default, CancellationToken cancellationToken = default)
@@ -1102,15 +1138,18 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNull(documents, nameof(documents));
             options ??= DefaultHeathcareEntitiesOptions;
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntities)}";
 
-            return await StartAnalyzeHealthcareEntitiesAsync(documentInputs, options, cancellationToken).ConfigureAwait(false);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeHealthcareEntitiesAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeHealthcareEntitiesAsync(scopeName, WaitUntil.Started, documentInputs, options, cancellationToken).ConfigureAwait(false);
         }
 
-        private AnalyzeHealthcareEntitiesOperation StartAnalyzeHealthcareEntities(MultiLanguageBatchInput batchInput, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
+        private AnalyzeHealthcareEntitiesOperation AnalyzeHealthcareEntities(string scopeName, WaitUntil waitUntil, MultiLanguageBatchInput batchInput, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
         {
             options ??= DefaultHeathcareEntitiesOptions;
 
-            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(StartAnalyzeHealthcareEntities)}");
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(scopeName);
             scope.Start();
 
             try
@@ -1125,7 +1164,14 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 var _idToIndexMap = CreateIdToIndexMap(batchInput.Documents);
 
-                return new AnalyzeHealthcareEntitiesOperation(this, _clientDiagnostics, location, _idToIndexMap, options.IncludeStatistics);
+                var operation = new AnalyzeHealthcareEntitiesOperation(this, _clientDiagnostics, location, _idToIndexMap, options.IncludeStatistics);
+
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    operation.WaitForCompletion(cancellationToken);
+                }
+
+                return operation;
             }
             catch (Exception e)
             {
@@ -1134,11 +1180,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             }
         }
 
-        private async Task<AnalyzeHealthcareEntitiesOperation> StartAnalyzeHealthcareEntitiesAsync(MultiLanguageBatchInput batchInput, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
+        private async Task<AnalyzeHealthcareEntitiesOperation> AnalyzeHealthcareEntitiesAsync(string scopeName, WaitUntil waitUntil, MultiLanguageBatchInput batchInput, AnalyzeHealthcareEntitiesOptions options, CancellationToken cancellationToken = default)
         {
             options ??= DefaultHeathcareEntitiesOptions;
 
-            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(StartAnalyzeHealthcareEntities)}");
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(scopeName);
             scope.Start();
 
             try
@@ -1153,7 +1199,14 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 var _idToIndexMap = CreateIdToIndexMap(batchInput.Documents);
 
-                return new AnalyzeHealthcareEntitiesOperation(this, _clientDiagnostics, location, _idToIndexMap, options.IncludeStatistics);
+                var operation = new AnalyzeHealthcareEntitiesOperation(this, _clientDiagnostics, location, _idToIndexMap, options.IncludeStatistics);
+
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                return operation;
             }
             catch (Exception e)
             {
@@ -1308,13 +1361,64 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
         #region Analyze Operation
 
+        public override AnalyzeActionsOperation AnalyzeActions(WaitUntil waitUntil, IEnumerable<string> documents, TextAnalyticsActions actions, string language = default, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            Argument.AssertNotNull(actions, nameof(actions));
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeActions(scopeName, waitUntil, documentInputs, actions, options, cancellationToken);
+        }
+
+        public override AnalyzeActionsOperation AnalyzeActions(WaitUntil waitUntil, IEnumerable<TextDocumentInput> documents, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            Argument.AssertNotNull(actions, nameof(actions));
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeActions(scopeName, waitUntil, documentInputs, actions, options, cancellationToken);
+        }
+
+        public override async Task<AnalyzeActionsOperation> AnalyzeActionsAsync(WaitUntil waitUntil, IEnumerable<string> documents, TextAnalyticsActions actions, string language = default, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            Argument.AssertNotNull(actions, nameof(actions));
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActionsAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeActionsAsync(scopeName, waitUntil, documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
+        }
+
+        public override async Task<AnalyzeActionsOperation> AnalyzeActionsAsync(WaitUntil waitUntil, IEnumerable<TextDocumentInput> documents, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(documents, nameof(documents));
+            Argument.AssertNotNull(actions, nameof(actions));
+            MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActions)}";
+
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.AnalyzeActionsAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeActionsAsync(scopeName, waitUntil, documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
+        }
+
         public override async Task<AnalyzeActionsOperation> StartAnalyzeActionsAsync(IEnumerable<string> documents, TextAnalyticsActions actions, string language = default, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             Argument.AssertNotNull(actions, nameof(actions));
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}";
 
-            return await StartAnalyzeActionsAsync(documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActionsAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeActionsAsync(scopeName, WaitUntil.Started, documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
         }
 
         public override AnalyzeActionsOperation StartAnalyzeActions(IEnumerable<string> documents, TextAnalyticsActions actions, string language = default, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
@@ -1322,8 +1426,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             Argument.AssertNotNull(actions, nameof(actions));
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents, language);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}";
 
-            return StartAnalyzeActions(documentInputs, actions, options, cancellationToken);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeActions(scopeName, WaitUntil.Started, documentInputs, actions, options, cancellationToken);
         }
 
         public override AnalyzeActionsOperation StartAnalyzeActions(IEnumerable<TextDocumentInput> documents, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
@@ -1331,8 +1438,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             Argument.AssertNotNull(actions, nameof(actions));
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}";
 
-            return StartAnalyzeActions(documentInputs, actions, options, cancellationToken);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return AnalyzeActions(scopeName, WaitUntil.Started, documentInputs, actions, options, cancellationToken);
         }
 
         public override async Task<AnalyzeActionsOperation> StartAnalyzeActionsAsync(IEnumerable<TextDocumentInput> documents, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
@@ -1340,8 +1450,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             Argument.AssertNotNullOrEmpty(documents, nameof(documents));
             Argument.AssertNotNull(actions, nameof(actions));
             MultiLanguageBatchInput documentInputs = ConvertToMultiLanguageInputs(documents);
+            string scopeName = $"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActions)}";
 
-            return await StartAnalyzeActionsAsync(documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
+            Validation.SupportsOperation($"{nameof(TextAnalyticsClient)}.{nameof(TextAnalyticsClient.StartAnalyzeActionsAsync)}", TextAnalyticsClientOptions.ServiceVersion.V3_1, ServiceVersion);
+
+            return await AnalyzeActionsAsync(scopeName, WaitUntil.Started, documentInputs, actions, options, cancellationToken).ConfigureAwait(false);
         }
 
         public override async Task<Response<Models.AnalyzeTextJobStatusResult>> AnalyzeStatusAsync(string jobId, bool? showStats, int? top, int? skip, IDictionary<string, int> idToIndexMap, CancellationToken cancellationToken = default)
@@ -1428,11 +1541,23 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             }
         }
 
-        private AnalyzeActionsOperation StartAnalyzeActions(MultiLanguageBatchInput batchInput, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        public override Task CancelAnalyzeActionsJobAsync(string jobId, CancellationToken cancellationToken = default)
+        {
+            throw Validation.NotSupported("Cancellation", TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+        }
+
+        public override void CancelAnalyzeActionsJob(string jobId, CancellationToken cancellationToken = default)
+        {
+            throw Validation.NotSupported("Cancellation", TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+        }
+
+        private AnalyzeActionsOperation AnalyzeActions(string scopeName, WaitUntil waitUntil, MultiLanguageBatchInput batchInput, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
         {
             options ??= new AnalyzeActionsOptions();
+
             AnalyzeBatchInput analyzeDocumentInputs = new AnalyzeBatchInput(batchInput, CreateTasks(actions)) { DisplayName = actions.DisplayName };
-            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(StartAnalyzeActions)}");
+
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(scopeName);
             scope.Start();
 
             try
@@ -1442,7 +1567,14 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 IDictionary<string, int> idToIndexMap = CreateIdToIndexMap(batchInput.Documents);
 
-                return new AnalyzeActionsOperation(this, _clientDiagnostics, location, idToIndexMap, options.IncludeStatistics);
+                var operation = new AnalyzeActionsOperation(this, _clientDiagnostics, location, idToIndexMap, options.IncludeStatistics);
+
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    operation.WaitForCompletion(cancellationToken);
+                }
+
+                return operation;
             }
             catch (Exception e)
             {
@@ -1451,13 +1583,13 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             }
         }
 
-        private async Task<AnalyzeActionsOperation> StartAnalyzeActionsAsync(MultiLanguageBatchInput batchInput, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
+        private async Task<AnalyzeActionsOperation> AnalyzeActionsAsync(string scopeName, WaitUntil waitUntil, MultiLanguageBatchInput batchInput, TextAnalyticsActions actions, AnalyzeActionsOptions options = default, CancellationToken cancellationToken = default)
         {
             options ??= new AnalyzeActionsOptions();
 
             AnalyzeBatchInput analyzeDocumentInputs = new AnalyzeBatchInput(batchInput, CreateTasks(actions)) { DisplayName = actions.DisplayName };
 
-            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(TextAnalyticsClient)}.{nameof(StartAnalyzeActions)}");
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(scopeName);
             scope.Start();
 
             try
@@ -1467,7 +1599,14 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
                 IDictionary<string, int> idToIndexMap = CreateIdToIndexMap(batchInput.Documents);
 
-                return new AnalyzeActionsOperation(this, _clientDiagnostics, location, idToIndexMap, options.IncludeStatistics);
+                var operation = new AnalyzeActionsOperation(this, _clientDiagnostics, location, idToIndexMap, options.IncludeStatistics);
+
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
+
+                return operation;
             }
             catch (Exception e)
             {
@@ -1476,7 +1615,7 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             }
         }
 
-        private static Legacy.JobManifestTasks CreateTasks(TextAnalyticsActions actions)
+        private Legacy.JobManifestTasks CreateTasks(TextAnalyticsActions actions)
         {
             Legacy.JobManifestTasks tasks = new();
 
@@ -1487,10 +1626,6 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             if (actions.RecognizeEntitiesActions != null)
             {
                 tasks.EntityRecognitionTasks = Transforms.ConvertFromRecognizeEntitiesActionsToLegacyTasks(actions.RecognizeEntitiesActions);
-            }
-            if (actions.RecognizeCustomEntitiesActions != null)
-            {
-                tasks.CustomEntityRecognitionTasks = Transforms.ConvertFromRecognizeCustomEntitiesActionsToLegacyTasks(actions.RecognizeCustomEntitiesActions);
             }
             if (actions.ExtractKeyPhrasesActions != null)
             {
@@ -1504,31 +1639,58 @@ namespace Azure.AI.TextAnalytics.ServiceClients
             {
                 tasks.SentimentAnalysisTasks = Transforms.ConvertFromAnalyzeSentimentActionsToLegacyTasks(actions.AnalyzeSentimentActions);
             }
-            if (actions.ExtractSummaryActions != null)
+
+            // Not supported in legacy service.
+            if (actions.AnalyzeHealthcareEntitiesActions != null && actions.AnalyzeHealthcareEntitiesActions.Count > 0)
             {
-                tasks.ExtractiveSummarizationTasks = Transforms.ConvertFromExtractSummaryActionsToLegacyTasks(actions.ExtractSummaryActions);
+                throw Validation.NotSupported(nameof(AnalyzeHealthcareEntitiesAction), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
             }
-            if (actions.SingleCategoryClassifyActions != null)
+            if (actions.MultiLabelClassifyActions != null && actions.MultiLabelClassifyActions.Count > 0)
             {
-                tasks.CustomSingleClassificationTasks = Transforms.ConvertFromSingleCategoryClassifyActionsToLegacyTasks(actions.SingleCategoryClassifyActions);
+                throw Validation.NotSupported(nameof(MultiLabelClassifyAction), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
             }
-            if (actions.MultiCategoryClassifyActions != null)
+            if (actions.RecognizeCustomEntitiesActions != null && actions.RecognizeCustomEntitiesActions.Count > 0)
             {
-                tasks.CustomMultiClassificationTasks = Transforms.ConvertFromMultiCategoryClassifyActionsToLegacyTasks(actions.MultiCategoryClassifyActions);
+                throw Validation.NotSupported(nameof(RecognizeCustomEntitiesAction), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+            }
+            if (actions.SingleLabelClassifyActions != null && actions.SingleLabelClassifyActions.Count > 0)
+            {
+                throw Validation.NotSupported(nameof(SingleLabelClassifyAction), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+            }
+            if (actions.ExtractiveSummarizeActions != null && actions.ExtractiveSummarizeActions.Count > 0)
+            {
+                throw Validation.NotSupported(nameof(ExtractiveSummarizeAction), TextAnalyticsClientOptions.ServiceVersion.V2023_04_01, ServiceVersion);
+            }
+            if (actions.AbstractiveSummarizeActions != null && actions.AbstractiveSummarizeActions.Count > 0)
+            {
+                throw Validation.NotSupported(nameof(AbstractiveSummarizeAction), TextAnalyticsClientOptions.ServiceVersion.V2023_04_01, ServiceVersion);
             }
             return tasks;
         }
 
         #endregion
 
+        #region Long Running Operations
+
+        public override Task<Response<Models.AnalyzeTextJobState>> AnalyzeTextJobStatusAsync(string jobId, bool? showStats, int? top, int? skip, IDictionary<string, int> idToIndexMap, CancellationToken cancellationToken = default) =>
+            throw Validation.NotSupported(nameof(AnalyzeTextJobStatusAsync), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+        public override Response<Models.AnalyzeTextJobState> AnalyzeTextJobStatus(string jobId, bool? showStats, int? top, int? skip, IDictionary<string, int> idToIndexMap, CancellationToken cancellationToken = default) =>
+            throw Validation.NotSupported(nameof(AnalyzeTextJobStatus), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+        public override Task<Response<Models.AnalyzeTextJobState>> AnalyzeTextJobStatusNextPageAsync(string nextLink, int? pageSizeHint, IDictionary<string, int> idToIndexMap, CancellationToken cancellationToken = default) =>
+            throw Validation.NotSupported(nameof(AnalyzeTextJobStatusNextPageAsync), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+        public override Response<Models.AnalyzeTextJobState> AnalyzeTextJobStatusNextPage(string nextLink, int? pageSizeHint, IDictionary<string, int> idToIndexMap, CancellationToken cancellationToken = default) =>
+            throw Validation.NotSupported(nameof(AnalyzeTextJobStatusNextPage), TextAnalyticsClientOptions.ServiceVersion.V2022_05_01, ServiceVersion);
+
+        #endregion
+
         #region Common
 
         private MultiLanguageInput ConvertToMultiLanguageInput(string document, string language, int id = 0)
-            => new MultiLanguageInput($"{id}", document) { Language = language ?? _options.DefaultLanguage };
+            => new MultiLanguageInput($"{id}", document) { Language = language ?? Options.DefaultLanguage };
 
         private MultiLanguageBatchInput ConvertToMultiLanguageInputs(IEnumerable<string> documents, string language)
         {
-            var batchInput = new MultiLanguageBatchInput(Array.Empty<MultiLanguageInput>());
+            var batchInput = new MultiLanguageBatchInput(Enumerable.Empty<MultiLanguageInput>());
             var i = 0;
 
             foreach (var document in documents)
@@ -1542,22 +1704,24 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
         private MultiLanguageBatchInput ConvertToMultiLanguageInputs(IEnumerable<TextDocumentInput> documents)
         {
-            var batchInput = new MultiLanguageBatchInput(Array.Empty<MultiLanguageInput>());;
+            var batchInput = new MultiLanguageBatchInput(Enumerable.Empty<MultiLanguageInput>());
+            ;
 
             foreach (var document in documents)
             {
-                batchInput.Documents.Add(new MultiLanguageInput(document.Id, document.Text) { Language = document.Language ?? _options.DefaultLanguage });;
+                batchInput.Documents.Add(new MultiLanguageInput(document.Id, document.Text) { Language = document.Language ?? Options.DefaultLanguage });
+                ;
             }
 
             return batchInput;
         }
 
         private LanguageInput ConvertToLanguageInput(string document, string countryHint, int id = 0)
-            => new LanguageInput($"{id}", document) { CountryHint = countryHint ?? _options.DefaultCountryHint };
+            => new LanguageInput($"{id}", document) { CountryHint = countryHint ?? Options.DefaultCountryHint };
 
         private LanguageBatchInput ConvertToLanguageInputs(IEnumerable<string> documents, string countryHint)
         {
-            var batchInput = new LanguageBatchInput(Array.Empty<LanguageInput>());
+            var batchInput = new LanguageBatchInput(Enumerable.Empty<LanguageInput>());
             var i = 0;
 
             foreach (var document in documents)
@@ -1571,11 +1735,11 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
         private LanguageBatchInput ConvertToLanguageInputs(IEnumerable<DetectLanguageInput> documents)
         {
-            var batchInput = new LanguageBatchInput(Array.Empty<LanguageInput>());
+            var batchInput = new LanguageBatchInput(Enumerable.Empty<LanguageInput>());
 
             foreach (var document in documents)
             {
-                batchInput.Documents.Add(new LanguageInput(document.Id, document.Text) { CountryHint = document.CountryHint ?? _options.DefaultCountryHint });
+                batchInput.Documents.Add(new LanguageInput(document.Id, document.Text) { CountryHint = document.CountryHint ?? Options.DefaultCountryHint });
             }
 
             return batchInput;
@@ -1604,14 +1768,6 @@ namespace Azure.AI.TextAnalytics.ServiceClients
 
             return map;
         }
-
-        private static IDictionary<string, string> CreateAdditionalInformation(TextAnalyticsError error) =>
-            error.Target switch
-            {
-                { Length: > 0 } => new Dictionary<string, string> { { "Target", error.Target } },
-                _ => null
-            };
-
         #endregion
     }
 }

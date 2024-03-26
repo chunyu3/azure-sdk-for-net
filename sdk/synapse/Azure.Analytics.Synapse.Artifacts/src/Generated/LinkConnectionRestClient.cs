@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Analytics.Synapse.Artifacts.Models;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -27,7 +26,7 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <summary> Initializes a new instance of LinkConnectionRestClient. </summary>
         /// <param name="clientDiagnostics"> The handler for diagnostic messaging in the client. </param>
         /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
-        /// <param name="endpoint"> The workspace development endpoint, for example https://myworkspace.dev.azuresynapse.net. </param>
+        /// <param name="endpoint"> The workspace development endpoint, for example `https://myworkspace.dev.azuresynapse.net`. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="clientDiagnostics"/>, <paramref name="pipeline"/> or <paramref name="endpoint"/> is null. </exception>
         public LinkConnectionRestClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Uri endpoint)
         {
@@ -36,7 +35,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        internal HttpMessage CreateListLinkConnectionsByWorkspaceRequest()
+        internal HttpMessage CreateListByWorkspaceRequest()
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -44,7 +43,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
             uri.AppendPath("/linkconnections", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
@@ -52,9 +51,9 @@ namespace Azure.Analytics.Synapse.Artifacts
 
         /// <summary> List link connections. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<LinkConnectionListResponse>> ListLinkConnectionsByWorkspaceAsync(CancellationToken cancellationToken = default)
+        public async Task<Response<LinkConnectionListResponse>> ListByWorkspaceAsync(CancellationToken cancellationToken = default)
         {
-            using var message = CreateListLinkConnectionsByWorkspaceRequest();
+            using var message = CreateListByWorkspaceRequest();
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -66,15 +65,15 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> List link connections. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<LinkConnectionListResponse> ListLinkConnectionsByWorkspace(CancellationToken cancellationToken = default)
+        public Response<LinkConnectionListResponse> ListByWorkspace(CancellationToken cancellationToken = default)
         {
-            using var message = CreateListLinkConnectionsByWorkspaceRequest();
+            using var message = CreateListByWorkspaceRequest();
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -86,11 +85,11 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateLinkConnectionRequest(string linkConnectionName, LinkConnectionResource linkConnection)
+        internal HttpMessage CreateCreateOrUpdateRequest(string linkConnectionName, LinkConnectionResource linkConnection)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -99,12 +98,12 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.Reset(_endpoint);
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(linkConnection);
+            content.JsonWriter.WriteObjectValue<LinkConnectionResource>(linkConnection);
             request.Content = content;
             return message;
         }
@@ -114,7 +113,7 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnection"> Link connection resource definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> or <paramref name="linkConnection"/> is null. </exception>
-        public async Task<Response<LinkConnectionResource>> CreateOrUpdateLinkConnectionAsync(string linkConnectionName, LinkConnectionResource linkConnection, CancellationToken cancellationToken = default)
+        public async Task<Response<LinkConnectionResource>> CreateOrUpdateAsync(string linkConnectionName, LinkConnectionResource linkConnection, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
@@ -125,7 +124,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 throw new ArgumentNullException(nameof(linkConnection));
             }
 
-            using var message = CreateCreateOrUpdateLinkConnectionRequest(linkConnectionName, linkConnection);
+            using var message = CreateCreateOrUpdateRequest(linkConnectionName, linkConnection);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -137,7 +136,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -146,7 +145,7 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnection"> Link connection resource definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> or <paramref name="linkConnection"/> is null. </exception>
-        public Response<LinkConnectionResource> CreateOrUpdateLinkConnection(string linkConnectionName, LinkConnectionResource linkConnection, CancellationToken cancellationToken = default)
+        public Response<LinkConnectionResource> CreateOrUpdate(string linkConnectionName, LinkConnectionResource linkConnection, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
@@ -157,7 +156,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 throw new ArgumentNullException(nameof(linkConnection));
             }
 
-            using var message = CreateCreateOrUpdateLinkConnectionRequest(linkConnectionName, linkConnection);
+            using var message = CreateCreateOrUpdateRequest(linkConnectionName, linkConnection);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -169,11 +168,11 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateGetLinkConnectionRequest(string linkConnectionName)
+        internal HttpMessage CreateGetRequest(string linkConnectionName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -182,7 +181,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.Reset(_endpoint);
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
@@ -192,14 +191,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
-        public async Task<Response<LinkConnectionResource>> GetLinkConnectionAsync(string linkConnectionName, CancellationToken cancellationToken = default)
+        public async Task<Response<LinkConnectionResource>> GetAsync(string linkConnectionName, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
                 throw new ArgumentNullException(nameof(linkConnectionName));
             }
 
-            using var message = CreateGetLinkConnectionRequest(linkConnectionName);
+            using var message = CreateGetRequest(linkConnectionName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -211,7 +210,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -219,14 +218,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
-        public Response<LinkConnectionResource> GetLinkConnection(string linkConnectionName, CancellationToken cancellationToken = default)
+        public Response<LinkConnectionResource> Get(string linkConnectionName, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
                 throw new ArgumentNullException(nameof(linkConnectionName));
             }
 
-            using var message = CreateGetLinkConnectionRequest(linkConnectionName);
+            using var message = CreateGetRequest(linkConnectionName);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -238,11 +237,11 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateDeleteLinkConnectionRequest(string linkConnectionName)
+        internal HttpMessage CreateDeleteRequest(string linkConnectionName)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -251,7 +250,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.Reset(_endpoint);
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
@@ -261,14 +260,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
-        public async Task<Response> DeleteLinkConnectionAsync(string linkConnectionName, CancellationToken cancellationToken = default)
+        public async Task<Response> DeleteAsync(string linkConnectionName, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
                 throw new ArgumentNullException(nameof(linkConnectionName));
             }
 
-            using var message = CreateDeleteLinkConnectionRequest(linkConnectionName);
+            using var message = CreateDeleteRequest(linkConnectionName);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -276,7 +275,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 204:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -284,14 +283,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
-        public Response DeleteLinkConnection(string linkConnectionName, CancellationToken cancellationToken = default)
+        public Response Delete(string linkConnectionName, CancellationToken cancellationToken = default)
         {
             if (linkConnectionName == null)
             {
                 throw new ArgumentNullException(nameof(linkConnectionName));
             }
 
-            using var message = CreateDeleteLinkConnectionRequest(linkConnectionName);
+            using var message = CreateDeleteRequest(linkConnectionName);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -299,7 +298,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 204:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -313,12 +312,12 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/edittables", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(editTablesRequest);
+            content.JsonWriter.WriteObjectValue<EditTablesRequest>(editTablesRequest);
             request.Content = content;
             return message;
         }
@@ -346,7 +345,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -373,7 +372,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -387,13 +386,13 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/start", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        /// <summary> Start a link connection. </summary>
+        /// <summary> Start a link connection. It may take a few minutes from Starting to Running, monitor the status with LinkConnection_GetDetailedStatus. </summary>
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
@@ -411,11 +410,11 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Start a link connection. </summary>
+        /// <summary> Start a link connection. It may take a few minutes from Starting to Running, monitor the status with LinkConnection_GetDetailedStatus. </summary>
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
@@ -433,7 +432,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -447,13 +446,13 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/stop", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
         }
 
-        /// <summary> Stop a link connection. </summary>
+        /// <summary> Stop a link connection. It may take a few minutes from Stopping to stopped, monitor the status with LinkConnection_GetDetailedStatus. </summary>
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
@@ -471,11 +470,11 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        /// <summary> Stop a link connection. </summary>
+        /// <summary> Stop a link connection. It may take a few minutes from Stopping to stopped, monitor the status with LinkConnection_GetDetailedStatus. </summary>
         /// <param name="linkConnectionName"> The link connection name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
@@ -493,7 +492,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -507,7 +506,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/detailedstatus", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
@@ -536,7 +535,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -563,7 +562,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -577,7 +576,7 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/linktables", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             return message;
@@ -606,7 +605,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -633,7 +632,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -647,12 +646,12 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/querytablestatus", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(queryTableStatusRequest);
+            content.JsonWriter.WriteObjectValue<QueryTableStatusRequest>(queryTableStatusRequest);
             request.Content = content;
             return message;
         }
@@ -685,7 +684,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -717,7 +716,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -731,12 +730,12 @@ namespace Azure.Analytics.Synapse.Artifacts
             uri.AppendPath("/linkconnections/", false);
             uri.AppendPath(linkConnectionName, true);
             uri.AppendPath("/updateLandingZoneCredential", false);
-            uri.AppendQuery("api-version", "2021-12-01-preview", true);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(updateLandingZoneCredentialRequest);
+            content.JsonWriter.WriteObjectValue<UpdateLandingZoneCredential>(updateLandingZoneCredentialRequest);
             request.Content = content;
             return message;
         }
@@ -764,7 +763,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -791,11 +790,131 @@ namespace Azure.Analytics.Synapse.Artifacts
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateListLinkConnectionsByWorkspaceNextPageRequest(string nextLink)
+        internal HttpMessage CreatePauseRequest(string linkConnectionName)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Post;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/linkconnections/", false);
+            uri.AppendPath(linkConnectionName, true);
+            uri.AppendPath("/pause", false);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        /// <summary> Pause a link connection. It may take a few minutes from Pausing to Paused, monitor the status with LinkConnection_GetDetailedStatus. </summary>
+        /// <param name="linkConnectionName"> The link connection name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
+        public async Task<Response> PauseAsync(string linkConnectionName, CancellationToken cancellationToken = default)
+        {
+            if (linkConnectionName == null)
+            {
+                throw new ArgumentNullException(nameof(linkConnectionName));
+            }
+
+            using var message = CreatePauseRequest(linkConnectionName);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Pause a link connection. It may take a few minutes from Pausing to Paused, monitor the status with LinkConnection_GetDetailedStatus. </summary>
+        /// <param name="linkConnectionName"> The link connection name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
+        public Response Pause(string linkConnectionName, CancellationToken cancellationToken = default)
+        {
+            if (linkConnectionName == null)
+            {
+                throw new ArgumentNullException(nameof(linkConnectionName));
+            }
+
+            using var message = CreatePauseRequest(linkConnectionName);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal HttpMessage CreateResumeRequest(string linkConnectionName)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Post;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/linkconnections/", false);
+            uri.AppendPath(linkConnectionName, true);
+            uri.AppendPath("/resume", false);
+            uri.AppendQuery("api-version", "2023-04-18-preview", true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            return message;
+        }
+
+        /// <summary> Resume a link connection. It may take a few minutes from Resuming to Running, monitor the status with LinkConnection_GetDetailedStatus. </summary>
+        /// <param name="linkConnectionName"> The link connection name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
+        public async Task<Response> ResumeAsync(string linkConnectionName, CancellationToken cancellationToken = default)
+        {
+            if (linkConnectionName == null)
+            {
+                throw new ArgumentNullException(nameof(linkConnectionName));
+            }
+
+            using var message = CreateResumeRequest(linkConnectionName);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Resume a link connection. It may take a few minutes from Resuming to Running, monitor the status with LinkConnection_GetDetailedStatus. </summary>
+        /// <param name="linkConnectionName"> The link connection name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="linkConnectionName"/> is null. </exception>
+        public Response Resume(string linkConnectionName, CancellationToken cancellationToken = default)
+        {
+            if (linkConnectionName == null)
+            {
+                throw new ArgumentNullException(nameof(linkConnectionName));
+            }
+
+            using var message = CreateResumeRequest(linkConnectionName);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal HttpMessage CreateListByWorkspaceNextPageRequest(string nextLink)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -812,14 +931,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<LinkConnectionListResponse>> ListLinkConnectionsByWorkspaceNextPageAsync(string nextLink, CancellationToken cancellationToken = default)
+        public async Task<Response<LinkConnectionListResponse>> ListByWorkspaceNextPageAsync(string nextLink, CancellationToken cancellationToken = default)
         {
             if (nextLink == null)
             {
                 throw new ArgumentNullException(nameof(nextLink));
             }
 
-            using var message = CreateListLinkConnectionsByWorkspaceNextPageRequest(nextLink);
+            using var message = CreateListByWorkspaceNextPageRequest(nextLink);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -831,7 +950,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -839,14 +958,14 @@ namespace Azure.Analytics.Synapse.Artifacts
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<LinkConnectionListResponse> ListLinkConnectionsByWorkspaceNextPage(string nextLink, CancellationToken cancellationToken = default)
+        public Response<LinkConnectionListResponse> ListByWorkspaceNextPage(string nextLink, CancellationToken cancellationToken = default)
         {
             if (nextLink == null)
             {
                 throw new ArgumentNullException(nameof(nextLink));
             }
 
-            using var message = CreateListLinkConnectionsByWorkspaceNextPageRequest(nextLink);
+            using var message = CreateListByWorkspaceNextPageRequest(nextLink);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -858,7 +977,7 @@ namespace Azure.Analytics.Synapse.Artifacts
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

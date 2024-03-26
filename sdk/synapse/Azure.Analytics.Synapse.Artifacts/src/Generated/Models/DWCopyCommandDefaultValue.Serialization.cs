@@ -20,52 +20,54 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ColumnName))
             {
-                writer.WritePropertyName("columnName");
-                writer.WriteObjectValue(ColumnName);
+                writer.WritePropertyName("columnName"u8);
+                writer.WriteObjectValue<object>(ColumnName);
             }
             if (Optional.IsDefined(DefaultValue))
             {
-                writer.WritePropertyName("defaultValue");
-                writer.WriteObjectValue(DefaultValue);
+                writer.WritePropertyName("defaultValue"u8);
+                writer.WriteObjectValue<object>(DefaultValue);
             }
             writer.WriteEndObject();
         }
 
         internal static DWCopyCommandDefaultValue DeserializeDWCopyCommandDefaultValue(JsonElement element)
         {
-            Optional<object> columnName = default;
-            Optional<object> defaultValue = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object columnName = default;
+            object defaultValue = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("columnName"))
+                if (property.NameEquals("columnName"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     columnName = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("defaultValue"))
+                if (property.NameEquals("defaultValue"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     defaultValue = property.Value.GetObject();
                     continue;
                 }
             }
-            return new DWCopyCommandDefaultValue(columnName.Value, defaultValue.Value);
+            return new DWCopyCommandDefaultValue(columnName, defaultValue);
         }
 
         internal partial class DWCopyCommandDefaultValueConverter : JsonConverter<DWCopyCommandDefaultValue>
         {
             public override void Write(Utf8JsonWriter writer, DWCopyCommandDefaultValue model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DWCopyCommandDefaultValue>(model);
             }
             public override DWCopyCommandDefaultValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

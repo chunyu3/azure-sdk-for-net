@@ -6,19 +6,29 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Media.Models
 {
-    public partial class ContentKeyPolicyRsaTokenKey : IUtf8JsonSerializable
+    public partial class ContentKeyPolicyRsaTokenKey : IUtf8JsonSerializable, IJsonModel<ContentKeyPolicyRsaTokenKey>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ContentKeyPolicyRsaTokenKey>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<ContentKeyPolicyRsaTokenKey>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ContentKeyPolicyRsaTokenKey>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContentKeyPolicyRsaTokenKey)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Exponent != null)
             {
-                writer.WritePropertyName("exponent");
+                writer.WritePropertyName("exponent"u8);
                 writer.WriteBase64StringValue(Exponent, "D");
             }
             else
@@ -27,26 +37,61 @@ namespace Azure.ResourceManager.Media.Models
             }
             if (Modulus != null)
             {
-                writer.WritePropertyName("modulus");
+                writer.WritePropertyName("modulus"u8);
                 writer.WriteBase64StringValue(Modulus, "D");
             }
             else
             {
                 writer.WriteNull("modulus");
             }
-            writer.WritePropertyName("@odata.type");
+            writer.WritePropertyName("@odata.type"u8);
             writer.WriteStringValue(OdataType);
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static ContentKeyPolicyRsaTokenKey DeserializeContentKeyPolicyRsaTokenKey(JsonElement element)
+        ContentKeyPolicyRsaTokenKey IJsonModel<ContentKeyPolicyRsaTokenKey>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ContentKeyPolicyRsaTokenKey>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContentKeyPolicyRsaTokenKey)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeContentKeyPolicyRsaTokenKey(document.RootElement, options);
+        }
+
+        internal static ContentKeyPolicyRsaTokenKey DeserializeContentKeyPolicyRsaTokenKey(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             byte[] exponent = default;
             byte[] modulus = default;
             string odataType = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("exponent"))
+                if (property.NameEquals("exponent"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -56,7 +101,7 @@ namespace Azure.ResourceManager.Media.Models
                     exponent = property.Value.GetBytesFromBase64("D");
                     continue;
                 }
-                if (property.NameEquals("modulus"))
+                if (property.NameEquals("modulus"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -66,13 +111,49 @@ namespace Azure.ResourceManager.Media.Models
                     modulus = property.Value.GetBytesFromBase64("D");
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ContentKeyPolicyRsaTokenKey(odataType, exponent, modulus);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new ContentKeyPolicyRsaTokenKey(odataType, serializedAdditionalRawData, exponent, modulus);
         }
+
+        BinaryData IPersistableModel<ContentKeyPolicyRsaTokenKey>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContentKeyPolicyRsaTokenKey>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(ContentKeyPolicyRsaTokenKey)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ContentKeyPolicyRsaTokenKey IPersistableModel<ContentKeyPolicyRsaTokenKey>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContentKeyPolicyRsaTokenKey>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeContentKeyPolicyRsaTokenKey(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ContentKeyPolicyRsaTokenKey)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ContentKeyPolicyRsaTokenKey>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -20,18 +20,18 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(SessionId))
             {
-                writer.WritePropertyName("sessionId");
+                writer.WritePropertyName("sessionId"u8);
                 writer.WriteStringValue(SessionId);
             }
             if (Optional.IsDefined(Command))
             {
-                writer.WritePropertyName("command");
+                writer.WritePropertyName("command"u8);
                 writer.WriteStringValue(Command.Value.ToString());
             }
             if (Optional.IsDefined(CommandPayload))
             {
-                writer.WritePropertyName("commandPayload");
-                writer.WriteObjectValue(CommandPayload);
+                writer.WritePropertyName("commandPayload"u8);
+                writer.WriteObjectValue<DataFlowDebugCommandPayload>(CommandPayload);
             }
             writer.WriteEndObject();
         }
@@ -40,7 +40,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, DataFlowDebugCommandRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DataFlowDebugCommandRequest>(model);
             }
             public override DataFlowDebugCommandRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

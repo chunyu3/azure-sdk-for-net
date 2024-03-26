@@ -20,36 +20,39 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Content))
             {
-                writer.WritePropertyName("content");
-                writer.WriteObjectValue(Content);
+                writer.WritePropertyName("content"u8);
+                writer.WriteObjectValue<KqlScriptContent>(Content);
             }
             writer.WriteEndObject();
         }
 
         internal static KqlScript DeserializeKqlScript(JsonElement element)
         {
-            Optional<KqlScriptContent> content = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            KqlScriptContent content = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("content"))
+                if (property.NameEquals("content"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     content = KqlScriptContent.DeserializeKqlScriptContent(property.Value);
                     continue;
                 }
             }
-            return new KqlScript(content.Value);
+            return new KqlScript(content);
         }
 
         internal partial class KqlScriptConverter : JsonConverter<KqlScript>
         {
             public override void Write(Utf8JsonWriter writer, KqlScript model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<KqlScript>(model);
             }
             public override KqlScript Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

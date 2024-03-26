@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Teradata database dataset. </summary>
-    public partial class TeradataTableDataset : Dataset
+    public partial class TeradataTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of TeradataTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="TeradataTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public TeradataTableDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public TeradataTableDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "TeradataTable";
         }
 
-        /// <summary> Initializes a new instance of TeradataTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="TeradataTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -38,16 +36,21 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="database"> The database name of Teradata. Type: string (or Expression with resultType string). </param>
         /// <param name="table"> The table name of Teradata. Type: string (or Expression with resultType string). </param>
-        internal TeradataTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData database, BinaryData table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal TeradataTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> database, DataFactoryElement<string> table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             Database = database;
             Table = table;
             DatasetType = datasetType ?? "TeradataTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="TeradataTableDataset"/> for deserialization. </summary>
+        internal TeradataTableDataset()
+        {
+        }
+
         /// <summary> The database name of Teradata. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Database { get; set; }
+        public DataFactoryElement<string> Database { get; set; }
         /// <summary> The table name of Teradata. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Table { get; set; }
+        public DataFactoryElement<string> Table { get; set; }
     }
 }

@@ -21,21 +21,21 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(LinkedServices))
             {
-                writer.WritePropertyName("linkedServices");
+                writer.WritePropertyName("linkedServices"u8);
                 writer.WriteStartArray();
                 foreach (var item in LinkedServices)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<LinkedServiceReference>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(Datasets))
             {
-                writer.WritePropertyName("datasets");
+                writer.WritePropertyName("datasets"u8);
                 writer.WriteStartArray();
                 foreach (var item in Datasets)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<DatasetReference>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -44,15 +44,18 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static CustomActivityReferenceObject DeserializeCustomActivityReferenceObject(JsonElement element)
         {
-            Optional<IList<LinkedServiceReference>> linkedServices = default;
-            Optional<IList<DatasetReference>> datasets = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<LinkedServiceReference> linkedServices = default;
+            IList<DatasetReference> datasets = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("linkedServices"))
+                if (property.NameEquals("linkedServices"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<LinkedServiceReference> array = new List<LinkedServiceReference>();
@@ -63,11 +66,10 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     linkedServices = array;
                     continue;
                 }
-                if (property.NameEquals("datasets"))
+                if (property.NameEquals("datasets"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DatasetReference> array = new List<DatasetReference>();
@@ -79,14 +81,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new CustomActivityReferenceObject(Optional.ToList(linkedServices), Optional.ToList(datasets));
+            return new CustomActivityReferenceObject(linkedServices ?? new ChangeTrackingList<LinkedServiceReference>(), datasets ?? new ChangeTrackingList<DatasetReference>());
         }
 
         internal partial class CustomActivityReferenceObjectConverter : JsonConverter<CustomActivityReferenceObject>
         {
             public override void Write(Utf8JsonWriter writer, CustomActivityReferenceObject model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<CustomActivityReferenceObject>(model);
             }
             public override CustomActivityReferenceObject Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

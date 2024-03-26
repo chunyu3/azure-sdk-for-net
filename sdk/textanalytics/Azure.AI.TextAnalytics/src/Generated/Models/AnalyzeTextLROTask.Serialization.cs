@@ -15,11 +15,11 @@ namespace Azure.AI.TextAnalytics.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("kind");
+            writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind.ToString());
             if (Optional.IsDefined(TaskName))
             {
-                writer.WritePropertyName("taskName");
+                writer.WritePropertyName("taskName"u8);
                 writer.WriteStringValue(TaskName);
             }
             writer.WriteEndObject();
@@ -27,10 +27,15 @@ namespace Azure.AI.TextAnalytics.Models
 
         internal static AnalyzeTextLROTask DeserializeAnalyzeTextLROTask(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("kind", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
+                    case "AbstractiveSummarization": return AbstractiveSummarizationLROTask.DeserializeAbstractiveSummarizationLROTask(element);
                     case "CustomEntityRecognition": return CustomEntitiesLROTask.DeserializeCustomEntitiesLROTask(element);
                     case "CustomMultiLabelClassification": return CustomMultiLabelClassificationLROTask.DeserializeCustomMultiLabelClassificationLROTask(element);
                     case "CustomSingleLabelClassification": return CustomSingleLabelClassificationLROTask.DeserializeCustomSingleLabelClassificationLROTask(element);
@@ -43,22 +48,7 @@ namespace Azure.AI.TextAnalytics.Models
                     case "SentimentAnalysis": return SentimentAnalysisLROTask.DeserializeSentimentAnalysisLROTask(element);
                 }
             }
-            AnalyzeTextLROTaskKind kind = default;
-            Optional<string> taskName = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals("kind"))
-                {
-                    kind = new AnalyzeTextLROTaskKind(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("taskName"))
-                {
-                    taskName = property.Value.GetString();
-                    continue;
-                }
-            }
-            return new AnalyzeTextLROTask(taskName.Value, kind);
+            return UnknownAnalyzeTextLROTask.DeserializeUnknownAnalyzeTextLROTask(element);
         }
     }
 }

@@ -18,17 +18,17 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Value))
             {
-                writer.WritePropertyName("value");
+                writer.WritePropertyName("value"u8);
                 writer.WriteStartArray();
                 foreach (var item in Value)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<PipelineTopology>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ContinuationToken))
             {
-                writer.WritePropertyName("@continuationToken");
+                writer.WritePropertyName("@continuationToken"u8);
                 writer.WriteStringValue(ContinuationToken);
             }
             writer.WriteEndObject();
@@ -36,15 +36,18 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static PipelineTopologyCollection DeserializePipelineTopologyCollection(JsonElement element)
         {
-            Optional<IList<PipelineTopology>> value = default;
-            Optional<string> continuationToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<PipelineTopology> value = default;
+            string continuationToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<PipelineTopology> array = new List<PipelineTopology>();
@@ -55,13 +58,13 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("@continuationToken"))
+                if (property.NameEquals("@continuationToken"u8))
                 {
                     continuationToken = property.Value.GetString();
                     continue;
                 }
             }
-            return new PipelineTopologyCollection(Optional.ToList(value), continuationToken.Value);
+            return new PipelineTopologyCollection(value ?? new ChangeTrackingList<PipelineTopology>(), continuationToken);
         }
     }
 }

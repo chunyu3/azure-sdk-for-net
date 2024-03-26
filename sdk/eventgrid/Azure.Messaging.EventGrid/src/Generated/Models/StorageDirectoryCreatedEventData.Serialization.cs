@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -17,63 +16,74 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static StorageDirectoryCreatedEventData DeserializeStorageDirectoryCreatedEventData(JsonElement element)
         {
-            Optional<string> api = default;
-            Optional<string> clientRequestId = default;
-            Optional<string> requestId = default;
-            Optional<string> eTag = default;
-            Optional<string> url = default;
-            Optional<string> sequencer = default;
-            Optional<string> identity = default;
-            Optional<object> storageDiagnostics = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string api = default;
+            string clientRequestId = default;
+            string requestId = default;
+            string eTag = default;
+            string url = default;
+            string sequencer = default;
+            string identity = default;
+            object storageDiagnostics = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("api"))
+                if (property.NameEquals("api"u8))
                 {
                     api = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("clientRequestId"))
+                if (property.NameEquals("clientRequestId"u8))
                 {
                     clientRequestId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("requestId"))
+                if (property.NameEquals("requestId"u8))
                 {
                     requestId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("eTag"))
+                if (property.NameEquals("eTag"u8))
                 {
                     eTag = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("url"))
+                if (property.NameEquals("url"u8))
                 {
                     url = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sequencer"))
+                if (property.NameEquals("sequencer"u8))
                 {
                     sequencer = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("identity"))
+                if (property.NameEquals("identity"u8))
                 {
                     identity = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("storageDiagnostics"))
+                if (property.NameEquals("storageDiagnostics"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     storageDiagnostics = property.Value.GetObject();
                     continue;
                 }
             }
-            return new StorageDirectoryCreatedEventData(api.Value, clientRequestId.Value, requestId.Value, eTag.Value, url.Value, sequencer.Value, identity.Value, storageDiagnostics.Value);
+            return new StorageDirectoryCreatedEventData(
+                api,
+                clientRequestId,
+                requestId,
+                eTag,
+                url,
+                sequencer,
+                identity,
+                storageDiagnostics);
         }
 
         internal partial class StorageDirectoryCreatedEventDataConverter : JsonConverter<StorageDirectoryCreatedEventData>

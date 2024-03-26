@@ -10,10 +10,24 @@ title: ResourceManagementClient
 tag: package-resources-2022-04
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../samples/Generated
+  clear-output-folder: true
 skip-csproj: true
 model-namespace: true
 public-clients: false
 head-as-boolean: false
+modelerfour:
+  lenient-model-deduplication: true
+use-model-reader-writer: true
+enable-bicep-serialization: true
+
+#mgmt-debug:
+#  show-serialized-names: true
+
+patch-initializer-customization:
+  ArmDeploymentContent:
+    Properties: 'new ArmDeploymentProperties(current.Properties.Mode.HasValue ? current.Properties.Mode.Value : ArmDeploymentMode.Incremental)'
 
 request-path-to-parent:
   # setting these to the same parent will automatically merge these operations
@@ -45,7 +59,7 @@ override-operation-name:
   Deployments_WhatIfAtTenantScope: WhatIf
   Deployments_CheckExistenceAtScope: CheckExistence
   jitRequests_ListBySubscription: GetJitRequestDefinitions
-  Deployments_CalculateTemplateHash: CalculateDeploymentTemplateHash 
+  Deployments_CalculateTemplateHash: CalculateDeploymentTemplateHash
 
 operation-groups-to-omit:
    Providers;ProviderResourceTypes;Resources;ResourceGroups;Tags;Subscriptions;Tenants
@@ -60,7 +74,7 @@ format-by-name-rules:
 keep-plural-enums:
   - ScriptCleanupOptions
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -82,6 +96,12 @@ rename-rules:
   SSO: Sso
   URI: Uri
   Urls: Uris
+
+models-to-treat-empty-string-as-null:
+  - ArmApplicationPackageSupportUris
+
+suppress-abstract-base-class:
+- ArmDeploymentScriptData
 
 directive:
   - remove-operation: checkResourceName
@@ -127,7 +147,6 @@ directive:
   - remove-operation: DeploymentOperations_ListAtSubscriptionScope
   - remove-operation: DeploymentOperations_Get
   - remove-operation: DeploymentOperations_List
-
   - remove-operation: Applications_GetById
   - remove-operation: Applications_DeleteById
   - remove-operation: Applications_CreateOrUpdateById
@@ -174,8 +193,6 @@ directive:
       $.Resource['x-ms-client-name'] = 'ArmApplicationResourceBase';
       $.Plan['x-ms-client-name'] = 'ArmApplicationPlan';
       $.Sku['x-ms-client-name'] = 'ArmApplicationSku';
-      $.ErrorResponse['x-ms-client-name'] = 'ArmApplicationErrorResponse';
-      $.OperationListResult['x-ms-client-name'] = 'ArmApplicationOperationListResult';
       $.Operation['x-ms-client-name'] = 'ArmApplicationOperation';
       $.Operation.properties.displayOfApplication = $.Operation.properties.display;
       $.Operation.properties['display'] = undefined;
@@ -318,6 +335,11 @@ directive:
     where: $.definitions.DeploymentScriptPropertiesBase.properties.outputs
     transform: >
       $.additionalProperties = undefined
+  # Avoid breaking change
+  - from: resources.json
+    where: $.definitions.DeploymentProperties
+    transform:
+      delete $.properties.parameters.additionalProperties
 ```
 
 ### Tag: package-resources-2022-04
@@ -326,8 +348,8 @@ These settings apply only when `--tag=package-resources-2022-04` is specified on
 
 ```yaml $(tag) == 'package-resources-2022-04'
 input-file:
-    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/91ac14531f0d05b3d6fcf4a817ea0defde59fe63/specification/resources/resource-manager/Microsoft.Resources/stable/2021-04-01/resources.json
-    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/91ac14531f0d05b3d6fcf4a817ea0defde59fe63/specification/resources/resource-manager/Microsoft.Solutions/stable/2019-07-01/managedapplications.json
-    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/91ac14531f0d05b3d6fcf4a817ea0defde59fe63/specification/resources/resource-manager/Microsoft.Resources/stable/2020-10-01/deploymentScripts.json
-    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/91ac14531f0d05b3d6fcf4a817ea0defde59fe63/specification/resources/resource-manager/Microsoft.Resources/stable/2021-05-01/templateSpecs.json
+    - https://github.com/Azure/azure-rest-api-specs/blob/90a65cb3135d42438a381eb8bb5461a2b99b199f/specification/resources/resource-manager/Microsoft.Resources/stable/2021-05-01/templateSpecs.json
+    - https://github.com/Azure/azure-rest-api-specs/blob/90a65cb3135d42438a381eb8bb5461a2b99b199f/specification/resources/resource-manager/Microsoft.Resources/stable/2020-10-01/deploymentScripts.json
+    - https://github.com/Azure/azure-rest-api-specs/blob/90a65cb3135d42438a381eb8bb5461a2b99b199f/specification/resources/resource-manager/Microsoft.Resources/stable/2022-09-01/resources.json
+    - https://github.com/Azure/azure-rest-api-specs/blob/90a65cb3135d42438a381eb8bb5461a2b99b199f/specification/resources/resource-manager/Microsoft.Solutions/stable/2019-07-01/managedapplications.json
 ```

@@ -17,12 +17,12 @@ namespace Azure.Communication.ShortCodes.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Direction))
             {
-                writer.WritePropertyName("direction");
+                writer.WritePropertyName("direction"u8);
                 writer.WriteStringValue(Direction.Value.ToString());
             }
             if (Optional.IsDefined(Text))
             {
-                writer.WritePropertyName("text");
+                writer.WritePropertyName("text"u8);
                 writer.WriteStringValue(Text);
             }
             writer.WriteEndObject();
@@ -30,27 +30,30 @@ namespace Azure.Communication.ShortCodes.Models
 
         internal static MessageExample DeserializeMessageExample(JsonElement element)
         {
-            Optional<MessageDirection> direction = default;
-            Optional<string> text = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            MessageDirection? direction = default;
+            string text = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("direction"))
+                if (property.NameEquals("direction"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     direction = new MessageDirection(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("text"))
+                if (property.NameEquals("text"u8))
                 {
                     text = property.Value.GetString();
                     continue;
                 }
             }
-            return new MessageExample(Optional.ToNullable(direction), text.Value);
+            return new MessageExample(direction, text);
         }
     }
 }

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.AppService.Models;
@@ -57,9 +56,9 @@ namespace Azure.ResourceManager.AppService
         }
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<ApplicationStackCollection>> GetAvailableStacksAsync(ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApplicationStackListResult>> GetAvailableStacksAsync(ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetAvailableStacksRequest(osTypeSelected);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -67,9 +66,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -78,9 +77,9 @@ namespace Azure.ResourceManager.AppService
         }
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<ApplicationStackCollection> GetAvailableStacks(ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public Response<ApplicationStackListResult> GetAvailableStacks(ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetAvailableStacksRequest(osTypeSelected);
             _pipeline.Send(message, cancellationToken);
@@ -88,9 +87,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -120,7 +119,7 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available Function app frameworks and their versions. </summary>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<FunctionAppStackCollection>> GetFunctionAppStacksAsync(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<FunctionAppStackListResult>> GetFunctionAppStacksAsync(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetFunctionAppStacksRequest(stackOSType);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -128,9 +127,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -141,7 +140,7 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available Function app frameworks and their versions. </summary>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<FunctionAppStackCollection> GetFunctionAppStacks(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<FunctionAppStackListResult> GetFunctionAppStacks(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetFunctionAppStacksRequest(stackOSType);
             _pipeline.Send(message, cancellationToken);
@@ -149,9 +148,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -184,7 +183,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="location"> Function App stack location. </param>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<FunctionAppStackCollection>> GetFunctionAppStacksForLocationAsync(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<FunctionAppStackListResult>> GetFunctionAppStacksForLocationAsync(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetFunctionAppStacksForLocationRequest(location, stackOSType);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -192,9 +191,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -206,7 +205,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="location"> Function App stack location. </param>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<FunctionAppStackCollection> GetFunctionAppStacksForLocation(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<FunctionAppStackListResult> GetFunctionAppStacksForLocation(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetFunctionAppStacksForLocationRequest(location, stackOSType);
             _pipeline.Send(message, cancellationToken);
@@ -214,9 +213,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -249,7 +248,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="location"> Web App stack location. </param>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<WebAppStackCollection>> GetWebAppStacksForLocationAsync(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<WebAppStackListResult>> GetWebAppStacksForLocationAsync(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetWebAppStacksForLocationRequest(location, stackOSType);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -257,9 +256,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -271,7 +270,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="location"> Web App stack location. </param>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<WebAppStackCollection> GetWebAppStacksForLocation(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<WebAppStackListResult> GetWebAppStacksForLocation(AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetWebAppStacksForLocationRequest(location, stackOSType);
             _pipeline.Send(message, cancellationToken);
@@ -279,9 +278,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -306,7 +305,7 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Gets all available operations for the Microsoft.Web resource provider. Also exposes resource metric definitions. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<CsmOperationCollection>> ListOperationsAsync(CancellationToken cancellationToken = default)
+        public async Task<Response<CsmOperationListResult>> ListOperationsAsync(CancellationToken cancellationToken = default)
         {
             using var message = CreateListOperationsRequest();
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -314,9 +313,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        CsmOperationCollection value = default;
+                        CsmOperationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CsmOperationCollection.DeserializeCsmOperationCollection(document.RootElement);
+                        value = CsmOperationListResult.DeserializeCsmOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -326,7 +325,7 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Gets all available operations for the Microsoft.Web resource provider. Also exposes resource metric definitions. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<CsmOperationCollection> ListOperations(CancellationToken cancellationToken = default)
+        public Response<CsmOperationListResult> ListOperations(CancellationToken cancellationToken = default)
         {
             using var message = CreateListOperationsRequest();
             _pipeline.Send(message, cancellationToken);
@@ -334,9 +333,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        CsmOperationCollection value = default;
+                        CsmOperationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CsmOperationCollection.DeserializeCsmOperationCollection(document.RootElement);
+                        value = CsmOperationListResult.DeserializeCsmOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -366,7 +365,7 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available Web app frameworks and their versions. </summary>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<WebAppStackCollection>> GetWebAppStacksAsync(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<WebAppStackListResult>> GetWebAppStacksAsync(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetWebAppStacksRequest(stackOSType);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -374,9 +373,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -387,7 +386,7 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available Web app frameworks and their versions. </summary>
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<WebAppStackCollection> GetWebAppStacks(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<WebAppStackListResult> GetWebAppStacks(ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             using var message = CreateGetWebAppStacksRequest(stackOSType);
             _pipeline.Send(message, cancellationToken);
@@ -395,9 +394,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -428,11 +427,11 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ApplicationStackCollection>> GetAvailableStacksOnPremAsync(string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApplicationStackListResult>> GetAvailableStacksOnPremAsync(string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -442,9 +441,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -454,11 +453,11 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ApplicationStackCollection> GetAvailableStacksOnPrem(string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public Response<ApplicationStackListResult> GetAvailableStacksOnPrem(string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -468,9 +467,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -494,10 +493,10 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<ApplicationStackCollection>> GetAvailableStacksNextPageAsync(string nextLink, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApplicationStackListResult>> GetAvailableStacksNextPageAsync(string nextLink, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -507,9 +506,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -519,10 +518,10 @@ namespace Azure.ResourceManager.AppService
 
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<ApplicationStackCollection> GetAvailableStacksNextPage(string nextLink, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public Response<ApplicationStackListResult> GetAvailableStacksNextPage(string nextLink, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -532,9 +531,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -561,7 +560,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<FunctionAppStackCollection>> GetFunctionAppStacksNextPageAsync(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<FunctionAppStackListResult>> GetFunctionAppStacksNextPageAsync(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -571,9 +570,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -586,7 +585,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<FunctionAppStackCollection> GetFunctionAppStacksNextPage(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<FunctionAppStackListResult> GetFunctionAppStacksNextPage(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -596,9 +595,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -626,7 +625,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<FunctionAppStackCollection>> GetFunctionAppStacksForLocationNextPageAsync(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<FunctionAppStackListResult>> GetFunctionAppStacksForLocationNextPageAsync(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -636,9 +635,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -652,7 +651,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<FunctionAppStackCollection> GetFunctionAppStacksForLocationNextPage(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<FunctionAppStackListResult> GetFunctionAppStacksForLocationNextPage(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -662,9 +661,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        FunctionAppStackCollection value = default;
+                        FunctionAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = FunctionAppStackCollection.DeserializeFunctionAppStackCollection(document.RootElement);
+                        value = FunctionAppStackListResult.DeserializeFunctionAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -692,7 +691,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<WebAppStackCollection>> GetWebAppStacksForLocationNextPageAsync(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<WebAppStackListResult>> GetWebAppStacksForLocationNextPageAsync(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -702,9 +701,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -718,7 +717,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<WebAppStackCollection> GetWebAppStacksForLocationNextPage(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<WebAppStackListResult> GetWebAppStacksForLocationNextPage(string nextLink, AzureLocation location, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -728,9 +727,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -756,7 +755,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<CsmOperationCollection>> ListOperationsNextPageAsync(string nextLink, CancellationToken cancellationToken = default)
+        public async Task<Response<CsmOperationListResult>> ListOperationsNextPageAsync(string nextLink, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -766,9 +765,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        CsmOperationCollection value = default;
+                        CsmOperationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CsmOperationCollection.DeserializeCsmOperationCollection(document.RootElement);
+                        value = CsmOperationListResult.DeserializeCsmOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -780,7 +779,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<CsmOperationCollection> ListOperationsNextPage(string nextLink, CancellationToken cancellationToken = default)
+        public Response<CsmOperationListResult> ListOperationsNextPage(string nextLink, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -790,9 +789,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        CsmOperationCollection value = default;
+                        CsmOperationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CsmOperationCollection.DeserializeCsmOperationCollection(document.RootElement);
+                        value = CsmOperationListResult.DeserializeCsmOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -819,7 +818,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<WebAppStackCollection>> GetWebAppStacksNextPageAsync(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public async Task<Response<WebAppStackListResult>> GetWebAppStacksNextPageAsync(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -829,9 +828,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -844,7 +843,7 @@ namespace Azure.ResourceManager.AppService
         /// <param name="stackOSType"> Stack OS Type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<WebAppStackCollection> GetWebAppStacksNextPage(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
+        public Response<WebAppStackListResult> GetWebAppStacksNextPage(string nextLink, ProviderStackOSType? stackOSType = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
@@ -854,9 +853,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        WebAppStackCollection value = default;
+                        WebAppStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = WebAppStackCollection.DeserializeWebAppStackCollection(document.RootElement);
+                        value = WebAppStackListResult.DeserializeWebAppStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -881,11 +880,11 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ApplicationStackCollection>> GetAvailableStacksOnPremNextPageAsync(string nextLink, string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApplicationStackListResult>> GetAvailableStacksOnPremNextPageAsync(string nextLink, string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -896,9 +895,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -909,11 +908,11 @@ namespace Azure.ResourceManager.AppService
         /// <summary> Description for Get available application frameworks and their versions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Your Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
-        /// <param name="osTypeSelected"> The ProviderOSTypeSelected to use. </param>
+        /// <param name="osTypeSelected"> The <see cref="ProviderOSTypeSelected"/>? to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ApplicationStackCollection> GetAvailableStacksOnPremNextPage(string nextLink, string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
+        public Response<ApplicationStackListResult> GetAvailableStacksOnPremNextPage(string nextLink, string subscriptionId, ProviderOSTypeSelected? osTypeSelected = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -924,9 +923,9 @@ namespace Azure.ResourceManager.AppService
             {
                 case 200:
                     {
-                        ApplicationStackCollection value = default;
+                        ApplicationStackListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApplicationStackCollection.DeserializeApplicationStackCollection(document.RootElement);
+                        value = ApplicationStackListResult.DeserializeApplicationStackListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

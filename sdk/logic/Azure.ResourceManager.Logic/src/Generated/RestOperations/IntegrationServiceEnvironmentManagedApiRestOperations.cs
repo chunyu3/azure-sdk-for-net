@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Logic.Models;
@@ -68,7 +67,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ApiOperationListResult>> ListAsync(string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
+        public async Task<Response<LogicApiOperationListResult>> ListAsync(string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroup, nameof(resourceGroup));
@@ -81,9 +80,9 @@ namespace Azure.ResourceManager.Logic
             {
                 case 200:
                     {
-                        ApiOperationListResult value = default;
+                        LogicApiOperationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApiOperationListResult.DeserializeApiOperationListResult(document.RootElement);
+                        value = LogicApiOperationListResult.DeserializeLogicApiOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -99,7 +98,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ApiOperationListResult> List(string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
+        public Response<LogicApiOperationListResult> List(string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroup, nameof(resourceGroup));
@@ -112,9 +111,9 @@ namespace Azure.ResourceManager.Logic
             {
                 case 200:
                     {
-                        ApiOperationListResult value = default;
+                        LogicApiOperationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApiOperationListResult.DeserializeApiOperationListResult(document.RootElement);
+                        value = LogicApiOperationListResult.DeserializeLogicApiOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -145,7 +144,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ApiOperationListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
+        public async Task<Response<LogicApiOperationListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -159,9 +158,9 @@ namespace Azure.ResourceManager.Logic
             {
                 case 200:
                     {
-                        ApiOperationListResult value = default;
+                        LogicApiOperationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ApiOperationListResult.DeserializeApiOperationListResult(document.RootElement);
+                        value = LogicApiOperationListResult.DeserializeLogicApiOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -178,7 +177,7 @@ namespace Azure.ResourceManager.Logic
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroup"/>, <paramref name="integrationServiceEnvironmentName"/> or <paramref name="apiName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ApiOperationListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
+        public Response<LogicApiOperationListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroup, string integrationServiceEnvironmentName, string apiName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -192,9 +191,9 @@ namespace Azure.ResourceManager.Logic
             {
                 case 200:
                     {
-                        ApiOperationListResult value = default;
+                        LogicApiOperationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ApiOperationListResult.DeserializeApiOperationListResult(document.RootElement);
+                        value = LogicApiOperationListResult.DeserializeLogicApiOperationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

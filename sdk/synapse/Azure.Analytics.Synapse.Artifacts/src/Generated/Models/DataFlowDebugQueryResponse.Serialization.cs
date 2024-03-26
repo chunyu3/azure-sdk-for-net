@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(RunId))
             {
-                writer.WritePropertyName("runId");
+                writer.WritePropertyName("runId"u8);
                 writer.WriteStringValue(RunId);
             }
             writer.WriteEndObject();
@@ -28,23 +28,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static DataFlowDebugQueryResponse DeserializeDataFlowDebugQueryResponse(JsonElement element)
         {
-            Optional<string> runId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string runId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("runId"))
+                if (property.NameEquals("runId"u8))
                 {
                     runId = property.Value.GetString();
                     continue;
                 }
             }
-            return new DataFlowDebugQueryResponse(runId.Value);
+            return new DataFlowDebugQueryResponse(runId);
         }
 
         internal partial class DataFlowDebugQueryResponseConverter : JsonConverter<DataFlowDebugQueryResponse>
         {
             public override void Write(Utf8JsonWriter writer, DataFlowDebugQueryResponse model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DataFlowDebugQueryResponse>(model);
             }
             public override DataFlowDebugQueryResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

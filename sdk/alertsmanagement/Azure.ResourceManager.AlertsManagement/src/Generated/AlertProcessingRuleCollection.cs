@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.AlertsManagement
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AlertProcessingRuleResource" /> and their operations.
-    /// Each <see cref="AlertProcessingRuleResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get an <see cref="AlertProcessingRuleCollection" /> instance call the GetAlertProcessingRules method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="AlertProcessingRuleResource"/> and their operations.
+    /// Each <see cref="AlertProcessingRuleResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get an <see cref="AlertProcessingRuleCollection"/> instance call the GetAlertProcessingRules method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class AlertProcessingRuleCollection : ArmCollection, IEnumerable<AlertProcessingRuleResource>, IAsyncEnumerable<AlertProcessingRuleResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Create or update an alert processing rule.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be created/updated. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Create or update an alert processing rule.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be created/updated. </param>
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get an alert processing rule by name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_GetByName
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get an alert processing rule by name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_GetByName
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,92 +242,84 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// List all alert processing rules in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules
-        /// Operation Id: AlertProcessingRules_ListByResourceGroup
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AlertProcessingRuleResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="AlertProcessingRuleResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AlertProcessingRuleResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<AlertProcessingRuleResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _alertProcessingRuleRestClient.ListByResourceGroupAsync(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AlertProcessingRuleResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AlertProcessingRuleResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _alertProcessingRuleRestClient.ListByResourceGroupNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AlertProcessingRuleResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _alertProcessingRuleRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _alertProcessingRuleRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new AlertProcessingRuleResource(Client, AlertProcessingRuleData.DeserializeAlertProcessingRuleData(e)), _alertProcessingRuleClientDiagnostics, Pipeline, "AlertProcessingRuleCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List all alert processing rules in a resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules
-        /// Operation Id: AlertProcessingRules_ListByResourceGroup
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_ListByResourceGroup</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AlertProcessingRuleResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AlertProcessingRuleResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AlertProcessingRuleResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<AlertProcessingRuleResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _alertProcessingRuleRestClient.ListByResourceGroup(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AlertProcessingRuleResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AlertProcessingRuleResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _alertProcessingRuleRestClient.ListByResourceGroupNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AlertProcessingRuleResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _alertProcessingRuleRestClient.CreateListByResourceGroupRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _alertProcessingRuleRestClient.CreateListByResourceGroupNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new AlertProcessingRuleResource(Client, AlertProcessingRuleData.DeserializeAlertProcessingRuleData(e)), _alertProcessingRuleClientDiagnostics, Pipeline, "AlertProcessingRuleCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_GetByName
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -291,8 +345,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}
-        /// Operation Id: AlertProcessingRules_GetByName
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -308,6 +378,96 @@ namespace Azure.ResourceManager.AlertsManagement
             {
                 var response = _alertProcessingRuleRestClient.GetByName(Id.SubscriptionId, Id.ResourceGroupName, alertProcessingRuleName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="alertProcessingRuleName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="alertProcessingRuleName"/> is null. </exception>
+        public virtual async Task<NullableResponse<AlertProcessingRuleResource>> GetIfExistsAsync(string alertProcessingRuleName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(alertProcessingRuleName, nameof(alertProcessingRuleName));
+
+            using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _alertProcessingRuleRestClient.GetByNameAsync(Id.SubscriptionId, Id.ResourceGroupName, alertProcessingRuleName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<AlertProcessingRuleResource>(response.GetRawResponse());
+                return Response.FromValue(new AlertProcessingRuleResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AlertsManagement/actionRules/{alertProcessingRuleName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AlertProcessingRules_GetByName</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-08</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AlertProcessingRuleResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="alertProcessingRuleName"> The name of the alert processing rule that needs to be fetched. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="alertProcessingRuleName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="alertProcessingRuleName"/> is null. </exception>
+        public virtual NullableResponse<AlertProcessingRuleResource> GetIfExists(string alertProcessingRuleName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(alertProcessingRuleName, nameof(alertProcessingRuleName));
+
+            using var scope = _alertProcessingRuleClientDiagnostics.CreateScope("AlertProcessingRuleCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _alertProcessingRuleRestClient.GetByName(Id.SubscriptionId, Id.ResourceGroupName, alertProcessingRuleName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<AlertProcessingRuleResource>(response.GetRawResponse());
+                return Response.FromValue(new AlertProcessingRuleResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

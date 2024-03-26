@@ -7,21 +7,20 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Properties of managed integration runtime operation result. </summary>
     public partial class ManagedIntegrationRuntimeOperationResult
     {
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeOperationResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeOperationResult"/>. </summary>
         internal ManagedIntegrationRuntimeOperationResult()
         {
             Parameters = new ChangeTrackingList<string>();
             AdditionalProperties = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeOperationResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeOperationResult"/>. </summary>
         /// <param name="managedIntegrationRuntimeOperationResultType"> The operation type. Could be start or stop. </param>
         /// <param name="startOn"> The start time of the operation. </param>
         /// <param name="result"> The operation result. </param>
@@ -52,7 +51,36 @@ namespace Azure.ResourceManager.DataFactory.Models
         public IReadOnlyList<string> Parameters { get; }
         /// <summary> The activity id for the operation request. </summary>
         public string ActivityId { get; }
-        /// <summary> Additional Properties. </summary>
+        /// <summary>
+        /// Additional Properties
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IReadOnlyDictionary<string, BinaryData> AdditionalProperties { get; }
     }
 }

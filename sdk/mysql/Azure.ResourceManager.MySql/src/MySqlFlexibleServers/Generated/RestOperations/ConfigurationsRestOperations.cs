@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.MySql.FlexibleServers.Models;
@@ -33,11 +33,95 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-05-01";
+            _apiVersion = apiVersion ?? "2023-06-01-preview";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, string configurationName, ConfigurationData data)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data)
+        {
+            var message = _pipeline.CreateMessage();
+            var request = message.Request;
+            request.Method = RequestMethod.Put;
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.DBforMySQL/flexibleServers/", false);
+            uri.AppendPath(serverName, true);
+            uri.AppendPath("/configurations/", false);
+            uri.AppendPath(configurationName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            request.Uri = uri;
+            request.Headers.Add("Accept", "application/json");
+            request.Headers.Add("Content-Type", "application/json");
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<MySqlFlexibleServerConfigurationData>(data, new ModelReaderWriterOptions("W"));
+            request.Content = content;
+            _userAgent.Apply(message);
+            return message;
+        }
+
+        /// <summary> Updates a configuration of a server. </summary>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="configurationName"> The name of the server configuration. </param>
+        /// <param name="data"> The required parameters for updating a server configuration. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/>, <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        public async Task<Response> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
+            Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
+            Argument.AssertNotNull(data, nameof(data));
+
+            using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, serverName, configurationName, data);
+            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
+            switch (message.Response.Status)
+            {
+                case 200:
+                case 202:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        /// <summary> Updates a configuration of a server. </summary>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
+        /// <param name="serverName"> The name of the server. </param>
+        /// <param name="configurationName"> The name of the server configuration. </param>
+        /// <param name="data"> The required parameters for updating a server configuration. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/>, <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        public Response CreateOrUpdate(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
+            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
+            Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
+            Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
+            Argument.AssertNotNull(data, nameof(data));
+
+            using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, serverName, configurationName, data);
+            _pipeline.Send(message, cancellationToken);
+            switch (message.Response.Status)
+            {
+                case 200:
+                case 202:
+                    return message.Response;
+                default:
+                    throw new RequestFailedException(message.Response);
+            }
+        }
+
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -57,14 +141,14 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<MySqlFlexibleServerConfigurationData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Updates a configuration of a server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="configurationName"> The name of the server configuration. </param>
@@ -72,7 +156,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/>, <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string serverName, string configurationName, ConfigurationData data, CancellationToken cancellationToken = default)
+        public async Task<Response> UpdateAsync(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -93,7 +177,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         }
 
         /// <summary> Updates a configuration of a server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="configurationName"> The name of the server configuration. </param>
@@ -101,7 +185,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/>, <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Update(string subscriptionId, string resourceGroupName, string serverName, string configurationName, ConfigurationData data, CancellationToken cancellationToken = default)
+        public Response Update(string subscriptionId, string resourceGroupName, string serverName, string configurationName, MySqlFlexibleServerConfigurationData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -144,14 +228,14 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         }
 
         /// <summary> Gets information about a configuration of server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="configurationName"> The name of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ConfigurationData>> GetAsync(string subscriptionId, string resourceGroupName, string serverName, string configurationName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlFlexibleServerConfigurationData>> GetAsync(string subscriptionId, string resourceGroupName, string serverName, string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -164,27 +248,27 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             {
                 case 200:
                     {
-                        ConfigurationData value = default;
+                        MySqlFlexibleServerConfigurationData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ConfigurationData.DeserializeConfigurationData(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationData.DeserializeMySqlFlexibleServerConfigurationData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((ConfigurationData)null, message.Response);
+                    return Response.FromValue((MySqlFlexibleServerConfigurationData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets information about a configuration of server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
         /// <param name="configurationName"> The name of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ConfigurationData> Get(string subscriptionId, string resourceGroupName, string serverName, string configurationName, CancellationToken cancellationToken = default)
+        public Response<MySqlFlexibleServerConfigurationData> Get(string subscriptionId, string resourceGroupName, string serverName, string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -197,19 +281,19 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             {
                 case 200:
                     {
-                        ConfigurationData value = default;
+                        MySqlFlexibleServerConfigurationData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ConfigurationData.DeserializeConfigurationData(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationData.DeserializeMySqlFlexibleServerConfigurationData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((ConfigurationData)null, message.Response);
+                    return Response.FromValue((MySqlFlexibleServerConfigurationData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateBatchUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, ConfigurationListForBatchUpdate configurationListForBatchUpdate)
+        internal HttpMessage CreateBatchUpdateRequest(string subscriptionId, string resourceGroupName, string serverName, MySqlFlexibleServerConfigurationListForBatchUpdate mySqlFlexibleServerConfigurationListForBatchUpdate)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -228,28 +312,28 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(configurationListForBatchUpdate);
+            content.JsonWriter.WriteObjectValue<MySqlFlexibleServerConfigurationListForBatchUpdate>(mySqlFlexibleServerConfigurationListForBatchUpdate, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Update a list of configurations in a given server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
-        /// <param name="configurationListForBatchUpdate"> The parameters for updating a list of server configuration. </param>
+        /// <param name="mySqlFlexibleServerConfigurationListForBatchUpdate"> The parameters for updating a list of server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationListForBatchUpdate"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="mySqlFlexibleServerConfigurationListForBatchUpdate"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> BatchUpdateAsync(string subscriptionId, string resourceGroupName, string serverName, ConfigurationListForBatchUpdate configurationListForBatchUpdate, CancellationToken cancellationToken = default)
+        public async Task<Response> BatchUpdateAsync(string subscriptionId, string resourceGroupName, string serverName, MySqlFlexibleServerConfigurationListForBatchUpdate mySqlFlexibleServerConfigurationListForBatchUpdate, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
-            Argument.AssertNotNull(configurationListForBatchUpdate, nameof(configurationListForBatchUpdate));
+            Argument.AssertNotNull(mySqlFlexibleServerConfigurationListForBatchUpdate, nameof(mySqlFlexibleServerConfigurationListForBatchUpdate));
 
-            using var message = CreateBatchUpdateRequest(subscriptionId, resourceGroupName, serverName, configurationListForBatchUpdate);
+            using var message = CreateBatchUpdateRequest(subscriptionId, resourceGroupName, serverName, mySqlFlexibleServerConfigurationListForBatchUpdate);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -262,21 +346,21 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         }
 
         /// <summary> Update a list of configurations in a given server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
-        /// <param name="configurationListForBatchUpdate"> The parameters for updating a list of server configuration. </param>
+        /// <param name="mySqlFlexibleServerConfigurationListForBatchUpdate"> The parameters for updating a list of server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="configurationListForBatchUpdate"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serverName"/> or <paramref name="mySqlFlexibleServerConfigurationListForBatchUpdate"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response BatchUpdate(string subscriptionId, string resourceGroupName, string serverName, ConfigurationListForBatchUpdate configurationListForBatchUpdate, CancellationToken cancellationToken = default)
+        public Response BatchUpdate(string subscriptionId, string resourceGroupName, string serverName, MySqlFlexibleServerConfigurationListForBatchUpdate mySqlFlexibleServerConfigurationListForBatchUpdate, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
-            Argument.AssertNotNull(configurationListForBatchUpdate, nameof(configurationListForBatchUpdate));
+            Argument.AssertNotNull(mySqlFlexibleServerConfigurationListForBatchUpdate, nameof(mySqlFlexibleServerConfigurationListForBatchUpdate));
 
-            using var message = CreateBatchUpdateRequest(subscriptionId, resourceGroupName, serverName, configurationListForBatchUpdate);
+            using var message = CreateBatchUpdateRequest(subscriptionId, resourceGroupName, serverName, mySqlFlexibleServerConfigurationListForBatchUpdate);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -288,7 +372,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             }
         }
 
-        internal HttpMessage CreateListByServerRequest(string subscriptionId, string resourceGroupName, string serverName)
+        internal HttpMessage CreateListByServerRequest(string subscriptionId, string resourceGroupName, string serverName, string tags, string keyword, int? page, int? pageSize)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -303,6 +387,22 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             uri.AppendPath(serverName, true);
             uri.AppendPath("/configurations", false);
             uri.AppendQuery("api-version", _apiVersion, true);
+            if (tags != null)
+            {
+                uri.AppendQuery("tags", tags, true);
+            }
+            if (keyword != null)
+            {
+                uri.AppendQuery("keyword", keyword, true);
+            }
+            if (page != null)
+            {
+                uri.AppendQuery("page", page.Value, true);
+            }
+            if (pageSize != null)
+            {
+                uri.AppendQuery("pageSize", pageSize.Value, true);
+            }
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             _userAgent.Apply(message);
@@ -310,27 +410,31 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         }
 
         /// <summary> List all the configurations in a given server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
+        /// <param name="tags"> The tags of the server configuration. </param>
+        /// <param name="keyword"> The keyword of the server configuration. </param>
+        /// <param name="page"> The page of the server configuration. </param>
+        /// <param name="pageSize"> The pageSize of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ConfigurationListResult>> ListByServerAsync(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlFlexibleServerConfigurationListResult>> ListByServerAsync(string subscriptionId, string resourceGroupName, string serverName, string tags = null, string keyword = null, int? page = null, int? pageSize = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
 
-            using var message = CreateListByServerRequest(subscriptionId, resourceGroupName, serverName);
+            using var message = CreateListByServerRequest(subscriptionId, resourceGroupName, serverName, tags, keyword, page, pageSize);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        ConfigurationListResult value = default;
+                        MySqlFlexibleServerConfigurationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ConfigurationListResult.DeserializeConfigurationListResult(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationListResult.DeserializeMySqlFlexibleServerConfigurationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -339,27 +443,31 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
         }
 
         /// <summary> List all the configurations in a given server. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
+        /// <param name="tags"> The tags of the server configuration. </param>
+        /// <param name="keyword"> The keyword of the server configuration. </param>
+        /// <param name="page"> The page of the server configuration. </param>
+        /// <param name="pageSize"> The pageSize of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ConfigurationListResult> ListByServer(string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public Response<MySqlFlexibleServerConfigurationListResult> ListByServer(string subscriptionId, string resourceGroupName, string serverName, string tags = null, string keyword = null, int? page = null, int? pageSize = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
 
-            using var message = CreateListByServerRequest(subscriptionId, resourceGroupName, serverName);
+            using var message = CreateListByServerRequest(subscriptionId, resourceGroupName, serverName, tags, keyword, page, pageSize);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        ConfigurationListResult value = default;
+                        MySqlFlexibleServerConfigurationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ConfigurationListResult.DeserializeConfigurationListResult(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationListResult.DeserializeMySqlFlexibleServerConfigurationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -367,7 +475,7 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
             }
         }
 
-        internal HttpMessage CreateListByServerNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string serverName)
+        internal HttpMessage CreateListByServerNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string serverName, string tags, string keyword, int? page, int? pageSize)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -383,28 +491,32 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
 
         /// <summary> List all the configurations in a given server. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
+        /// <param name="tags"> The tags of the server configuration. </param>
+        /// <param name="keyword"> The keyword of the server configuration. </param>
+        /// <param name="page"> The page of the server configuration. </param>
+        /// <param name="pageSize"> The pageSize of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ConfigurationListResult>> ListByServerNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public async Task<Response<MySqlFlexibleServerConfigurationListResult>> ListByServerNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serverName, string tags = null, string keyword = null, int? page = null, int? pageSize = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
 
-            using var message = CreateListByServerNextPageRequest(nextLink, subscriptionId, resourceGroupName, serverName);
+            using var message = CreateListByServerNextPageRequest(nextLink, subscriptionId, resourceGroupName, serverName, tags, keyword, page, pageSize);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        ConfigurationListResult value = default;
+                        MySqlFlexibleServerConfigurationListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = ConfigurationListResult.DeserializeConfigurationListResult(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationListResult.DeserializeMySqlFlexibleServerConfigurationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -414,28 +526,32 @@ namespace Azure.ResourceManager.MySql.FlexibleServers
 
         /// <summary> List all the configurations in a given server. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="serverName"> The name of the server. </param>
+        /// <param name="tags"> The tags of the server configuration. </param>
+        /// <param name="keyword"> The keyword of the server configuration. </param>
+        /// <param name="page"> The page of the server configuration. </param>
+        /// <param name="pageSize"> The pageSize of the server configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serverName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ConfigurationListResult> ListByServerNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serverName, CancellationToken cancellationToken = default)
+        public Response<MySqlFlexibleServerConfigurationListResult> ListByServerNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serverName, string tags = null, string keyword = null, int? page = null, int? pageSize = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serverName, nameof(serverName));
 
-            using var message = CreateListByServerNextPageRequest(nextLink, subscriptionId, resourceGroupName, serverName);
+            using var message = CreateListByServerNextPageRequest(nextLink, subscriptionId, resourceGroupName, serverName, tags, keyword, page, pageSize);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        ConfigurationListResult value = default;
+                        MySqlFlexibleServerConfigurationListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = ConfigurationListResult.DeserializeConfigurationListResult(document.RootElement);
+                        value = MySqlFlexibleServerConfigurationListResult.DeserializeMySqlFlexibleServerConfigurationListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

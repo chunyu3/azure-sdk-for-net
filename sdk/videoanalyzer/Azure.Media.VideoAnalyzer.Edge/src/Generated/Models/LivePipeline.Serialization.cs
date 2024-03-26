@@ -15,55 +15,57 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
             if (Optional.IsDefined(SystemData))
             {
-                writer.WritePropertyName("systemData");
-                writer.WriteObjectValue(SystemData);
+                writer.WritePropertyName("systemData"u8);
+                writer.WriteObjectValue<SystemData>(SystemData);
             }
             if (Optional.IsDefined(Properties))
             {
-                writer.WritePropertyName("properties");
-                writer.WriteObjectValue(Properties);
+                writer.WritePropertyName("properties"u8);
+                writer.WriteObjectValue<LivePipelineProperties>(Properties);
             }
             writer.WriteEndObject();
         }
 
         internal static LivePipeline DeserializeLivePipeline(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
-            Optional<SystemData> systemData = default;
-            Optional<LivePipelineProperties> properties = default;
+            SystemData systemData = default;
+            LivePipelineProperties properties = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     systemData = SystemData.DeserializeSystemData(property.Value);
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     properties = LivePipelineProperties.DeserializeLivePipelineProperties(property.Value);
                     continue;
                 }
             }
-            return new LivePipeline(name, systemData.Value, properties.Value);
+            return new LivePipeline(name, systemData, properties);
         }
     }
 }

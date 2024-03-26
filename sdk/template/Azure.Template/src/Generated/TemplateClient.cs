@@ -7,12 +7,12 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
 namespace Azure.Template
 {
+    // Data plane generated client.
     /// <summary> The Template service client. </summary>
     public partial class TemplateClient
     {
@@ -59,31 +59,24 @@ namespace Azure.Template
             _apiVersion = options.Version;
         }
 
-        /// <summary> The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission. </summary>
+        /// <summary>
+        /// [Protocol Method] Get a specified secret from a given key vault.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="secretName"> The name of the secret. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="secretName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="secretName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>SecretBundle</c>:
-        /// <code>{
-        ///   value: string, # Optional. The secret value.
-        ///   id: string, # Optional. The secret id.
-        ///   contentType: string, # Optional. The content type of the secret.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Application specific metadata in the form of key-value pairs.
-        ///   kid: string, # Optional. If this is a secret backing a KV certificate, then this field specifies the corresponding key backing the KV certificate.
-        ///   managed: boolean, # Optional. True if the secret&apos;s lifetime is managed by key vault. If this is a secret backing a certificate, then managed will be true.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual async Task<Response> GetSecretAsync(string secretName, RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/TemplateClient.xml" path="doc/members/member[@name='GetSecretAsync(string,RequestContext)']/*" />
+        public virtual async Task<Response> GetSecretAsync(string secretName, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(secretName, nameof(secretName));
 
@@ -101,31 +94,24 @@ namespace Azure.Template
             }
         }
 
-        /// <summary> The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission. </summary>
+        /// <summary>
+        /// [Protocol Method] Get a specified secret from a given key vault.
+        /// <list type="bullet">
+        /// <item>
+        /// <description>
+        /// This <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/ProtocolMethods.md">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios.
+        /// </description>
+        /// </item>
+        /// </list>
+        /// </summary>
         /// <param name="secretName"> The name of the secret. </param>
         /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="secretName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="secretName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <remarks>
-        /// Below is the JSON schema for the response payload.
-        /// 
-        /// Response Body:
-        /// 
-        /// Schema for <c>SecretBundle</c>:
-        /// <code>{
-        ///   value: string, # Optional. The secret value.
-        ///   id: string, # Optional. The secret id.
-        ///   contentType: string, # Optional. The content type of the secret.
-        ///   tags: Dictionary&lt;string, string&gt;, # Optional. Application specific metadata in the form of key-value pairs.
-        ///   kid: string, # Optional. If this is a secret backing a KV certificate, then this field specifies the corresponding key backing the KV certificate.
-        ///   managed: boolean, # Optional. True if the secret&apos;s lifetime is managed by key vault. If this is a secret backing a certificate, then managed will be true.
-        /// }
-        /// </code>
-        /// 
-        /// </remarks>
-        public virtual Response GetSecret(string secretName, RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        /// <include file="Docs/TemplateClient.xml" path="doc/members/member[@name='GetSecret(string,RequestContext)']/*" />
+        public virtual Response GetSecret(string secretName, RequestContext context)
         {
             Argument.AssertNotNullOrEmpty(secretName, nameof(secretName));
 

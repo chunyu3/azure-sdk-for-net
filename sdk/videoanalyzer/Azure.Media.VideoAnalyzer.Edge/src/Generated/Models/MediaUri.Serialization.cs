@@ -17,7 +17,7 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Uri))
             {
-                writer.WritePropertyName("uri");
+                writer.WritePropertyName("uri"u8);
                 writer.WriteStringValue(Uri);
             }
             writer.WriteEndObject();
@@ -25,16 +25,20 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static MediaUri DeserializeMediaUri(JsonElement element)
         {
-            Optional<string> uri = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string uri = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("uri"))
+                if (property.NameEquals("uri"u8))
                 {
                     uri = property.Value.GetString();
                     continue;
                 }
             }
-            return new MediaUri(uri.Value);
+            return new MediaUri(uri);
         }
     }
 }

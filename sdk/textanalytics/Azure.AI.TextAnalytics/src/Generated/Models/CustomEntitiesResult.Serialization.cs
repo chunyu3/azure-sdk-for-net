@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.AI.TextAnalytics;
 using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
@@ -17,42 +16,46 @@ namespace Azure.AI.TextAnalytics.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("documents");
+            writer.WritePropertyName("documents"u8);
             writer.WriteStartArray();
             foreach (var item in Documents)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<CustomEntitiesResultDocumentsItem>(item);
             }
             writer.WriteEndArray();
-            writer.WritePropertyName("errors");
+            writer.WritePropertyName("errors"u8);
             writer.WriteStartArray();
             foreach (var item in Errors)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<DocumentError>(item);
             }
             writer.WriteEndArray();
             if (Optional.IsDefined(Statistics))
             {
-                writer.WritePropertyName("statistics");
-                writer.WriteObjectValue(Statistics);
+                writer.WritePropertyName("statistics"u8);
+                writer.WriteObjectValue<TextDocumentBatchStatistics>(Statistics);
             }
-            writer.WritePropertyName("projectName");
+            writer.WritePropertyName("projectName"u8);
             writer.WriteStringValue(ProjectName);
-            writer.WritePropertyName("deploymentName");
+            writer.WritePropertyName("deploymentName"u8);
             writer.WriteStringValue(DeploymentName);
             writer.WriteEndObject();
         }
 
         internal static CustomEntitiesResult DeserializeCustomEntitiesResult(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IList<CustomEntitiesResultDocumentsItem> documents = default;
             IList<DocumentError> errors = default;
-            Optional<TextDocumentBatchStatistics> statistics = default;
+            TextDocumentBatchStatistics statistics = default;
             string projectName = default;
             string deploymentName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("documents"))
+                if (property.NameEquals("documents"u8))
                 {
                     List<CustomEntitiesResultDocumentsItem> array = new List<CustomEntitiesResultDocumentsItem>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -62,7 +65,7 @@ namespace Azure.AI.TextAnalytics.Models
                     documents = array;
                     continue;
                 }
-                if (property.NameEquals("errors"))
+                if (property.NameEquals("errors"u8))
                 {
                     List<DocumentError> array = new List<DocumentError>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -72,28 +75,27 @@ namespace Azure.AI.TextAnalytics.Models
                     errors = array;
                     continue;
                 }
-                if (property.NameEquals("statistics"))
+                if (property.NameEquals("statistics"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     statistics = TextDocumentBatchStatistics.DeserializeTextDocumentBatchStatistics(property.Value);
                     continue;
                 }
-                if (property.NameEquals("projectName"))
+                if (property.NameEquals("projectName"u8))
                 {
                     projectName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("deploymentName"))
+                if (property.NameEquals("deploymentName"u8))
                 {
                     deploymentName = property.Value.GetString();
                     continue;
                 }
             }
-            return new CustomEntitiesResult(errors, statistics.Value, projectName, deploymentName, documents);
+            return new CustomEntitiesResult(errors, statistics, projectName, deploymentName, documents);
         }
     }
 }

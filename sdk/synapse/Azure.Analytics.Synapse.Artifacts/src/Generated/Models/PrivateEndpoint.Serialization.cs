@@ -23,23 +23,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static PrivateEndpoint DeserializePrivateEndpoint(JsonElement element)
         {
-            Optional<string> id = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string id = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
             }
-            return new PrivateEndpoint(id.Value);
+            return new PrivateEndpoint(id);
         }
 
         internal partial class PrivateEndpointConverter : JsonConverter<PrivateEndpoint>
         {
             public override void Write(Utf8JsonWriter writer, PrivateEndpoint model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<PrivateEndpoint>(model);
             }
             public override PrivateEndpoint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

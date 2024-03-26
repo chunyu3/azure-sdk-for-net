@@ -18,25 +18,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("filePath");
-            writer.WriteObjectValue(FilePath);
-            writer.WritePropertyName("linkedServiceName");
-            writer.WriteObjectValue(LinkedServiceName);
+            writer.WritePropertyName("filePath"u8);
+            writer.WriteObjectValue<object>(FilePath);
+            writer.WritePropertyName("linkedServiceName"u8);
+            writer.WriteObjectValue<LinkedServiceReference>(LinkedServiceName);
             writer.WriteEndObject();
         }
 
         internal static AzureMLWebServiceFile DeserializeAzureMLWebServiceFile(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             object filePath = default;
             LinkedServiceReference linkedServiceName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("filePath"))
+                if (property.NameEquals("filePath"u8))
                 {
                     filePath = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("linkedServiceName"))
+                if (property.NameEquals("linkedServiceName"u8))
                 {
                     linkedServiceName = LinkedServiceReference.DeserializeLinkedServiceReference(property.Value);
                     continue;
@@ -49,7 +53,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, AzureMLWebServiceFile model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AzureMLWebServiceFile>(model);
             }
             public override AzureMLWebServiceFile Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

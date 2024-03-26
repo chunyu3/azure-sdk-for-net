@@ -23,41 +23,45 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static AzureEntityResource DeserializeAzureEntityResource(JsonElement element)
         {
-            Optional<string> etag = default;
-            Optional<string> id = default;
-            Optional<string> name = default;
-            Optional<string> type = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string etag = default;
+            string id = default;
+            string name = default;
+            string type = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("etag"))
+                if (property.NameEquals("etag"u8))
                 {
                     etag = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
             }
-            return new AzureEntityResource(id.Value, name.Value, type.Value, etag.Value);
+            return new AzureEntityResource(id, name, type, etag);
         }
 
         internal partial class AzureEntityResourceConverter : JsonConverter<AzureEntityResource>
         {
             public override void Write(Utf8JsonWriter writer, AzureEntityResource model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AzureEntityResource>(model);
             }
             public override AzureEntityResource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

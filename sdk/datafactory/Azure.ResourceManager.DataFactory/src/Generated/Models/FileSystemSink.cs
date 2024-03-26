@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity file system sink. </summary>
     public partial class FileSystemSink : CopySink
     {
-        /// <summary> Initializes a new instance of FileSystemSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="FileSystemSink"/>. </summary>
         public FileSystemSink()
         {
             CopySinkType = "FileSystemSink";
         }
 
-        /// <summary> Initializes a new instance of FileSystemSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="FileSystemSink"/>. </summary>
         /// <param name="copySinkType"> Copy sink type. </param>
         /// <param name="writeBatchSize"> Write batch size. Type: integer (or Expression with resultType integer), minimum: 0. </param>
         /// <param name="writeBatchTimeout"> Write batch timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -29,13 +30,13 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="disableMetricsCollection"> If true, disable data store metrics collection. Default is false. Type: boolean (or Expression with resultType boolean). </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="copyBehavior"> The type of copy behavior for copy sink. </param>
-        internal FileSystemSink(string copySinkType, BinaryData writeBatchSize, BinaryData writeBatchTimeout, BinaryData sinkRetryCount, BinaryData sinkRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData copyBehavior) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal FileSystemSink(string copySinkType, DataFactoryElement<int> writeBatchSize, DataFactoryElement<string> writeBatchTimeout, DataFactoryElement<int> sinkRetryCount, DataFactoryElement<string> sinkRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> copyBehavior) : base(copySinkType, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             CopyBehavior = copyBehavior;
             CopySinkType = copySinkType ?? "FileSystemSink";
         }
 
         /// <summary> The type of copy behavior for copy sink. </summary>
-        public BinaryData CopyBehavior { get; set; }
+        public DataFactoryElement<string> CopyBehavior { get; set; }
     }
 }

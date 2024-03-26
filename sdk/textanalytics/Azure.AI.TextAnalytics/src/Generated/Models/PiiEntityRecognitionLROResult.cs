@@ -6,30 +6,26 @@
 #nullable disable
 
 using System;
-using Azure.AI.TextAnalytics;
 
 namespace Azure.AI.TextAnalytics.Models
 {
     /// <summary> The PiiEntityRecognitionLROResult. </summary>
     internal partial class PiiEntityRecognitionLROResult : AnalyzeTextLROResult
     {
-        /// <summary> Initializes a new instance of PiiEntityRecognitionLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PiiEntityRecognitionLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="results"></param>
         /// <exception cref="ArgumentNullException"> <paramref name="results"/> is null. </exception>
         public PiiEntityRecognitionLROResult(DateTimeOffset lastUpdateDateTime, TextAnalyticsOperationStatus status, PiiEntitiesResult results) : base(lastUpdateDateTime, status)
         {
-            if (results == null)
-            {
-                throw new ArgumentNullException(nameof(results));
-            }
+            Argument.AssertNotNull(results, nameof(results));
 
             Results = results;
             Kind = AnalyzeTextLROResultsKind.PiiEntityRecognitionLROResults;
         }
 
-        /// <summary> Initializes a new instance of PiiEntityRecognitionLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="PiiEntityRecognitionLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="kind"> Enumeration of supported Text Analysis long-running operation task results. </param>

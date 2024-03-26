@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -17,57 +16,67 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static StorageBlobInventoryPolicyCompletedEventData DeserializeStorageBlobInventoryPolicyCompletedEventData(JsonElement element)
         {
-            Optional<DateTimeOffset> scheduleDateTime = default;
-            Optional<string> accountName = default;
-            Optional<string> ruleName = default;
-            Optional<string> policyRunStatus = default;
-            Optional<string> policyRunStatusMessage = default;
-            Optional<string> policyRunId = default;
-            Optional<string> manifestBlobUrl = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? scheduleDateTime = default;
+            string accountName = default;
+            string ruleName = default;
+            string policyRunStatus = default;
+            string policyRunStatusMessage = default;
+            string policyRunId = default;
+            string manifestBlobUrl = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("scheduleDateTime"))
+                if (property.NameEquals("scheduleDateTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     scheduleDateTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("accountName"))
+                if (property.NameEquals("accountName"u8))
                 {
                     accountName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("ruleName"))
+                if (property.NameEquals("ruleName"u8))
                 {
                     ruleName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("policyRunStatus"))
+                if (property.NameEquals("policyRunStatus"u8))
                 {
                     policyRunStatus = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("policyRunStatusMessage"))
+                if (property.NameEquals("policyRunStatusMessage"u8))
                 {
                     policyRunStatusMessage = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("policyRunId"))
+                if (property.NameEquals("policyRunId"u8))
                 {
                     policyRunId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("manifestBlobUrl"))
+                if (property.NameEquals("manifestBlobUrl"u8))
                 {
                     manifestBlobUrl = property.Value.GetString();
                     continue;
                 }
             }
-            return new StorageBlobInventoryPolicyCompletedEventData(Optional.ToNullable(scheduleDateTime), accountName.Value, ruleName.Value, policyRunStatus.Value, policyRunStatusMessage.Value, policyRunId.Value, manifestBlobUrl.Value);
+            return new StorageBlobInventoryPolicyCompletedEventData(
+                scheduleDateTime,
+                accountName,
+                ruleName,
+                policyRunStatus,
+                policyRunStatusMessage,
+                policyRunId,
+                manifestBlobUrl);
         }
 
         internal partial class StorageBlobInventoryPolicyCompletedEventDataConverter : JsonConverter<StorageBlobInventoryPolicyCompletedEventData>

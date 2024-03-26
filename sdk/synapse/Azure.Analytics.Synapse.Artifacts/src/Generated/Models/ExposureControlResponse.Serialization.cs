@@ -23,29 +23,33 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static ExposureControlResponse DeserializeExposureControlResponse(JsonElement element)
         {
-            Optional<string> featureName = default;
-            Optional<string> value = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string featureName = default;
+            string value = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("featureName"))
+                if (property.NameEquals("featureName"u8))
                 {
                     featureName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     value = property.Value.GetString();
                     continue;
                 }
             }
-            return new ExposureControlResponse(featureName.Value, value.Value);
+            return new ExposureControlResponse(featureName, value);
         }
 
         internal partial class ExposureControlResponseConverter : JsonConverter<ExposureControlResponse>
         {
             public override void Write(Utf8JsonWriter writer, ExposureControlResponse model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ExposureControlResponse>(model);
             }
             public override ExposureControlResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

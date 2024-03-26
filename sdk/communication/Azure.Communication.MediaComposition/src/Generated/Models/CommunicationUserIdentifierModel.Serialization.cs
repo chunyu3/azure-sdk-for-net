@@ -8,24 +8,28 @@
 using System.Text.Json;
 using Azure.Core;
 
-namespace Azure.Communication.MediaComposition
+namespace Azure.Communication
 {
-    public partial class CommunicationUserIdentifierModel : IUtf8JsonSerializable
+    internal partial class CommunicationUserIdentifierModel : IUtf8JsonSerializable
     {
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("id");
+            writer.WritePropertyName("id"u8);
             writer.WriteStringValue(Id);
             writer.WriteEndObject();
         }
 
         internal static CommunicationUserIdentifierModel DeserializeCommunicationUserIdentifierModel(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string id = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = property.Value.GetString();
                     continue;

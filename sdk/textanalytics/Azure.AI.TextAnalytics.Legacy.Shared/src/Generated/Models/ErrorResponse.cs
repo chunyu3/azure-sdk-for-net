@@ -12,15 +12,12 @@ namespace Azure.AI.TextAnalytics.Legacy
     /// <summary> The ErrorResponse. </summary>
     internal partial class ErrorResponse
     {
-        /// <summary> Initializes a new instance of ErrorResponse. </summary>
+        /// <summary> Initializes a new instance of <see cref="ErrorResponse"/>. </summary>
         /// <param name="error"> Document Error. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="error"/> is null. </exception>
         internal ErrorResponse(TextAnalyticsError error)
         {
-            if (error == null)
-            {
-                throw new ArgumentNullException(nameof(error));
-            }
+            Argument.AssertNotNull(error, nameof(error));
 
             Error = error;
         }

@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Redis.Models;
@@ -33,11 +33,11 @@ namespace Azure.ResourceManager.Redis
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-06-01";
+            _apiVersion = apiVersion ?? "2023-08-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertiesCreateOrUpdateContent content)
+        internal HttpMessage CreateCreateRequest(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertyCreateOrUpdateContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -57,22 +57,22 @@ namespace Azure.ResourceManager.Redis
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<RedisLinkedServerWithPropertyCreateOrUpdateContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Adds a linked server to the Redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the Redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server that is being added to the Redis cache. </param>
         /// <param name="content"> Parameters supplied to the Create Linked server operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/>, <paramref name="linkedServerName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertiesCreateOrUpdateContent content, CancellationToken cancellationToken = default)
+        public async Task<Response> CreateAsync(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertyCreateOrUpdateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -93,15 +93,15 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Adds a linked server to the Redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the Redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server that is being added to the Redis cache. </param>
         /// <param name="content"> Parameters supplied to the Create Linked server operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/>, <paramref name="linkedServerName"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Create(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertiesCreateOrUpdateContent content, CancellationToken cancellationToken = default)
+        public Response Create(string subscriptionId, string resourceGroupName, string name, string linkedServerName, RedisLinkedServerWithPropertyCreateOrUpdateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -144,8 +144,8 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Deletes the linked server from a redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server that is being added to the Redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -163,7 +163,7 @@ namespace Azure.ResourceManager.Redis
             switch (message.Response.Status)
             {
                 case 200:
-                case 204:
+                case 202:
                     return message.Response;
                 default:
                     throw new RequestFailedException(message.Response);
@@ -171,8 +171,8 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Deletes the linked server from a redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server that is being added to the Redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -190,7 +190,7 @@ namespace Azure.ResourceManager.Redis
             switch (message.Response.Status)
             {
                 case 200:
-                case 204:
+                case 202:
                     return message.Response;
                 default:
                     throw new RequestFailedException(message.Response);
@@ -220,14 +220,14 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Gets the detailed information about a linked server of a redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<RedisLinkedServerWithPropertiesData>> GetAsync(string subscriptionId, string resourceGroupName, string name, string linkedServerName, CancellationToken cancellationToken = default)
+        public async Task<Response<RedisLinkedServerWithPropertyData>> GetAsync(string subscriptionId, string resourceGroupName, string name, string linkedServerName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -240,27 +240,27 @@ namespace Azure.ResourceManager.Redis
             {
                 case 200:
                     {
-                        RedisLinkedServerWithPropertiesData value = default;
+                        RedisLinkedServerWithPropertyData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = RedisLinkedServerWithPropertiesData.DeserializeRedisLinkedServerWithPropertiesData(document.RootElement);
+                        value = RedisLinkedServerWithPropertyData.DeserializeRedisLinkedServerWithPropertyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((RedisLinkedServerWithPropertiesData)null, message.Response);
+                    return Response.FromValue((RedisLinkedServerWithPropertyData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the detailed information about a linked server of a redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="linkedServerName"> The name of the linked server. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="name"/> or <paramref name="linkedServerName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<RedisLinkedServerWithPropertiesData> Get(string subscriptionId, string resourceGroupName, string name, string linkedServerName, CancellationToken cancellationToken = default)
+        public Response<RedisLinkedServerWithPropertyData> Get(string subscriptionId, string resourceGroupName, string name, string linkedServerName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -273,13 +273,13 @@ namespace Azure.ResourceManager.Redis
             {
                 case 200:
                     {
-                        RedisLinkedServerWithPropertiesData value = default;
+                        RedisLinkedServerWithPropertyData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = RedisLinkedServerWithPropertiesData.DeserializeRedisLinkedServerWithPropertiesData(document.RootElement);
+                        value = RedisLinkedServerWithPropertyData.DeserializeRedisLinkedServerWithPropertyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((RedisLinkedServerWithPropertiesData)null, message.Response);
+                    return Response.FromValue((RedisLinkedServerWithPropertyData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -307,8 +307,8 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Gets the list of linked servers associated with this redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="name"/> is null. </exception>
@@ -336,8 +336,8 @@ namespace Azure.ResourceManager.Redis
         }
 
         /// <summary> Gets the list of linked servers associated with this redis cache (requires Premium SKU). </summary>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="name"/> is null. </exception>
@@ -380,8 +380,8 @@ namespace Azure.ResourceManager.Redis
 
         /// <summary> Gets the list of linked servers associated with this redis cache (requires Premium SKU). </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="name"/> is null. </exception>
@@ -411,8 +411,8 @@ namespace Azure.ResourceManager.Redis
 
         /// <summary> Gets the list of linked servers associated with this redis cache (requires Premium SKU). </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> Gets subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
-        /// <param name="resourceGroupName"> The name of the resource group. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="name"> The name of the redis cache. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="name"/> is null. </exception>

@@ -18,7 +18,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("inputFolder");
+            writer.WritePropertyName("inputFolder"u8);
             writer.WriteStringValue(InputFolder);
             writer.WriteEndObject();
         }
@@ -27,7 +27,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, MetastoreUpdateObject model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<MetastoreUpdateObject>(model);
             }
             public override MetastoreUpdateObject Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

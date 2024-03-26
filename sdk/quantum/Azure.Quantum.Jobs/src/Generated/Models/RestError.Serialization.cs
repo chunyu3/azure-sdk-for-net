@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Quantum.Jobs.Models
 {
@@ -14,21 +13,24 @@ namespace Azure.Quantum.Jobs.Models
     {
         internal static RestError DeserializeRestError(JsonElement element)
         {
-            Optional<ErrorData> error = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ErrorData error = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("error"))
+                if (property.NameEquals("error"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     error = ErrorData.DeserializeErrorData(property.Value);
                     continue;
                 }
             }
-            return new RestError(error.Value);
+            return new RestError(error);
         }
     }
 }

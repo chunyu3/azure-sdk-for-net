@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Media.Models;
@@ -33,7 +32,7 @@ namespace Azure.ResourceManager.Media
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-11-01";
+            _apiVersion = apiVersion ?? "2023-01-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -142,11 +141,11 @@ namespace Azure.ResourceManager.Media
         /// <param name="subscriptionId"> The unique identifier for a Microsoft Azure subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the Azure subscription. </param>
         /// <param name="accountName"> The Media Services account name. </param>
-        /// <param name="name"> The String to use. </param>
+        /// <param name="name"> The <see cref="string"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="name"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="name"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<MediaPrivateLinkResourceData>> GetAsync(string subscriptionId, string resourceGroupName, string accountName, string name, CancellationToken cancellationToken = default)
+        public async Task<Response<MediaServicesPrivateLinkResourceData>> GetAsync(string subscriptionId, string resourceGroupName, string accountName, string name, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -159,13 +158,13 @@ namespace Azure.ResourceManager.Media
             {
                 case 200:
                     {
-                        MediaPrivateLinkResourceData value = default;
+                        MediaServicesPrivateLinkResourceData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = MediaPrivateLinkResourceData.DeserializeMediaPrivateLinkResourceData(document.RootElement);
+                        value = MediaServicesPrivateLinkResourceData.DeserializeMediaServicesPrivateLinkResourceData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((MediaPrivateLinkResourceData)null, message.Response);
+                    return Response.FromValue((MediaServicesPrivateLinkResourceData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -175,11 +174,11 @@ namespace Azure.ResourceManager.Media
         /// <param name="subscriptionId"> The unique identifier for a Microsoft Azure subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group within the Azure subscription. </param>
         /// <param name="accountName"> The Media Services account name. </param>
-        /// <param name="name"> The String to use. </param>
+        /// <param name="name"> The <see cref="string"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="name"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="name"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<MediaPrivateLinkResourceData> Get(string subscriptionId, string resourceGroupName, string accountName, string name, CancellationToken cancellationToken = default)
+        public Response<MediaServicesPrivateLinkResourceData> Get(string subscriptionId, string resourceGroupName, string accountName, string name, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -192,13 +191,13 @@ namespace Azure.ResourceManager.Media
             {
                 case 200:
                     {
-                        MediaPrivateLinkResourceData value = default;
+                        MediaServicesPrivateLinkResourceData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = MediaPrivateLinkResourceData.DeserializeMediaPrivateLinkResourceData(document.RootElement);
+                        value = MediaServicesPrivateLinkResourceData.DeserializeMediaServicesPrivateLinkResourceData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((MediaPrivateLinkResourceData)null, message.Response);
+                    return Response.FromValue((MediaServicesPrivateLinkResourceData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }

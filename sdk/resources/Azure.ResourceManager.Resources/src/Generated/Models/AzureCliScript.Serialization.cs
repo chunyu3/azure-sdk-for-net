@@ -6,28 +6,39 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Resources.Models
 {
-    public partial class AzureCliScript : IUtf8JsonSerializable
+    public partial class AzureCliScript : IUtf8JsonSerializable, IJsonModel<AzureCliScript>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<AzureCliScript>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<AzureCliScript>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<AzureCliScript>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AzureCliScript)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Identity))
             {
-                writer.WritePropertyName("identity");
-                writer.WriteObjectValue(Identity);
+                writer.WritePropertyName("identity"u8);
+                writer.WriteObjectValue<ArmDeploymentScriptManagedIdentity>(Identity, options);
             }
-            writer.WritePropertyName("location");
+            writer.WritePropertyName("location"u8);
             writer.WriteStringValue(Location);
             if (Optional.IsCollectionDefined(Tags))
             {
-                writer.WritePropertyName("tags");
+                writer.WritePropertyName("tags"u8);
                 writer.WriteStartObject();
                 foreach (var item in Tags)
                 {
@@ -36,125 +47,205 @@ namespace Azure.ResourceManager.Resources.Models
                 }
                 writer.WriteEndObject();
             }
-            writer.WritePropertyName("kind");
+            writer.WritePropertyName("kind"u8);
             writer.WriteStringValue(Kind.ToString());
-            writer.WritePropertyName("properties");
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(ResourceType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SystemData))
+            {
+                writer.WritePropertyName("systemData"u8);
+                JsonSerializer.Serialize(writer, SystemData);
+            }
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(ContainerSettings))
             {
-                writer.WritePropertyName("containerSettings");
-                writer.WriteObjectValue(ContainerSettings);
+                writer.WritePropertyName("containerSettings"u8);
+                writer.WriteObjectValue<ContainerConfiguration>(ContainerSettings, options);
             }
             if (Optional.IsDefined(StorageAccountSettings))
             {
-                writer.WritePropertyName("storageAccountSettings");
-                writer.WriteObjectValue(StorageAccountSettings);
+                writer.WritePropertyName("storageAccountSettings"u8);
+                writer.WriteObjectValue<ScriptStorageConfiguration>(StorageAccountSettings, options);
             }
             if (Optional.IsDefined(CleanupPreference))
             {
-                writer.WritePropertyName("cleanupPreference");
+                writer.WritePropertyName("cleanupPreference"u8);
                 writer.WriteStringValue(CleanupPreference.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(Status))
+            {
+                writer.WritePropertyName("status"u8);
+                writer.WriteObjectValue<ScriptStatus>(Status, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Outputs))
+            {
+                writer.WritePropertyName("outputs"u8);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(Outputs);
+#else
+                using (JsonDocument document = JsonDocument.Parse(Outputs))
+                {
+                    JsonSerializer.Serialize(writer, document.RootElement);
+                }
+#endif
             }
             if (Optional.IsDefined(PrimaryScriptUri))
             {
-                writer.WritePropertyName("primaryScriptUri");
+                writer.WritePropertyName("primaryScriptUri"u8);
                 writer.WriteStringValue(PrimaryScriptUri.AbsoluteUri);
             }
             if (Optional.IsCollectionDefined(SupportingScriptUris))
             {
-                writer.WritePropertyName("supportingScriptUris");
+                writer.WritePropertyName("supportingScriptUris"u8);
                 writer.WriteStartArray();
                 foreach (var item in SupportingScriptUris)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item.AbsoluteUri);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ScriptContent))
             {
-                writer.WritePropertyName("scriptContent");
+                writer.WritePropertyName("scriptContent"u8);
                 writer.WriteStringValue(ScriptContent);
             }
             if (Optional.IsDefined(Arguments))
             {
-                writer.WritePropertyName("arguments");
+                writer.WritePropertyName("arguments"u8);
                 writer.WriteStringValue(Arguments);
             }
             if (Optional.IsCollectionDefined(EnvironmentVariables))
             {
-                writer.WritePropertyName("environmentVariables");
+                writer.WritePropertyName("environmentVariables"u8);
                 writer.WriteStartArray();
                 foreach (var item in EnvironmentVariables)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ScriptEnvironmentVariable>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ForceUpdateTag))
             {
-                writer.WritePropertyName("forceUpdateTag");
+                writer.WritePropertyName("forceUpdateTag"u8);
                 writer.WriteStringValue(ForceUpdateTag);
             }
-            writer.WritePropertyName("retentionInterval");
+            writer.WritePropertyName("retentionInterval"u8);
             writer.WriteStringValue(RetentionInterval, "P");
             if (Optional.IsDefined(Timeout))
             {
-                writer.WritePropertyName("timeout");
+                writer.WritePropertyName("timeout"u8);
                 writer.WriteStringValue(Timeout.Value, "P");
             }
-            writer.WritePropertyName("azCliVersion");
+            writer.WritePropertyName("azCliVersion"u8);
             writer.WriteStringValue(AzCliVersion);
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static AzureCliScript DeserializeAzureCliScript(JsonElement element)
+        AzureCliScript IJsonModel<AzureCliScript>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ArmDeploymentScriptManagedIdentity> identity = default;
+            var format = options.Format == "W" ? ((IPersistableModel<AzureCliScript>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AzureCliScript)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAzureCliScript(document.RootElement, options);
+        }
+
+        internal static AzureCliScript DeserializeAzureCliScript(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ArmDeploymentScriptManagedIdentity identity = default;
             AzureLocation location = default;
-            Optional<IDictionary<string, string>> tags = default;
+            IDictionary<string, string> tags = default;
             ScriptType kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<ContainerConfiguration> containerSettings = default;
-            Optional<ScriptStorageConfiguration> storageAccountSettings = default;
-            Optional<ScriptCleanupOptions> cleanupPreference = default;
-            Optional<ScriptProvisioningState> provisioningState = default;
-            Optional<ScriptStatus> status = default;
-            Optional<BinaryData> outputs = default;
-            Optional<Uri> primaryScriptUri = default;
-            Optional<IList<Uri>> supportingScriptUris = default;
-            Optional<string> scriptContent = default;
-            Optional<string> arguments = default;
-            Optional<IList<ScriptEnvironmentVariable>> environmentVariables = default;
-            Optional<string> forceUpdateTag = default;
+            SystemData systemData = default;
+            ContainerConfiguration containerSettings = default;
+            ScriptStorageConfiguration storageAccountSettings = default;
+            ScriptCleanupOptions? cleanupPreference = default;
+            ScriptProvisioningState? provisioningState = default;
+            ScriptStatus status = default;
+            BinaryData outputs = default;
+            Uri primaryScriptUri = default;
+            IList<Uri> supportingScriptUris = default;
+            string scriptContent = default;
+            string arguments = default;
+            IList<ScriptEnvironmentVariable> environmentVariables = default;
+            string forceUpdateTag = default;
             TimeSpan retentionInterval = default;
-            Optional<TimeSpan> timeout = default;
+            TimeSpan? timeout = default;
             string azCliVersion = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("identity"))
+                if (property.NameEquals("identity"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    identity = ArmDeploymentScriptManagedIdentity.DeserializeArmDeploymentScriptManagedIdentity(property.Value);
+                    identity = ArmDeploymentScriptManagedIdentity.DeserializeArmDeploymentScriptManagedIdentity(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("tags"))
+                if (property.NameEquals("tags"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     Dictionary<string, string> dictionary = new Dictionary<string, string>();
@@ -165,37 +256,36 @@ namespace Azure.ResourceManager.Resources.Models
                     tags = dictionary;
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = new ScriptType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.ToString());
+                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -204,137 +294,134 @@ namespace Azure.ResourceManager.Resources.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("containerSettings"))
+                        if (property0.NameEquals("containerSettings"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            containerSettings = ContainerConfiguration.DeserializeContainerConfiguration(property0.Value);
+                            containerSettings = ContainerConfiguration.DeserializeContainerConfiguration(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("storageAccountSettings"))
+                        if (property0.NameEquals("storageAccountSettings"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            storageAccountSettings = ScriptStorageConfiguration.DeserializeScriptStorageConfiguration(property0.Value);
+                            storageAccountSettings = ScriptStorageConfiguration.DeserializeScriptStorageConfiguration(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("cleanupPreference"))
+                        if (property0.NameEquals("cleanupPreference"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             cleanupPreference = new ScriptCleanupOptions(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = new ScriptProvisioningState(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("status"))
+                        if (property0.NameEquals("status"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            status = ScriptStatus.DeserializeScriptStatus(property0.Value);
+                            status = ScriptStatus.DeserializeScriptStatus(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("outputs"))
+                        if (property0.NameEquals("outputs"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             outputs = BinaryData.FromString(property0.Value.GetRawText());
                             continue;
                         }
-                        if (property0.NameEquals("primaryScriptUri"))
+                        if (property0.NameEquals("primaryScriptUri"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                primaryScriptUri = null;
                                 continue;
                             }
                             primaryScriptUri = new Uri(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("supportingScriptUris"))
+                        if (property0.NameEquals("supportingScriptUris"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<Uri> array = new List<Uri>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(new Uri(item.GetString()));
+                                if (item.ValueKind == JsonValueKind.Null)
+                                {
+                                    array.Add(null);
+                                }
+                                else
+                                {
+                                    array.Add(new Uri(item.GetString()));
+                                }
                             }
                             supportingScriptUris = array;
                             continue;
                         }
-                        if (property0.NameEquals("scriptContent"))
+                        if (property0.NameEquals("scriptContent"u8))
                         {
                             scriptContent = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("arguments"))
+                        if (property0.NameEquals("arguments"u8))
                         {
                             arguments = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("environmentVariables"))
+                        if (property0.NameEquals("environmentVariables"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<ScriptEnvironmentVariable> array = new List<ScriptEnvironmentVariable>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(ScriptEnvironmentVariable.DeserializeScriptEnvironmentVariable(item));
+                                array.Add(ScriptEnvironmentVariable.DeserializeScriptEnvironmentVariable(item, options));
                             }
                             environmentVariables = array;
                             continue;
                         }
-                        if (property0.NameEquals("forceUpdateTag"))
+                        if (property0.NameEquals("forceUpdateTag"u8))
                         {
                             forceUpdateTag = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("retentionInterval"))
+                        if (property0.NameEquals("retentionInterval"u8))
                         {
                             retentionInterval = property0.Value.GetTimeSpan("P");
                             continue;
                         }
-                        if (property0.NameEquals("timeout"))
+                        if (property0.NameEquals("timeout"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             timeout = property0.Value.GetTimeSpan("P");
                             continue;
                         }
-                        if (property0.NameEquals("azCliVersion"))
+                        if (property0.NameEquals("azCliVersion"u8))
                         {
                             azCliVersion = property0.Value.GetString();
                             continue;
@@ -342,8 +429,494 @@ namespace Azure.ResourceManager.Resources.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new AzureCliScript(id, name, type, systemData.Value, identity.Value, location, Optional.ToDictionary(tags), kind, containerSettings.Value, storageAccountSettings.Value, Optional.ToNullable(cleanupPreference), Optional.ToNullable(provisioningState), status.Value, outputs.Value, primaryScriptUri.Value, Optional.ToList(supportingScriptUris), scriptContent.Value, arguments.Value, Optional.ToList(environmentVariables), forceUpdateTag.Value, retentionInterval, Optional.ToNullable(timeout), azCliVersion);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new AzureCliScript(
+                id,
+                name,
+                type,
+                systemData,
+                identity,
+                location,
+                tags ?? new ChangeTrackingDictionary<string, string>(),
+                kind,
+                serializedAdditionalRawData,
+                containerSettings,
+                storageAccountSettings,
+                cleanupPreference,
+                provisioningState,
+                status,
+                outputs,
+                primaryScriptUri,
+                supportingScriptUris ?? new ChangeTrackingList<Uri>(),
+                scriptContent,
+                arguments,
+                environmentVariables ?? new ChangeTrackingList<ScriptEnvironmentVariable>(),
+                forceUpdateTag,
+                retentionInterval,
+                timeout,
+                azCliVersion);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            if (propertyOverrides != null)
+            {
+                TransformFlattenedOverrides(bicepOptions, propertyOverrides);
+            }
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (Optional.IsDefined(Name) || hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Location), out propertyOverride);
+            builder.Append("  location: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{Location.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Tags), out propertyOverride);
+            if (Optional.IsCollectionDefined(Tags) || hasPropertyOverride)
+            {
+                if (Tags.Any() || hasPropertyOverride)
+                {
+                    builder.Append("  tags: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("{");
+                        foreach (var item in Tags)
+                        {
+                            builder.Append($"    '{item.Key}': ");
+                            if (item.Value == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Value.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("'''");
+                                builder.AppendLine($"{item.Value}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"'{item.Value}'");
+                            }
+                        }
+                        builder.AppendLine("  }");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Identity), out propertyOverride);
+            if (Optional.IsDefined(Identity) || hasPropertyOverride)
+            {
+                builder.Append("  identity: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Identity, options, 2, false, "  identity: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            builder.Append("  kind: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{Kind.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (Optional.IsDefined(Id) || hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (Optional.IsDefined(SystemData) || hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ContainerSettings), out propertyOverride);
+            if (Optional.IsDefined(ContainerSettings) || hasPropertyOverride)
+            {
+                builder.Append("    containerSettings: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, ContainerSettings, options, 4, false, "    containerSettings: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(StorageAccountSettings), out propertyOverride);
+            if (Optional.IsDefined(StorageAccountSettings) || hasPropertyOverride)
+            {
+                builder.Append("    storageAccountSettings: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, StorageAccountSettings, options, 4, false, "    storageAccountSettings: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CleanupPreference), out propertyOverride);
+            if (Optional.IsDefined(CleanupPreference) || hasPropertyOverride)
+            {
+                builder.Append("    cleanupPreference: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{CleanupPreference.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (Optional.IsDefined(ProvisioningState) || hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Status), out propertyOverride);
+            if (Optional.IsDefined(Status) || hasPropertyOverride)
+            {
+                builder.Append("    status: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Status, options, 4, false, "    status: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Outputs), out propertyOverride);
+            if (Optional.IsDefined(Outputs) || hasPropertyOverride)
+            {
+                builder.Append("    outputs: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Outputs.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrimaryScriptUri), out propertyOverride);
+            if (Optional.IsDefined(PrimaryScriptUri) || hasPropertyOverride)
+            {
+                builder.Append("    primaryScriptUri: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{PrimaryScriptUri.AbsoluteUri}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SupportingScriptUris), out propertyOverride);
+            if (Optional.IsCollectionDefined(SupportingScriptUris) || hasPropertyOverride)
+            {
+                if (SupportingScriptUris.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    supportingScriptUris: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in SupportingScriptUris)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            builder.AppendLine($"      '{item.AbsoluteUri}'");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ScriptContent), out propertyOverride);
+            if (Optional.IsDefined(ScriptContent) || hasPropertyOverride)
+            {
+                builder.Append("    scriptContent: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ScriptContent.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ScriptContent}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ScriptContent}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Arguments), out propertyOverride);
+            if (Optional.IsDefined(Arguments) || hasPropertyOverride)
+            {
+                builder.Append("    arguments: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Arguments.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Arguments}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Arguments}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnvironmentVariables), out propertyOverride);
+            if (Optional.IsCollectionDefined(EnvironmentVariables) || hasPropertyOverride)
+            {
+                if (EnvironmentVariables.Any() || hasPropertyOverride)
+                {
+                    builder.Append("    environmentVariables: ");
+                    if (hasPropertyOverride)
+                    {
+                        builder.AppendLine($"{propertyOverride}");
+                    }
+                    else
+                    {
+                        builder.AppendLine("[");
+                        foreach (var item in EnvironmentVariables)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    environmentVariables: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ForceUpdateTag), out propertyOverride);
+            if (Optional.IsDefined(ForceUpdateTag) || hasPropertyOverride)
+            {
+                builder.Append("    forceUpdateTag: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (ForceUpdateTag.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ForceUpdateTag}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ForceUpdateTag}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RetentionInterval), out propertyOverride);
+            builder.Append("    retentionInterval: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                var formattedTimeSpan = TypeFormatters.ToString(RetentionInterval, "P");
+                builder.AppendLine($"'{formattedTimeSpan}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Timeout), out propertyOverride);
+            if (Optional.IsDefined(Timeout) || hasPropertyOverride)
+            {
+                builder.Append("    timeout: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var formattedTimeSpan = TypeFormatters.ToString(Timeout.Value, "P");
+                    builder.AppendLine($"'{formattedTimeSpan}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AzCliVersion), out propertyOverride);
+            if (Optional.IsDefined(AzCliVersion) || hasPropertyOverride)
+            {
+                builder.Append("    azCliVersion: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (AzCliVersion.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AzCliVersion}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AzCliVersion}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        private void TransformFlattenedOverrides(BicepModelReaderWriterOptions bicepOptions, IDictionary<string, string> propertyOverrides)
+        {
+            foreach (var item in propertyOverrides.ToList())
+            {
+                switch (item.Key)
+                {
+                    case "ContainerGroupName":
+                        Dictionary<string, string> propertyDictionary = new Dictionary<string, string>();
+                        propertyDictionary.Add("ContainerGroupName", item.Value);
+                        bicepOptions.PropertyOverrides.Add(ContainerSettings, propertyDictionary);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+        }
+
+        BinaryData IPersistableModel<AzureCliScript>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AzureCliScript>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(AzureCliScript)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        AzureCliScript IPersistableModel<AzureCliScript>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<AzureCliScript>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeAzureCliScript(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AzureCliScript)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<AzureCliScript>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

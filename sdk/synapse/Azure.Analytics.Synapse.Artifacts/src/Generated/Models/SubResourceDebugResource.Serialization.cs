@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             writer.WriteEndObject();
@@ -28,23 +28,27 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static SubResourceDebugResource DeserializeSubResourceDebugResource(JsonElement element)
         {
-            Optional<string> name = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
             }
-            return new SubResourceDebugResource(name.Value);
+            return new SubResourceDebugResource(name);
         }
 
         internal partial class SubResourceDebugResourceConverter : JsonConverter<SubResourceDebugResource>
         {
             public override void Write(Utf8JsonWriter writer, SubResourceDebugResource model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<SubResourceDebugResource>(model);
             }
             public override SubResourceDebugResource Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

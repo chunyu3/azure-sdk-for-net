@@ -5,32 +5,33 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Ssis project. </summary>
     public partial class SsisProject : SsisObjectMetadata
     {
-        /// <summary> Initializes a new instance of SsisProject. </summary>
+        /// <summary> Initializes a new instance of <see cref="SsisProject"/>. </summary>
         internal SsisProject()
         {
             EnvironmentRefs = new ChangeTrackingList<SsisEnvironmentReference>();
-            Parameters = new ChangeTrackingList<SsisParameter>();
+            Parameters = new ChangeTrackingList<SsisParameterInfo>();
             MetadataType = SsisObjectMetadataType.Project;
         }
 
-        /// <summary> Initializes a new instance of SsisProject. </summary>
+        /// <summary> Initializes a new instance of <see cref="SsisProject"/>. </summary>
         /// <param name="metadataType"> Type of metadata. </param>
         /// <param name="id"> Metadata id. </param>
         /// <param name="name"> Metadata name. </param>
         /// <param name="description"> Metadata description. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="folderId"> Folder id which contains project. </param>
         /// <param name="version"> Project version. </param>
         /// <param name="environmentRefs"> Environment reference in project. </param>
         /// <param name="parameters"> Parameters in project. </param>
-        internal SsisProject(SsisObjectMetadataType metadataType, long? id, string name, string description, long? folderId, long? version, IReadOnlyList<SsisEnvironmentReference> environmentRefs, IReadOnlyList<SsisParameter> parameters) : base(metadataType, id, name, description)
+        internal SsisProject(SsisObjectMetadataType metadataType, long? id, string name, string description, IDictionary<string, BinaryData> serializedAdditionalRawData, long? folderId, long? version, IReadOnlyList<SsisEnvironmentReference> environmentRefs, IReadOnlyList<SsisParameterInfo> parameters) : base(metadataType, id, name, description, serializedAdditionalRawData)
         {
             FolderId = folderId;
             Version = version;
@@ -46,6 +47,6 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <summary> Environment reference in project. </summary>
         public IReadOnlyList<SsisEnvironmentReference> EnvironmentRefs { get; }
         /// <summary> Parameters in project. </summary>
-        public IReadOnlyList<SsisParameter> Parameters { get; }
+        public IReadOnlyList<SsisParameterInfo> Parameters { get; }
     }
 }

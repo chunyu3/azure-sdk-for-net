@@ -65,7 +65,7 @@ ResourceGroupResource resourceGroup = await subscription.GetResourceGroups().Get
 // Now we get the DnsZone collection from the resource group
 DnsZoneCollection dnsZoneCollection = resourceGroup.GetDnsZones();
 // With ListAsync(), we can get a list of the DnsZones
-AsyncPageable<DnsZoneResource>  response = dnsZoneCollection.GetAllAsync();
+AsyncPageable<DnsZoneResource> response = dnsZoneCollection.GetAllAsync();
 await foreach (DnsZoneResource dnsZone in response)
 {
     Console.WriteLine(dnsZone.Data.Name);
@@ -83,11 +83,6 @@ ResourceGroupResource resourceGroup = await subscription.GetResourceGroups().Get
 // Now we get the DnsZone collection from the resource group
 DnsZoneCollection dnsZoneCollection = resourceGroup.GetDnsZones();
 string dnsZoneName = "sample.com";
-DnsZoneResource dnsZone =await dnsZoneCollection.GetAsync(dnsZoneName);
+DnsZoneResource dnsZone = await dnsZoneCollection.GetAsync(dnsZoneName);
 await dnsZone.DeleteAsync(WaitUntil.Completed);
 ```
-
-
-## Next steps
-
-Take a look at the [Managing Record Set Ptrs](https://github.com/dvbb/azure-sdk-for-net/blob/dvbb-mgmt-track2-dns-2/sdk/dns/Azure.ResourceManager.Dns/samples/Sample2_ManagingRecordSetPtrs.md) samples.

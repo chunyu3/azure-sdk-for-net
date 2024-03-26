@@ -16,29 +16,29 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("endpoint");
-            writer.WriteObjectValue(Endpoint);
+            writer.WritePropertyName("endpoint"u8);
+            writer.WriteObjectValue<EndpointBase>(Endpoint);
             if (Optional.IsDefined(Image))
             {
-                writer.WritePropertyName("image");
-                writer.WriteObjectValue(Image);
+                writer.WritePropertyName("image"u8);
+                writer.WriteObjectValue<ImageProperties>(Image);
             }
             if (Optional.IsDefined(SamplingOptions))
             {
-                writer.WritePropertyName("samplingOptions");
-                writer.WriteObjectValue(SamplingOptions);
+                writer.WritePropertyName("samplingOptions"u8);
+                writer.WriteObjectValue<SamplingOptions>(SamplingOptions);
             }
-            writer.WritePropertyName("operation");
-            writer.WriteObjectValue(Operation);
-            writer.WritePropertyName("@type");
+            writer.WritePropertyName("operation"u8);
+            writer.WriteObjectValue<SpatialAnalysisOperationBase>(Operation);
+            writer.WritePropertyName("@type"u8);
             writer.WriteStringValue(Type);
-            writer.WritePropertyName("name");
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
-            writer.WritePropertyName("inputs");
+            writer.WritePropertyName("inputs"u8);
             writer.WriteStartArray();
             foreach (var item in Inputs)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<NodeInput>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
@@ -46,56 +46,58 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static CognitiveServicesVisionProcessor DeserializeCognitiveServicesVisionProcessor(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             EndpointBase endpoint = default;
-            Optional<ImageProperties> image = default;
-            Optional<SamplingOptions> samplingOptions = default;
+            ImageProperties image = default;
+            SamplingOptions samplingOptions = default;
             SpatialAnalysisOperationBase operation = default;
             string type = default;
             string name = default;
             IList<NodeInput> inputs = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("endpoint"))
+                if (property.NameEquals("endpoint"u8))
                 {
                     endpoint = EndpointBase.DeserializeEndpointBase(property.Value);
                     continue;
                 }
-                if (property.NameEquals("image"))
+                if (property.NameEquals("image"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     image = ImageProperties.DeserializeImageProperties(property.Value);
                     continue;
                 }
-                if (property.NameEquals("samplingOptions"))
+                if (property.NameEquals("samplingOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     samplingOptions = SamplingOptions.DeserializeSamplingOptions(property.Value);
                     continue;
                 }
-                if (property.NameEquals("operation"))
+                if (property.NameEquals("operation"u8))
                 {
                     operation = SpatialAnalysisOperationBase.DeserializeSpatialAnalysisOperationBase(property.Value);
                     continue;
                 }
-                if (property.NameEquals("@type"))
+                if (property.NameEquals("@type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("inputs"))
+                if (property.NameEquals("inputs"u8))
                 {
                     List<NodeInput> array = new List<NodeInput>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -106,7 +108,14 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     continue;
                 }
             }
-            return new CognitiveServicesVisionProcessor(type, name, inputs, endpoint, image.Value, samplingOptions.Value, operation);
+            return new CognitiveServicesVisionProcessor(
+                type,
+                name,
+                inputs,
+                endpoint,
+                image,
+                samplingOptions,
+                operation);
         }
     }
 }

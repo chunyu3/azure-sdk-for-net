@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(NewName))
             {
-                writer.WritePropertyName("newName");
+                writer.WritePropertyName("newName"u8);
                 writer.WriteStringValue(NewName);
             }
             writer.WriteEndObject();
@@ -30,7 +30,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, ArtifactRenameRequest model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ArtifactRenameRequest>(model);
             }
             public override ArtifactRenameRequest Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

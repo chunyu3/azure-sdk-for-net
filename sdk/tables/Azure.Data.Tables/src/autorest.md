@@ -16,6 +16,10 @@ generation1-convenience-client: true
 include-csproj: disable
 modelerfour:
   seal-single-value-enum-by-default: true
+protocol-method-list:
+  - Table_Delete
+  - Table_QueryEntityWithPartitionAndRowKey
+  - Table_Create
 ```
 
 ### Add nullable annotations
@@ -33,5 +37,7 @@ directive:
   from: swagger-document
   where: $.definitions.AccessPolicy
   transform: >
+    $.properties.Start["x-nullable"] = true;
+    $.properties.Expiry["x-nullable"] = true;
     $.properties.Permission["x-nullable"] = true;
 ```

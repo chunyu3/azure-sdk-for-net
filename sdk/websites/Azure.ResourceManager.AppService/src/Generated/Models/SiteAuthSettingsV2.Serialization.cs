@@ -5,98 +5,164 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class SiteAuthSettingsV2 : IUtf8JsonSerializable
+    public partial class SiteAuthSettingsV2 : IUtf8JsonSerializable, IJsonModel<SiteAuthSettingsV2>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SiteAuthSettingsV2>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SiteAuthSettingsV2>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<SiteAuthSettingsV2>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SiteAuthSettingsV2)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Kind))
             {
-                writer.WritePropertyName("kind");
+                writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
             }
-            writer.WritePropertyName("properties");
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(ResourceType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SystemData))
+            {
+                writer.WritePropertyName("systemData"u8);
+                JsonSerializer.Serialize(writer, SystemData);
+            }
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(Platform))
             {
-                writer.WritePropertyName("platform");
-                writer.WriteObjectValue(Platform);
+                writer.WritePropertyName("platform"u8);
+                writer.WriteObjectValue<AuthPlatform>(Platform, options);
             }
             if (Optional.IsDefined(GlobalValidation))
             {
-                writer.WritePropertyName("globalValidation");
-                writer.WriteObjectValue(GlobalValidation);
+                writer.WritePropertyName("globalValidation"u8);
+                writer.WriteObjectValue<GlobalValidation>(GlobalValidation, options);
             }
             if (Optional.IsDefined(IdentityProviders))
             {
-                writer.WritePropertyName("identityProviders");
-                writer.WriteObjectValue(IdentityProviders);
+                writer.WritePropertyName("identityProviders"u8);
+                writer.WriteObjectValue<AppServiceIdentityProviders>(IdentityProviders, options);
             }
             if (Optional.IsDefined(Login))
             {
-                writer.WritePropertyName("login");
-                writer.WriteObjectValue(Login);
+                writer.WritePropertyName("login"u8);
+                writer.WriteObjectValue<WebAppLoginInfo>(Login, options);
             }
             if (Optional.IsDefined(HttpSettings))
             {
-                writer.WritePropertyName("httpSettings");
-                writer.WriteObjectValue(HttpSettings);
+                writer.WritePropertyName("httpSettings"u8);
+                writer.WriteObjectValue<AppServiceHttpSettings>(HttpSettings, options);
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static SiteAuthSettingsV2 DeserializeSiteAuthSettingsV2(JsonElement element)
+        SiteAuthSettingsV2 IJsonModel<SiteAuthSettingsV2>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> kind = default;
+            var format = options.Format == "W" ? ((IPersistableModel<SiteAuthSettingsV2>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SiteAuthSettingsV2)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSiteAuthSettingsV2(document.RootElement, options);
+        }
+
+        internal static SiteAuthSettingsV2 DeserializeSiteAuthSettingsV2(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<AuthPlatform> platform = default;
-            Optional<GlobalValidation> globalValidation = default;
-            Optional<IdentityProviders> identityProviders = default;
-            Optional<LoginInformation> login = default;
-            Optional<HttpSettings> httpSettings = default;
+            SystemData systemData = default;
+            AuthPlatform platform = default;
+            GlobalValidation globalValidation = default;
+            AppServiceIdentityProviders identityProviders = default;
+            WebAppLoginInfo login = default;
+            AppServiceHttpSettings httpSettings = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.ToString());
+                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -105,61 +171,265 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("platform"))
+                        if (property0.NameEquals("platform"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            platform = AuthPlatform.DeserializeAuthPlatform(property0.Value);
+                            platform = AuthPlatform.DeserializeAuthPlatform(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("globalValidation"))
+                        if (property0.NameEquals("globalValidation"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            globalValidation = GlobalValidation.DeserializeGlobalValidation(property0.Value);
+                            globalValidation = GlobalValidation.DeserializeGlobalValidation(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("identityProviders"))
+                        if (property0.NameEquals("identityProviders"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            identityProviders = IdentityProviders.DeserializeIdentityProviders(property0.Value);
+                            identityProviders = AppServiceIdentityProviders.DeserializeAppServiceIdentityProviders(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("login"))
+                        if (property0.NameEquals("login"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            login = LoginInformation.DeserializeLoginInformation(property0.Value);
+                            login = WebAppLoginInfo.DeserializeWebAppLoginInfo(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("httpSettings"))
+                        if (property0.NameEquals("httpSettings"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            httpSettings = HttpSettings.DeserializeHttpSettings(property0.Value);
+                            httpSettings = AppServiceHttpSettings.DeserializeAppServiceHttpSettings(property0.Value, options);
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new SiteAuthSettingsV2(id, name, type, systemData.Value, platform.Value, globalValidation.Value, identityProviders.Value, login.Value, httpSettings.Value, kind.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SiteAuthSettingsV2(
+                id,
+                name,
+                type,
+                systemData,
+                platform,
+                globalValidation,
+                identityProviders,
+                login,
+                httpSettings,
+                kind,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (Optional.IsDefined(Name) || hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (Optional.IsDefined(Kind) || hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Kind.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Kind}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Kind}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (Optional.IsDefined(Id) || hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (Optional.IsDefined(SystemData) || hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Platform), out propertyOverride);
+            if (Optional.IsDefined(Platform) || hasPropertyOverride)
+            {
+                builder.Append("    platform: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Platform, options, 4, false, "    platform: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(GlobalValidation), out propertyOverride);
+            if (Optional.IsDefined(GlobalValidation) || hasPropertyOverride)
+            {
+                builder.Append("    globalValidation: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, GlobalValidation, options, 4, false, "    globalValidation: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IdentityProviders), out propertyOverride);
+            if (Optional.IsDefined(IdentityProviders) || hasPropertyOverride)
+            {
+                builder.Append("    identityProviders: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, IdentityProviders, options, 4, false, "    identityProviders: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Login), out propertyOverride);
+            if (Optional.IsDefined(Login) || hasPropertyOverride)
+            {
+                builder.Append("    login: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, Login, options, 4, false, "    login: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HttpSettings), out propertyOverride);
+            if (Optional.IsDefined(HttpSettings) || hasPropertyOverride)
+            {
+                builder.Append("    httpSettings: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    BicepSerializationHelpers.AppendChildObject(builder, HttpSettings, options, 4, false, "    httpSettings: ");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<SiteAuthSettingsV2>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SiteAuthSettingsV2>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(SiteAuthSettingsV2)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SiteAuthSettingsV2 IPersistableModel<SiteAuthSettingsV2>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SiteAuthSettingsV2>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSiteAuthSettingsV2(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SiteAuthSettingsV2)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SiteAuthSettingsV2>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

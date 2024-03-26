@@ -8,7 +8,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Azure.Core;
 
 namespace Azure.Analytics.Synapse.Artifacts.Models
 {
@@ -17,16 +16,20 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
     {
         internal static CreateDataFlowDebugSessionResponse DeserializeCreateDataFlowDebugSessionResponse(JsonElement element)
         {
-            Optional<string> sessionId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string sessionId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sessionId"))
+                if (property.NameEquals("sessionId"u8))
                 {
                     sessionId = property.Value.GetString();
                     continue;
                 }
             }
-            return new CreateDataFlowDebugSessionResponse(sessionId.Value);
+            return new CreateDataFlowDebugSessionResponse(sessionId);
         }
 
         internal partial class CreateDataFlowDebugSessionResponseConverter : JsonConverter<CreateDataFlowDebugSessionResponse>

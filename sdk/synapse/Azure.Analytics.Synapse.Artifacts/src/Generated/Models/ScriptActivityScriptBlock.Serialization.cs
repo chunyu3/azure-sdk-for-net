@@ -19,17 +19,17 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("text");
-            writer.WriteObjectValue(Text);
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("text"u8);
+            writer.WriteObjectValue<object>(Text);
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type.ToString());
             if (Optional.IsCollectionDefined(Parameters))
             {
-                writer.WritePropertyName("parameters");
+                writer.WritePropertyName("parameters"u8);
                 writer.WriteStartArray();
                 foreach (var item in Parameters)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ScriptActivityParameter>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -38,26 +38,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static ScriptActivityScriptBlock DeserializeScriptActivityScriptBlock(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             object text = default;
             ScriptType type = default;
-            Optional<IList<ScriptActivityParameter>> parameters = default;
+            IList<ScriptActivityParameter> parameters = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("text"))
+                if (property.NameEquals("text"u8))
                 {
                     text = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ScriptType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("parameters"))
+                if (property.NameEquals("parameters"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ScriptActivityParameter> array = new List<ScriptActivityParameter>();
@@ -69,14 +72,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     continue;
                 }
             }
-            return new ScriptActivityScriptBlock(text, type, Optional.ToList(parameters));
+            return new ScriptActivityScriptBlock(text, type, parameters ?? new ChangeTrackingList<ScriptActivityParameter>());
         }
 
         internal partial class ScriptActivityScriptBlockConverter : JsonConverter<ScriptActivityScriptBlock>
         {
             public override void Write(Utf8JsonWriter writer, ScriptActivityScriptBlock model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ScriptActivityScriptBlock>(model);
             }
             public override ScriptActivityScriptBlock Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

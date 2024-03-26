@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ApiManagement.Models;
@@ -80,7 +80,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<GatewayCollection>> ListByServiceAsync(string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<Response<GatewayListResult>> ListByServiceAsync(string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -92,9 +92,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayCollection value = default;
+                        GatewayListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GatewayCollection.DeserializeGatewayCollection(document.RootElement);
+                        value = GatewayListResult.DeserializeGatewayListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -112,7 +112,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<GatewayCollection> ListByService(string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Response<GatewayListResult> ListByService(string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -124,9 +124,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayCollection value = default;
+                        GatewayListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GatewayCollection.DeserializeGatewayCollection(document.RootElement);
+                        value = GatewayListResult.DeserializeGatewayListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -160,7 +160,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -194,7 +194,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -250,11 +250,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<GatewayContractData>> GetAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementGatewayData>> GetAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -267,13 +267,13 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((GatewayContractData)null, message.Response);
+                    return Response.FromValue((ApiManagementGatewayData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -283,11 +283,11 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<GatewayContractData> Get(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, CancellationToken cancellationToken = default)
+        public Response<ApiManagementGatewayData> Get(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -300,19 +300,19 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((GatewayContractData)null, message.Response);
+                    return Response.FromValue((ApiManagementGatewayData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayContractData data, string ifMatch)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ApiManagementGatewayData data, ETag? ifMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -331,12 +331,12 @@ namespace Azure.ResourceManager.ApiManagement
             request.Uri = uri;
             if (ifMatch != null)
             {
-                request.Headers.Add("If-Match", ifMatch);
+                request.Headers.Add("If-Match", ifMatch.Value);
             }
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ApiManagementGatewayData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -346,13 +346,13 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="data"> The GatewayContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="data"> The <see cref="ApiManagementGatewayData"/> to use. </param>
         /// <param name="ifMatch"> ETag of the Entity. Not required when creating an entity, but required when updating an entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<GatewayContractData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayContractData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementGatewayData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ApiManagementGatewayData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -367,9 +367,9 @@ namespace Azure.ResourceManager.ApiManagement
                 case 200:
                 case 201:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -381,13 +381,13 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="data"> The GatewayContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="data"> The <see cref="ApiManagementGatewayData"/> to use. </param>
         /// <param name="ifMatch"> ETag of the Entity. Not required when creating an entity, but required when updating an entity. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<GatewayContractData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayContractData data, string ifMatch = null, CancellationToken cancellationToken = default)
+        public Response<ApiManagementGatewayData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ApiManagementGatewayData data, ETag? ifMatch = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -402,9 +402,9 @@ namespace Azure.ResourceManager.ApiManagement
                 case 200:
                 case 201:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -412,7 +412,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch, GatewayContractData data)
+        internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch, ApiManagementGatewayData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -433,7 +433,7 @@ namespace Azure.ResourceManager.ApiManagement
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<ApiManagementGatewayData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -443,19 +443,18 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
-        /// <param name="data"> The GatewayContract to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementGatewayData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/>, <paramref name="ifMatch"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<GatewayContractData>> UpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch, GatewayContractData data, CancellationToken cancellationToken = default)
+        public async Task<Response<ApiManagementGatewayData>> UpdateAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch, ApiManagementGatewayData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
             Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, ifMatch, data);
@@ -464,9 +463,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -478,19 +477,18 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
-        /// <param name="data"> The GatewayContract to use. </param>
+        /// <param name="data"> The <see cref="ApiManagementGatewayData"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/>, <paramref name="ifMatch"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<GatewayContractData> Update(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch, GatewayContractData data, CancellationToken cancellationToken = default)
+        public Response<ApiManagementGatewayData> Update(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch, ApiManagementGatewayData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
             Argument.AssertNotNull(data, nameof(data));
 
             using var message = CreateUpdateRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, ifMatch, data);
@@ -499,9 +497,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayContractData value = default;
+                        ApiManagementGatewayData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GatewayContractData.DeserializeGatewayContractData(document.RootElement);
+                        value = ApiManagementGatewayData.DeserializeApiManagementGatewayData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -509,7 +507,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch)
+        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -536,18 +534,17 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="ifMatch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch, CancellationToken cancellationToken = default)
+        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, ifMatch);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
@@ -565,18 +562,17 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="ifMatch"> ETag of the Entity. ETag should match the current entity state from the header response of the GET request or it should be * for unconditional update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="ifMatch"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Delete(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, string ifMatch, CancellationToken cancellationToken = default)
+        public Response Delete(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, ETag ifMatch, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(ifMatch, nameof(ifMatch));
 
             using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, ifMatch);
             _pipeline.Send(message, cancellationToken);
@@ -617,7 +613,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -648,7 +644,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -675,7 +671,7 @@ namespace Azure.ResourceManager.ApiManagement
             }
         }
 
-        internal HttpMessage CreateRegenerateKeyRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerationRequestContract gatewayKeyRegenerationRequestContract)
+        internal HttpMessage CreateRegenerateKeyRequest(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerateContent content)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -695,9 +691,9 @@ namespace Azure.ResourceManager.ApiManagement
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
-            var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(gatewayKeyRegenerationRequestContract);
-            request.Content = content;
+            var content0 = new Utf8JsonRequestContent();
+            content0.JsonWriter.WriteObjectValue<GatewayKeyRegenerateContent>(content, new ModelReaderWriterOptions("W"));
+            request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
@@ -706,20 +702,20 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="gatewayKeyRegenerationRequestContract"> The GatewayKeyRegenerationRequestContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="content"> The <see cref="GatewayKeyRegenerateContent"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="gatewayKeyRegenerationRequestContract"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> RegenerateKeyAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerationRequestContract gatewayKeyRegenerationRequestContract, CancellationToken cancellationToken = default)
+        public async Task<Response> RegenerateKeyAsync(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(gatewayKeyRegenerationRequestContract, nameof(gatewayKeyRegenerationRequestContract));
+            Argument.AssertNotNull(content, nameof(content));
 
-            using var message = CreateRegenerateKeyRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, gatewayKeyRegenerationRequestContract);
+            using var message = CreateRegenerateKeyRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, content);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -734,20 +730,20 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="gatewayKeyRegenerationRequestContract"> The GatewayKeyRegenerationRequestContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="content"> The <see cref="GatewayKeyRegenerateContent"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="gatewayKeyRegenerationRequestContract"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="content"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response RegenerateKey(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerationRequestContract gatewayKeyRegenerationRequestContract, CancellationToken cancellationToken = default)
+        public Response RegenerateKey(string subscriptionId, string resourceGroupName, string serviceName, string gatewayId, GatewayKeyRegenerateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(serviceName, nameof(serviceName));
             Argument.AssertNotNullOrEmpty(gatewayId, nameof(gatewayId));
-            Argument.AssertNotNull(gatewayKeyRegenerationRequestContract, nameof(gatewayKeyRegenerationRequestContract));
+            Argument.AssertNotNull(content, nameof(content));
 
-            using var message = CreateRegenerateKeyRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, gatewayKeyRegenerationRequestContract);
+            using var message = CreateRegenerateKeyRequest(subscriptionId, resourceGroupName, serviceName, gatewayId, content);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
@@ -779,7 +775,7 @@ namespace Azure.ResourceManager.ApiManagement
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(gatewayTokenRequestContract);
+            content.JsonWriter.WriteObjectValue<GatewayTokenRequestContract>(gatewayTokenRequestContract, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -789,8 +785,8 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="gatewayTokenRequestContract"> The GatewayTokenRequestContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="gatewayTokenRequestContract"> The <see cref="GatewayTokenRequestContract"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="gatewayTokenRequestContract"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -822,8 +818,8 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="subscriptionId"> Subscription credentials which uniquely identify Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="serviceName"> The name of the API Management service. </param>
-        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value &apos;managed&apos;. </param>
-        /// <param name="gatewayTokenRequestContract"> The GatewayTokenRequestContract to use. </param>
+        /// <param name="gatewayId"> Gateway entity identifier. Must be unique in the current API Management service instance. Must not have value 'managed'. </param>
+        /// <param name="gatewayTokenRequestContract"> The <see cref="GatewayTokenRequestContract"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/>, <paramref name="gatewayId"/> or <paramref name="gatewayTokenRequestContract"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="serviceName"/> or <paramref name="gatewayId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -876,7 +872,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<GatewayCollection>> ListByServiceNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public async Task<Response<GatewayListResult>> ListByServiceNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -889,9 +885,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayCollection value = default;
+                        GatewayListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = GatewayCollection.DeserializeGatewayCollection(document.RootElement);
+                        value = GatewayListResult.DeserializeGatewayListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -910,7 +906,7 @@ namespace Azure.ResourceManager.ApiManagement
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="serviceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<GatewayCollection> ListByServiceNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
+        public Response<GatewayListResult> ListByServiceNextPage(string nextLink, string subscriptionId, string resourceGroupName, string serviceName, string filter = null, int? top = null, int? skip = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -923,9 +919,9 @@ namespace Azure.ResourceManager.ApiManagement
             {
                 case 200:
                     {
-                        GatewayCollection value = default;
+                        GatewayListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = GatewayCollection.DeserializeGatewayCollection(document.RootElement);
+                        value = GatewayListResult.DeserializeGatewayListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

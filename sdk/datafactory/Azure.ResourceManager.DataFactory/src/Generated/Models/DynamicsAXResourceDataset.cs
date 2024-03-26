@@ -7,32 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The path of the Dynamics AX OData entity. </summary>
-    public partial class DynamicsAXResourceDataset : Dataset
+    public partial class DynamicsAXResourceDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of DynamicsAXResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsAXResourceDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <param name="path"> The path of the Dynamics AX OData entity. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> or <paramref name="path"/> is null. </exception>
-        public DynamicsAXResourceDataset(LinkedServiceReference linkedServiceName, BinaryData path) : base(linkedServiceName)
+        public DynamicsAXResourceDataset(DataFactoryLinkedServiceReference linkedServiceName, DataFactoryElement<string> path) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
+            Argument.AssertNotNull(path, nameof(path));
 
             Path = path;
             DatasetType = "DynamicsAXResource";
         }
 
-        /// <summary> Initializes a new instance of DynamicsAXResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsAXResourceDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -43,13 +38,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="path"> The path of the Dynamics AX OData entity. Type: string (or Expression with resultType string). </param>
-        internal DynamicsAXResourceDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData path) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal DynamicsAXResourceDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> path) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             Path = path;
             DatasetType = datasetType ?? "DynamicsAXResource";
         }
 
+        /// <summary> Initializes a new instance of <see cref="DynamicsAXResourceDataset"/> for deserialization. </summary>
+        internal DynamicsAXResourceDataset()
+        {
+        }
+
         /// <summary> The path of the Dynamics AX OData entity. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Path { get; set; }
+        public DataFactoryElement<string> Path { get; set; }
     }
 }

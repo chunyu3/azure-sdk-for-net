@@ -5,7 +5,6 @@
 
 #nullable disable
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,20 +13,14 @@ namespace Azure.Search.Documents.Indexes.Models
     /// <summary> Response from a List Aliases request. If successful, it includes the associated index mappings for all aliases. </summary>
     internal partial class ListAliasesResult
     {
-        /// <summary> Initializes a new instance of ListAliasesResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ListAliasesResult"/>. </summary>
         /// <param name="aliases"> The aliases in the Search service. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="aliases"/> is null. </exception>
         internal ListAliasesResult(IEnumerable<SearchAlias> aliases)
         {
-            if (aliases == null)
-            {
-                throw new ArgumentNullException(nameof(aliases));
-            }
-
             Aliases = aliases.ToList();
         }
 
-        /// <summary> Initializes a new instance of ListAliasesResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ListAliasesResult"/>. </summary>
         /// <param name="aliases"> The aliases in the Search service. </param>
         internal ListAliasesResult(IReadOnlyList<SearchAlias> aliases)
         {

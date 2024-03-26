@@ -7,34 +7,36 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.DataFactory.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.DataFactory
 {
-    /// <summary> A class representing the DataFactory data model. </summary>
+    /// <summary>
+    /// A class representing the DataFactory data model.
+    /// Factory resource type.
+    /// </summary>
     public partial class DataFactoryData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of DataFactoryData. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataFactoryData"/>. </summary>
         /// <param name="location"> The location. </param>
         public DataFactoryData(AzureLocation location) : base(location)
         {
-            GlobalParameters = new ChangeTrackingDictionary<string, GlobalParameterSpecification>();
+            GlobalParameters = new ChangeTrackingDictionary<string, DataFactoryGlobalParameterProperties>();
             AdditionalProperties = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of DataFactoryData. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataFactoryData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="tags"> The tags. </param>
         /// <param name="location"> The location. </param>
-        /// <param name="identity"> Managed service identity of the factory. </param>
+        /// <param name="identity"> Managed service identity of the factory. Current supported identity types: SystemAssigned, UserAssigned, SystemAssigned,UserAssigned. </param>
         /// <param name="provisioningState"> Factory provisioning state, example Succeeded. </param>
-        /// <param name="createOn"> Time the factory was created in ISO8601 format. </param>
+        /// <param name="createdOn"> Time the factory was created in ISO8601 format. </param>
         /// <param name="version"> Version of the factory. </param>
         /// <param name="purviewConfiguration"> Purview information of the factory. </param>
         /// <param name="repoConfiguration">
@@ -47,11 +49,11 @@ namespace Azure.ResourceManager.DataFactory
         /// <param name="publicNetworkAccess"> Whether or not public network access is allowed for the data factory. </param>
         /// <param name="eTag"> Etag identifies change in the resource. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        internal DataFactoryData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, FactoryIdentity identity, string provisioningState, DateTimeOffset? createOn, string version, PurviewConfiguration purviewConfiguration, FactoryRepoConfiguration repoConfiguration, IDictionary<string, GlobalParameterSpecification> globalParameters, EncryptionConfiguration encryption, PublicNetworkAccess? publicNetworkAccess, ETag? eTag, IDictionary<string, BinaryData> additionalProperties) : base(id, name, resourceType, systemData, tags, location)
+        internal DataFactoryData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ManagedServiceIdentity identity, string provisioningState, DateTimeOffset? createdOn, string version, DataFactoryPurviewConfiguration purviewConfiguration, FactoryRepoConfiguration repoConfiguration, IDictionary<string, DataFactoryGlobalParameterProperties> globalParameters, DataFactoryEncryptionConfiguration encryption, DataFactoryPublicNetworkAccess? publicNetworkAccess, ETag? eTag, IDictionary<string, BinaryData> additionalProperties) : base(id, name, resourceType, systemData, tags, location)
         {
             Identity = identity;
             ProvisioningState = provisioningState;
-            CreateOn = createOn;
+            CreatedOn = createdOn;
             Version = version;
             PurviewConfiguration = purviewConfiguration;
             RepoConfiguration = repoConfiguration;
@@ -62,16 +64,21 @@ namespace Azure.ResourceManager.DataFactory
             AdditionalProperties = additionalProperties;
         }
 
-        /// <summary> Managed service identity of the factory. </summary>
-        public FactoryIdentity Identity { get; set; }
+        /// <summary> Initializes a new instance of <see cref="DataFactoryData"/> for deserialization. </summary>
+        internal DataFactoryData()
+        {
+        }
+
+        /// <summary> Managed service identity of the factory. Current supported identity types: SystemAssigned, UserAssigned, SystemAssigned,UserAssigned. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
         /// <summary> Factory provisioning state, example Succeeded. </summary>
         public string ProvisioningState { get; }
         /// <summary> Time the factory was created in ISO8601 format. </summary>
-        public DateTimeOffset? CreateOn { get; }
+        public DateTimeOffset? CreatedOn { get; }
         /// <summary> Version of the factory. </summary>
         public string Version { get; }
         /// <summary> Purview information of the factory. </summary>
-        internal PurviewConfiguration PurviewConfiguration { get; set; }
+        internal DataFactoryPurviewConfiguration PurviewConfiguration { get; set; }
         /// <summary> Purview resource id. </summary>
         public ResourceIdentifier PurviewResourceId
         {
@@ -79,7 +86,7 @@ namespace Azure.ResourceManager.DataFactory
             set
             {
                 if (PurviewConfiguration is null)
-                    PurviewConfiguration = new PurviewConfiguration();
+                    PurviewConfiguration = new DataFactoryPurviewConfiguration();
                 PurviewConfiguration.PurviewResourceId = value;
             }
         }
@@ -91,14 +98,43 @@ namespace Azure.ResourceManager.DataFactory
         /// </summary>
         public FactoryRepoConfiguration RepoConfiguration { get; set; }
         /// <summary> List of parameters for factory. </summary>
-        public IDictionary<string, GlobalParameterSpecification> GlobalParameters { get; }
+        public IDictionary<string, DataFactoryGlobalParameterProperties> GlobalParameters { get; }
         /// <summary> Properties to enable Customer Managed Key for the factory. </summary>
-        public EncryptionConfiguration Encryption { get; set; }
+        public DataFactoryEncryptionConfiguration Encryption { get; set; }
         /// <summary> Whether or not public network access is allowed for the data factory. </summary>
-        public PublicNetworkAccess? PublicNetworkAccess { get; set; }
+        public DataFactoryPublicNetworkAccess? PublicNetworkAccess { get; set; }
         /// <summary> Etag identifies change in the resource. </summary>
         public ETag? ETag { get; }
-        /// <summary> Additional Properties. </summary>
+        /// <summary>
+        /// Additional Properties
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IDictionary<string, BinaryData> AdditionalProperties { get; }
     }
 }

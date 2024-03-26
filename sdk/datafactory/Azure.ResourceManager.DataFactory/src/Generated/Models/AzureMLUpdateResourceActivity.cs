@@ -7,36 +7,25 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Azure ML Update Resource management activity. </summary>
     public partial class AzureMLUpdateResourceActivity : ExecutionActivity
     {
-        /// <summary> Initializes a new instance of AzureMLUpdateResourceActivity. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureMLUpdateResourceActivity"/>. </summary>
         /// <param name="name"> Activity name. </param>
         /// <param name="trainedModelName"> Name of the Trained Model module in the Web Service experiment to be updated. Type: string (or Expression with resultType string). </param>
         /// <param name="trainedModelLinkedServiceName"> Name of Azure Storage linked service holding the .ilearner file that will be uploaded by the update operation. </param>
         /// <param name="trainedModelFilePath"> The relative file path in trainedModelLinkedService to represent the .ilearner file that will be uploaded by the update operation.  Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/>, <paramref name="trainedModelName"/>, <paramref name="trainedModelLinkedServiceName"/> or <paramref name="trainedModelFilePath"/> is null. </exception>
-        public AzureMLUpdateResourceActivity(string name, BinaryData trainedModelName, LinkedServiceReference trainedModelLinkedServiceName, BinaryData trainedModelFilePath) : base(name)
+        public AzureMLUpdateResourceActivity(string name, DataFactoryElement<string> trainedModelName, DataFactoryLinkedServiceReference trainedModelLinkedServiceName, DataFactoryElement<string> trainedModelFilePath) : base(name)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            if (trainedModelName == null)
-            {
-                throw new ArgumentNullException(nameof(trainedModelName));
-            }
-            if (trainedModelLinkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(trainedModelLinkedServiceName));
-            }
-            if (trainedModelFilePath == null)
-            {
-                throw new ArgumentNullException(nameof(trainedModelFilePath));
-            }
+            Argument.AssertNotNull(name, nameof(name));
+            Argument.AssertNotNull(trainedModelName, nameof(trainedModelName));
+            Argument.AssertNotNull(trainedModelLinkedServiceName, nameof(trainedModelLinkedServiceName));
+            Argument.AssertNotNull(trainedModelFilePath, nameof(trainedModelFilePath));
 
             TrainedModelName = trainedModelName;
             TrainedModelLinkedServiceName = trainedModelLinkedServiceName;
@@ -44,10 +33,12 @@ namespace Azure.ResourceManager.DataFactory.Models
             ActivityType = "AzureMLUpdateResource";
         }
 
-        /// <summary> Initializes a new instance of AzureMLUpdateResourceActivity. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureMLUpdateResourceActivity"/>. </summary>
         /// <param name="name"> Activity name. </param>
         /// <param name="activityType"> Type of activity. </param>
         /// <param name="description"> Activity description. </param>
+        /// <param name="state"> Activity state. This is an optional property and if not provided, the state will be Active by default. </param>
+        /// <param name="onInactiveMarkAs"> Status result of the activity when the state is set to Inactive. This is an optional property and if not provided when the activity is inactive, the status will be Succeeded by default. </param>
         /// <param name="dependsOn"> Activity depends on condition. </param>
         /// <param name="userProperties"> Activity user properties. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
@@ -56,7 +47,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="trainedModelName"> Name of the Trained Model module in the Web Service experiment to be updated. Type: string (or Expression with resultType string). </param>
         /// <param name="trainedModelLinkedServiceName"> Name of Azure Storage linked service holding the .ilearner file that will be uploaded by the update operation. </param>
         /// <param name="trainedModelFilePath"> The relative file path in trainedModelLinkedService to represent the .ilearner file that will be uploaded by the update operation.  Type: string (or Expression with resultType string). </param>
-        internal AzureMLUpdateResourceActivity(string name, string activityType, string description, IList<ActivityDependency> dependsOn, IList<UserProperty> userProperties, IDictionary<string, BinaryData> additionalProperties, LinkedServiceReference linkedServiceName, ActivityPolicy policy, BinaryData trainedModelName, LinkedServiceReference trainedModelLinkedServiceName, BinaryData trainedModelFilePath) : base(name, activityType, description, dependsOn, userProperties, additionalProperties, linkedServiceName, policy)
+        internal AzureMLUpdateResourceActivity(string name, string activityType, string description, PipelineActivityState? state, ActivityOnInactiveMarkAs? onInactiveMarkAs, IList<PipelineActivityDependency> dependsOn, IList<PipelineActivityUserProperty> userProperties, IDictionary<string, BinaryData> additionalProperties, DataFactoryLinkedServiceReference linkedServiceName, PipelineActivityPolicy policy, DataFactoryElement<string> trainedModelName, DataFactoryLinkedServiceReference trainedModelLinkedServiceName, DataFactoryElement<string> trainedModelFilePath) : base(name, activityType, description, state, onInactiveMarkAs, dependsOn, userProperties, additionalProperties, linkedServiceName, policy)
         {
             TrainedModelName = trainedModelName;
             TrainedModelLinkedServiceName = trainedModelLinkedServiceName;
@@ -64,11 +55,16 @@ namespace Azure.ResourceManager.DataFactory.Models
             ActivityType = activityType ?? "AzureMLUpdateResource";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AzureMLUpdateResourceActivity"/> for deserialization. </summary>
+        internal AzureMLUpdateResourceActivity()
+        {
+        }
+
         /// <summary> Name of the Trained Model module in the Web Service experiment to be updated. Type: string (or Expression with resultType string). </summary>
-        public BinaryData TrainedModelName { get; set; }
+        public DataFactoryElement<string> TrainedModelName { get; set; }
         /// <summary> Name of Azure Storage linked service holding the .ilearner file that will be uploaded by the update operation. </summary>
-        public LinkedServiceReference TrainedModelLinkedServiceName { get; set; }
+        public DataFactoryLinkedServiceReference TrainedModelLinkedServiceName { get; set; }
         /// <summary> The relative file path in trainedModelLinkedService to represent the .ilearner file that will be uploaded by the update operation.  Type: string (or Expression with resultType string). </summary>
-        public BinaryData TrainedModelFilePath { get; set; }
+        public DataFactoryElement<string> TrainedModelFilePath { get; set; }
     }
 }

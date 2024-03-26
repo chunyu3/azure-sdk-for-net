@@ -7,38 +7,30 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> SAP ODP Resource properties. </summary>
-    public partial class SapOdpResourceDataset : Dataset
+    public partial class SapOdpResourceDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of SapOdpResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapOdpResourceDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <param name="context"> The context of the SAP ODP Object. Type: string (or Expression with resultType string). </param>
         /// <param name="objectName"> The name of the SAP ODP Object. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/>, <paramref name="context"/> or <paramref name="objectName"/> is null. </exception>
-        public SapOdpResourceDataset(LinkedServiceReference linkedServiceName, BinaryData context, BinaryData objectName) : base(linkedServiceName)
+        public SapOdpResourceDataset(DataFactoryLinkedServiceReference linkedServiceName, DataFactoryElement<string> context, DataFactoryElement<string> objectName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-            if (objectName == null)
-            {
-                throw new ArgumentNullException(nameof(objectName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
+            Argument.AssertNotNull(context, nameof(context));
+            Argument.AssertNotNull(objectName, nameof(objectName));
 
             Context = context;
             ObjectName = objectName;
             DatasetType = "SapOdpResource";
         }
 
-        /// <summary> Initializes a new instance of SapOdpResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapOdpResourceDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -50,16 +42,21 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="context"> The context of the SAP ODP Object. Type: string (or Expression with resultType string). </param>
         /// <param name="objectName"> The name of the SAP ODP Object. Type: string (or Expression with resultType string). </param>
-        internal SapOdpResourceDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData context, BinaryData objectName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal SapOdpResourceDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> context, DataFactoryElement<string> objectName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             Context = context;
             ObjectName = objectName;
             DatasetType = datasetType ?? "SapOdpResource";
         }
 
+        /// <summary> Initializes a new instance of <see cref="SapOdpResourceDataset"/> for deserialization. </summary>
+        internal SapOdpResourceDataset()
+        {
+        }
+
         /// <summary> The context of the SAP ODP Object. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Context { get; set; }
+        public DataFactoryElement<string> Context { get; set; }
         /// <summary> The name of the SAP ODP Object. Type: string (or Expression with resultType string). </summary>
-        public BinaryData ObjectName { get; set; }
+        public DataFactoryElement<string> ObjectName { get; set; }
     }
 }

@@ -5,52 +5,203 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Sql.Models
 {
-    public partial class SqlPrivateLinkServiceConnectionStateProperty : IUtf8JsonSerializable
+    public partial class SqlPrivateLinkServiceConnectionStateProperty : IUtf8JsonSerializable, IJsonModel<SqlPrivateLinkServiceConnectionStateProperty>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SqlPrivateLinkServiceConnectionStateProperty>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SqlPrivateLinkServiceConnectionStateProperty>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlPrivateLinkServiceConnectionStateProperty)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("status");
+            writer.WritePropertyName("status"u8);
             writer.WriteStringValue(Status.ToString());
-            writer.WritePropertyName("description");
+            writer.WritePropertyName("description"u8);
             writer.WriteStringValue(Description);
+            if (options.Format != "W" && Optional.IsDefined(ActionsRequired))
+            {
+                writer.WritePropertyName("actionsRequired"u8);
+                writer.WriteStringValue(ActionsRequired.Value.ToString());
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static SqlPrivateLinkServiceConnectionStateProperty DeserializeSqlPrivateLinkServiceConnectionStateProperty(JsonElement element)
+        SqlPrivateLinkServiceConnectionStateProperty IJsonModel<SqlPrivateLinkServiceConnectionStateProperty>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            PrivateLinkServiceConnectionStateStatus status = default;
+            var format = options.Format == "W" ? ((IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlPrivateLinkServiceConnectionStateProperty)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlPrivateLinkServiceConnectionStateProperty(document.RootElement, options);
+        }
+
+        internal static SqlPrivateLinkServiceConnectionStateProperty DeserializeSqlPrivateLinkServiceConnectionStateProperty(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            SqlPrivateLinkServiceConnectionStatus status = default;
             string description = default;
-            Optional<PrivateLinkServiceConnectionStateActionsRequire> actionsRequired = default;
+            SqlPrivateLinkServiceConnectionActionsRequired? actionsRequired = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
-                    status = new PrivateLinkServiceConnectionStateStatus(property.Value.GetString());
+                    status = new SqlPrivateLinkServiceConnectionStatus(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("actionsRequired"))
+                if (property.NameEquals("actionsRequired"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    actionsRequired = new PrivateLinkServiceConnectionStateActionsRequire(property.Value.GetString());
+                    actionsRequired = new SqlPrivateLinkServiceConnectionActionsRequired(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new SqlPrivateLinkServiceConnectionStateProperty(status, description, Optional.ToNullable(actionsRequired));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SqlPrivateLinkServiceConnectionStateProperty(status, description, actionsRequired, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Status), out propertyOverride);
+            builder.Append("  status: ");
+            if (hasPropertyOverride)
+            {
+                builder.AppendLine($"{propertyOverride}");
+            }
+            else
+            {
+                builder.AppendLine($"'{Status.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Description), out propertyOverride);
+            if (Optional.IsDefined(Description) || hasPropertyOverride)
+            {
+                builder.Append("  description: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Description.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Description}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Description}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionsRequired), out propertyOverride);
+            if (Optional.IsDefined(ActionsRequired) || hasPropertyOverride)
+            {
+                builder.Append("  actionsRequired: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{ActionsRequired.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(SqlPrivateLinkServiceConnectionStateProperty)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SqlPrivateLinkServiceConnectionStateProperty IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSqlPrivateLinkServiceConnectionStateProperty(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlPrivateLinkServiceConnectionStateProperty)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SqlPrivateLinkServiceConnectionStateProperty>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

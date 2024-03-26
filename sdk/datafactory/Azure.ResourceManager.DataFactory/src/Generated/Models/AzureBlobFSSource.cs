@@ -7,19 +7,20 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> A copy activity Azure BlobFS source. </summary>
-    public partial class AzureBlobFSSource : CopySource
+    public partial class AzureBlobFSSource : CopyActivitySource
     {
-        /// <summary> Initializes a new instance of AzureBlobFSSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureBlobFSSource"/>. </summary>
         public AzureBlobFSSource()
         {
             CopySourceType = "AzureBlobFSSource";
         }
 
-        /// <summary> Initializes a new instance of AzureBlobFSSource. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureBlobFSSource"/>. </summary>
         /// <param name="copySourceType"> Copy source type. </param>
         /// <param name="sourceRetryCount"> Source retry count. Type: integer (or Expression with resultType integer). </param>
         /// <param name="sourceRetryWait"> Source retry wait. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -29,7 +30,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="treatEmptyAsNull"> Treat empty as null. Type: boolean (or Expression with resultType boolean). </param>
         /// <param name="skipHeaderLineCount"> Number of header lines to skip from each blob. Type: integer (or Expression with resultType integer). </param>
         /// <param name="recursive"> If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression with resultType boolean). </param>
-        internal AzureBlobFSSource(string copySourceType, BinaryData sourceRetryCount, BinaryData sourceRetryWait, BinaryData maxConcurrentConnections, BinaryData disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, BinaryData treatEmptyAsNull, BinaryData skipHeaderLineCount, BinaryData recursive) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
+        internal AzureBlobFSSource(string copySourceType, DataFactoryElement<int> sourceRetryCount, DataFactoryElement<string> sourceRetryWait, DataFactoryElement<int> maxConcurrentConnections, DataFactoryElement<bool> disableMetricsCollection, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<bool> treatEmptyAsNull, DataFactoryElement<int> skipHeaderLineCount, DataFactoryElement<bool> recursive) : base(copySourceType, sourceRetryCount, sourceRetryWait, maxConcurrentConnections, disableMetricsCollection, additionalProperties)
         {
             TreatEmptyAsNull = treatEmptyAsNull;
             SkipHeaderLineCount = skipHeaderLineCount;
@@ -38,10 +39,10 @@ namespace Azure.ResourceManager.DataFactory.Models
         }
 
         /// <summary> Treat empty as null. Type: boolean (or Expression with resultType boolean). </summary>
-        public BinaryData TreatEmptyAsNull { get; set; }
+        public DataFactoryElement<bool> TreatEmptyAsNull { get; set; }
         /// <summary> Number of header lines to skip from each blob. Type: integer (or Expression with resultType integer). </summary>
-        public BinaryData SkipHeaderLineCount { get; set; }
+        public DataFactoryElement<int> SkipHeaderLineCount { get; set; }
         /// <summary> If true, files under the folder path will be read recursively. Default is true. Type: boolean (or Expression with resultType boolean). </summary>
-        public BinaryData Recursive { get; set; }
+        public DataFactoryElement<bool> Recursive { get; set; }
     }
 }

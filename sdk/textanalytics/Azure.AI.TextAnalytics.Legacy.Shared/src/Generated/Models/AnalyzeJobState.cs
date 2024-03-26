@@ -8,14 +8,13 @@
 using System;
 using System.Collections.Generic;
 using Azure.AI.TextAnalytics.Legacy.Models;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy
 {
     /// <summary> The AnalyzeJobState. </summary>
     internal partial class AnalyzeJobState : AnalyzeJobMetadata
     {
-        /// <summary> Initializes a new instance of AnalyzeJobState. </summary>
+        /// <summary> Initializes a new instance of <see cref="AnalyzeJobState"/>. </summary>
         /// <param name="createdDateTime"></param>
         /// <param name="jobId"></param>
         /// <param name="lastUpdateDateTime"></param>
@@ -24,16 +23,13 @@ namespace Azure.AI.TextAnalytics.Legacy
         /// <exception cref="ArgumentNullException"> <paramref name="tasks"/> is null. </exception>
         internal AnalyzeJobState(DateTimeOffset createdDateTime, Guid jobId, DateTimeOffset lastUpdateDateTime, State status, TasksStateTasks tasks) : base(createdDateTime, jobId, lastUpdateDateTime, status)
         {
-            if (tasks == null)
-            {
-                throw new ArgumentNullException(nameof(tasks));
-            }
+            Argument.AssertNotNull(tasks, nameof(tasks));
 
             Tasks = tasks;
             Errors = new ChangeTrackingList<TextAnalyticsError>();
         }
 
-        /// <summary> Initializes a new instance of AnalyzeJobState. </summary>
+        /// <summary> Initializes a new instance of <see cref="AnalyzeJobState"/>. </summary>
         /// <param name="createdDateTime"></param>
         /// <param name="expirationDateTime"></param>
         /// <param name="jobId"></param>

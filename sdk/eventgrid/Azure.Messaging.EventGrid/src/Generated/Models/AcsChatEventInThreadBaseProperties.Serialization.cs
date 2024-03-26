@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -14,22 +13,26 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static AcsChatEventInThreadBaseProperties DeserializeAcsChatEventInThreadBaseProperties(JsonElement element)
         {
-            Optional<string> transactionId = default;
-            Optional<string> threadId = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string transactionId = default;
+            string threadId = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("transactionId"))
+                if (property.NameEquals("transactionId"u8))
                 {
                     transactionId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("threadId"))
+                if (property.NameEquals("threadId"u8))
                 {
                     threadId = property.Value.GetString();
                     continue;
                 }
             }
-            return new AcsChatEventInThreadBaseProperties(transactionId.Value, threadId.Value);
+            return new AcsChatEventInThreadBaseProperties(transactionId, threadId);
         }
     }
 }

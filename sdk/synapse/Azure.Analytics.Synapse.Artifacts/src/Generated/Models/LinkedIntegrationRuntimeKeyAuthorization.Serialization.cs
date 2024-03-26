@@ -18,25 +18,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("key");
-            writer.WriteObjectValue(Key);
-            writer.WritePropertyName("authorizationType");
+            writer.WritePropertyName("key"u8);
+            writer.WriteObjectValue<SecureString>(Key);
+            writer.WritePropertyName("authorizationType"u8);
             writer.WriteStringValue(AuthorizationType);
             writer.WriteEndObject();
         }
 
         internal static LinkedIntegrationRuntimeKeyAuthorization DeserializeLinkedIntegrationRuntimeKeyAuthorization(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             SecureString key = default;
             string authorizationType = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("key"))
+                if (property.NameEquals("key"u8))
                 {
                     key = SecureString.DeserializeSecureString(property.Value);
                     continue;
                 }
-                if (property.NameEquals("authorizationType"))
+                if (property.NameEquals("authorizationType"u8))
                 {
                     authorizationType = property.Value.GetString();
                     continue;
@@ -49,7 +53,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, LinkedIntegrationRuntimeKeyAuthorization model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LinkedIntegrationRuntimeKeyAuthorization>(model);
             }
             public override LinkedIntegrationRuntimeKeyAuthorization Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

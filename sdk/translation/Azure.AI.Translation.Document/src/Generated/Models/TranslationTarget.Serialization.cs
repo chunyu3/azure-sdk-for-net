@@ -15,28 +15,28 @@ namespace Azure.AI.Translation.Document
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("targetUrl");
+            writer.WritePropertyName("targetUrl"u8);
             writer.WriteStringValue(TargetUri.AbsoluteUri);
             if (Optional.IsDefined(CategoryId))
             {
-                writer.WritePropertyName("category");
+                writer.WritePropertyName("category"u8);
                 writer.WriteStringValue(CategoryId);
             }
-            writer.WritePropertyName("language");
+            writer.WritePropertyName("language"u8);
             writer.WriteStringValue(LanguageCode);
             if (Optional.IsCollectionDefined(Glossaries))
             {
-                writer.WritePropertyName("glossaries");
+                writer.WritePropertyName("glossaries"u8);
                 writer.WriteStartArray();
                 foreach (var item in Glossaries)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<TranslationGlossary>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(StorageSource))
             {
-                writer.WritePropertyName("storageSource");
+                writer.WritePropertyName("storageSource"u8);
                 writer.WriteStringValue(StorageSource);
             }
             writer.WriteEndObject();

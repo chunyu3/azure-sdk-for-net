@@ -7,8 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.AI.Translation.Document;
-using Azure.Core;
 
 namespace Azure.AI.Translation.Document.Models
 {
@@ -16,11 +14,15 @@ namespace Azure.AI.Translation.Document.Models
     {
         internal static DocumentsStatus DeserializeDocumentsStatus(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IReadOnlyList<DocumentStatusResult> value = default;
-            Optional<string> nextLink = default;
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("value"))
+                if (property.NameEquals("value"u8))
                 {
                     List<DocumentStatusResult> array = new List<DocumentStatusResult>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -30,13 +32,13 @@ namespace Azure.AI.Translation.Document.Models
                     value = array;
                     continue;
                 }
-                if (property.NameEquals("@nextLink"))
+                if (property.NameEquals("@nextLink"u8))
                 {
                     nextLink = property.Value.GetString();
                     continue;
                 }
             }
-            return new DocumentsStatus(value, nextLink.Value);
+            return new DocumentsStatus(value, nextLink);
         }
     }
 }

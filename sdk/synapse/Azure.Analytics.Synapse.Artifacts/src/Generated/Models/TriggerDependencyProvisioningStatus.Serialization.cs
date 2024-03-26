@@ -18,25 +18,29 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("triggerName");
+            writer.WritePropertyName("triggerName"u8);
             writer.WriteStringValue(TriggerName);
-            writer.WritePropertyName("provisioningStatus");
+            writer.WritePropertyName("provisioningStatus"u8);
             writer.WriteStringValue(ProvisioningStatus);
             writer.WriteEndObject();
         }
 
         internal static TriggerDependencyProvisioningStatus DeserializeTriggerDependencyProvisioningStatus(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string triggerName = default;
             string provisioningStatus = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("triggerName"))
+                if (property.NameEquals("triggerName"u8))
                 {
                     triggerName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("provisioningStatus"))
+                if (property.NameEquals("provisioningStatus"u8))
                 {
                     provisioningStatus = property.Value.GetString();
                     continue;
@@ -49,7 +53,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, TriggerDependencyProvisioningStatus model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<TriggerDependencyProvisioningStatus>(model);
             }
             public override TriggerDependencyProvisioningStatus Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

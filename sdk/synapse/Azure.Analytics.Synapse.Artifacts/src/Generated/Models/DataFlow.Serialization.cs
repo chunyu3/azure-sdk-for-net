@@ -6,7 +6,6 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Azure.Core;
@@ -19,33 +18,42 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
+                writer.WritePropertyName("description"u8);
                 writer.WriteStringValue(Description);
             }
             if (Optional.IsCollectionDefined(Annotations))
             {
-                writer.WritePropertyName("annotations");
+                writer.WritePropertyName("annotations"u8);
                 writer.WriteStartArray();
                 foreach (var item in Annotations)
                 {
-                    writer.WriteObjectValue(item);
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
+                    writer.WriteObjectValue<object>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(Folder))
             {
-                writer.WritePropertyName("folder");
-                writer.WriteObjectValue(Folder);
+                writer.WritePropertyName("folder"u8);
+                writer.WriteObjectValue<DataFlowFolder>(Folder);
             }
             writer.WriteEndObject();
         }
 
         internal static DataFlow DeserializeDataFlow(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("type", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
@@ -54,56 +62,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                     case "MappingDataFlow": return MappingDataFlow.DeserializeMappingDataFlow(element);
                 }
             }
-            string type = default;
-            Optional<string> description = default;
-            Optional<IList<object>> annotations = default;
-            Optional<DataFlowFolder> folder = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals("type"))
-                {
-                    type = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("description"))
-                {
-                    description = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("annotations"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    List<object> array = new List<object>();
-                    foreach (var item in property.Value.EnumerateArray())
-                    {
-                        array.Add(item.GetObject());
-                    }
-                    annotations = array;
-                    continue;
-                }
-                if (property.NameEquals("folder"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    folder = DataFlowFolder.DeserializeDataFlowFolder(property.Value);
-                    continue;
-                }
-            }
-            return new DataFlow(type, description.Value, Optional.ToList(annotations), folder.Value);
+            return UnknownDataFlow.DeserializeUnknownDataFlow(element);
         }
 
         internal partial class DataFlowConverter : JsonConverter<DataFlow>
         {
             public override void Write(Utf8JsonWriter writer, DataFlow model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<DataFlow>(model);
             }
             public override DataFlow Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

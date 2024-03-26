@@ -18,9 +18,9 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("orderBy");
+            writer.WritePropertyName("orderBy"u8);
             writer.WriteStringValue(OrderBy.ToString());
-            writer.WritePropertyName("order");
+            writer.WritePropertyName("order"u8);
             writer.WriteStringValue(Order.ToString());
             writer.WriteEndObject();
         }
@@ -29,7 +29,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         {
             public override void Write(Utf8JsonWriter writer, RunQueryOrderBy model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<RunQueryOrderBy>(model);
             }
             public override RunQueryOrderBy Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

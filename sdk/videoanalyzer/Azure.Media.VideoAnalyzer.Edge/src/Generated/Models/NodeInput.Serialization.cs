@@ -16,15 +16,15 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("nodeName");
+            writer.WritePropertyName("nodeName"u8);
             writer.WriteStringValue(NodeName);
             if (Optional.IsCollectionDefined(OutputSelectors))
             {
-                writer.WritePropertyName("outputSelectors");
+                writer.WritePropertyName("outputSelectors"u8);
                 writer.WriteStartArray();
                 foreach (var item in OutputSelectors)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<OutputSelector>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -33,20 +33,23 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static NodeInput DeserializeNodeInput(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string nodeName = default;
-            Optional<IList<OutputSelector>> outputSelectors = default;
+            IList<OutputSelector> outputSelectors = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("nodeName"))
+                if (property.NameEquals("nodeName"u8))
                 {
                     nodeName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("outputSelectors"))
+                if (property.NameEquals("outputSelectors"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<OutputSelector> array = new List<OutputSelector>();
@@ -58,7 +61,7 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     continue;
                 }
             }
-            return new NodeInput(nodeName, Optional.ToList(outputSelectors));
+            return new NodeInput(nodeName, outputSelectors ?? new ChangeTrackingList<OutputSelector>());
         }
     }
 }

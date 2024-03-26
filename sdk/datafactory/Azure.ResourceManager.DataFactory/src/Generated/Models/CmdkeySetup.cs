@@ -6,35 +6,24 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The custom setup of running cmdkey commands. </summary>
     public partial class CmdkeySetup : CustomSetupBase
     {
-        /// <summary> Initializes a new instance of CmdkeySetup. </summary>
-        /// <param name="targetName"> The server name of data source access. </param>
-        /// <param name="userName"> The user name of data source access. </param>
-        /// <param name="password">
-        /// The password of data source access.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="CmdkeySetup"/>. </summary>
+        /// <param name="targetName"> The server name of data source access. Type: string. </param>
+        /// <param name="userName"> The user name of data source access. Type: string. </param>
+        /// <param name="password"> The password of data source access. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="targetName"/>, <paramref name="userName"/> or <paramref name="password"/> is null. </exception>
-        public CmdkeySetup(BinaryData targetName, BinaryData userName, SecretBase password)
+        public CmdkeySetup(DataFactoryElement<string> targetName, DataFactoryElement<string> userName, DataFactorySecret password)
         {
-            if (targetName == null)
-            {
-                throw new ArgumentNullException(nameof(targetName));
-            }
-            if (userName == null)
-            {
-                throw new ArgumentNullException(nameof(userName));
-            }
-            if (password == null)
-            {
-                throw new ArgumentNullException(nameof(password));
-            }
+            Argument.AssertNotNull(targetName, nameof(targetName));
+            Argument.AssertNotNull(userName, nameof(userName));
+            Argument.AssertNotNull(password, nameof(password));
 
             TargetName = targetName;
             UserName = userName;
@@ -42,16 +31,13 @@ namespace Azure.ResourceManager.DataFactory.Models
             CustomSetupBaseType = "CmdkeySetup";
         }
 
-        /// <summary> Initializes a new instance of CmdkeySetup. </summary>
+        /// <summary> Initializes a new instance of <see cref="CmdkeySetup"/>. </summary>
         /// <param name="customSetupBaseType"> The type of custom setup. </param>
-        /// <param name="targetName"> The server name of data source access. </param>
-        /// <param name="userName"> The user name of data source access. </param>
-        /// <param name="password">
-        /// The password of data source access.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        internal CmdkeySetup(string customSetupBaseType, BinaryData targetName, BinaryData userName, SecretBase password) : base(customSetupBaseType)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="targetName"> The server name of data source access. Type: string. </param>
+        /// <param name="userName"> The user name of data source access. Type: string. </param>
+        /// <param name="password"> The password of data source access. </param>
+        internal CmdkeySetup(string customSetupBaseType, IDictionary<string, BinaryData> serializedAdditionalRawData, DataFactoryElement<string> targetName, DataFactoryElement<string> userName, DataFactorySecret password) : base(customSetupBaseType, serializedAdditionalRawData)
         {
             TargetName = targetName;
             UserName = userName;
@@ -59,15 +45,16 @@ namespace Azure.ResourceManager.DataFactory.Models
             CustomSetupBaseType = customSetupBaseType ?? "CmdkeySetup";
         }
 
-        /// <summary> The server name of data source access. </summary>
-        public BinaryData TargetName { get; set; }
-        /// <summary> The user name of data source access. </summary>
-        public BinaryData UserName { get; set; }
-        /// <summary>
-        /// The password of data source access.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
+        /// <summary> Initializes a new instance of <see cref="CmdkeySetup"/> for deserialization. </summary>
+        internal CmdkeySetup()
+        {
+        }
+
+        /// <summary> The server name of data source access. Type: string. </summary>
+        public DataFactoryElement<string> TargetName { get; set; }
+        /// <summary> The user name of data source access. Type: string. </summary>
+        public DataFactoryElement<string> UserName { get; set; }
+        /// <summary> The password of data source access. </summary>
+        public DataFactorySecret Password { get; set; }
     }
 }

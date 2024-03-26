@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ContainerService.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.ContainerService
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-04-01";
+            _apiVersion = apiVersion ?? "2023-10-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -55,11 +55,11 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Gets a list of snapshots in the specified subscription. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotListResult>> ListAsync(string subscriptionId, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotListResult>> ListAsync(string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -69,9 +69,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -80,11 +80,11 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Gets a list of snapshots in the specified subscription. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotListResult> List(string subscriptionId, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotListResult> List(string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
@@ -94,9 +94,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -124,12 +124,12 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Lists snapshots in the specified subscription and resource group. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotListResult>> ListByResourceGroupAsync(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotListResult>> ListByResourceGroupAsync(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -140,9 +140,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -151,12 +151,12 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Lists snapshots in the specified subscription and resource group. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotListResult> ListByResourceGroup(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotListResult> ListByResourceGroup(string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -167,9 +167,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -198,13 +198,13 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Gets a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotData>> GetAsync(string subscriptionId, string resourceGroupName, string resourceName, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotData>> GetAsync(string subscriptionId, string resourceGroupName, string resourceName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -216,26 +216,26 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SnapshotData)null, message.Response);
+                    return Response.FromValue((AgentPoolSnapshotData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotData> Get(string subscriptionId, string resourceGroupName, string resourceName, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotData> Get(string subscriptionId, string resourceGroupName, string resourceName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -247,19 +247,19 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SnapshotData)null, message.Response);
+                    return Response.FromValue((AgentPoolSnapshotData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string resourceName, SnapshotData data)
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string resourceName, AgentPoolSnapshotData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -277,21 +277,21 @@ namespace Azure.ResourceManager.ContainerService
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<AgentPoolSnapshotData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="data"> The snapshot to create or update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string resourceName, SnapshotData data, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string resourceName, AgentPoolSnapshotData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -305,9 +305,9 @@ namespace Azure.ResourceManager.ContainerService
                 case 200:
                 case 201:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -316,14 +316,14 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Creates or updates a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="data"> The snapshot to create or update. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string resourceName, SnapshotData data, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string resourceName, AgentPoolSnapshotData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -337,9 +337,9 @@ namespace Azure.ResourceManager.ContainerService
                 case 200:
                 case 201:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -347,7 +347,7 @@ namespace Azure.ResourceManager.ContainerService
             }
         }
 
-        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string resourceName, TagsObject tagsObject)
+        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string resourceName, ContainerServiceTagsObject containerServiceTagsObject)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -365,36 +365,36 @@ namespace Azure.ResourceManager.ContainerService
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(tagsObject);
+            content.JsonWriter.WriteObjectValue<ContainerServiceTagsObject>(containerServiceTagsObject, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Updates tags on a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
-        /// <param name="tagsObject"> Parameters supplied to the Update snapshot Tags operation. </param>
+        /// <param name="containerServiceTagsObject"> Parameters supplied to the Update snapshot Tags operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="tagsObject"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="containerServiceTagsObject"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string resourceName, TagsObject tagsObject, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string resourceName, ContainerServiceTagsObject containerServiceTagsObject, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(resourceName, nameof(resourceName));
-            Argument.AssertNotNull(tagsObject, nameof(tagsObject));
+            Argument.AssertNotNull(containerServiceTagsObject, nameof(containerServiceTagsObject));
 
-            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, resourceName, tagsObject);
+            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, resourceName, containerServiceTagsObject);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -403,29 +403,29 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Updates tags on a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
-        /// <param name="tagsObject"> Parameters supplied to the Update snapshot Tags operation. </param>
+        /// <param name="containerServiceTagsObject"> Parameters supplied to the Update snapshot Tags operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="tagsObject"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="resourceName"/> or <paramref name="containerServiceTagsObject"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotData> UpdateTags(string subscriptionId, string resourceGroupName, string resourceName, TagsObject tagsObject, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotData> UpdateTags(string subscriptionId, string resourceGroupName, string resourceName, ContainerServiceTagsObject containerServiceTagsObject, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(resourceName, nameof(resourceName));
-            Argument.AssertNotNull(tagsObject, nameof(tagsObject));
+            Argument.AssertNotNull(containerServiceTagsObject, nameof(containerServiceTagsObject));
 
-            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, resourceName, tagsObject);
+            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, resourceName, containerServiceTagsObject);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        SnapshotData value = default;
+                        AgentPoolSnapshotData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotData.DeserializeSnapshotData(document.RootElement);
+                        value = AgentPoolSnapshotData.DeserializeAgentPoolSnapshotData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -454,7 +454,7 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Deletes a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -479,7 +479,7 @@ namespace Azure.ResourceManager.ContainerService
         }
 
         /// <summary> Deletes a snapshot. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the managed cluster resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -519,11 +519,11 @@ namespace Azure.ResourceManager.ContainerService
 
         /// <summary> Gets a list of snapshots in the specified subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotListResult>> ListNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotListResult>> ListNextPageAsync(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -534,9 +534,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -546,11 +546,11 @@ namespace Azure.ResourceManager.ContainerService
 
         /// <summary> Gets a list of snapshots in the specified subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotListResult> ListNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotListResult> ListNextPage(string nextLink, string subscriptionId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -561,9 +561,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -587,12 +587,12 @@ namespace Azure.ResourceManager.ContainerService
 
         /// <summary> Lists snapshots in the specified subscription and resource group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SnapshotListResult>> ListByResourceGroupNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        public async Task<Response<AgentPoolSnapshotListResult>> ListByResourceGroupNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -604,9 +604,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -616,12 +616,12 @@ namespace Azure.ResourceManager.ContainerService
 
         /// <summary> Lists snapshots in the specified subscription and resource group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SnapshotListResult> ListByResourceGroupNextPage(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
+        public Response<AgentPoolSnapshotListResult> ListByResourceGroupNextPage(string nextLink, string subscriptionId, string resourceGroupName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -633,9 +633,9 @@ namespace Azure.ResourceManager.ContainerService
             {
                 case 200:
                     {
-                        SnapshotListResult value = default;
+                        AgentPoolSnapshotListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SnapshotListResult.DeserializeSnapshotListResult(document.RootElement);
+                        value = AgentPoolSnapshotListResult.DeserializeAgentPoolSnapshotListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

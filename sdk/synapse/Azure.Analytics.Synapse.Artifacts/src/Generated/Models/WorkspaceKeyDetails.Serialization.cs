@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             if (Optional.IsDefined(KeyVaultUrl))
             {
-                writer.WritePropertyName("keyVaultUrl");
+                writer.WritePropertyName("keyVaultUrl"u8);
                 writer.WriteStringValue(KeyVaultUrl);
             }
             writer.WriteEndObject();
@@ -33,29 +33,33 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static WorkspaceKeyDetails DeserializeWorkspaceKeyDetails(JsonElement element)
         {
-            Optional<string> name = default;
-            Optional<string> keyVaultUrl = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            string keyVaultUrl = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("keyVaultUrl"))
+                if (property.NameEquals("keyVaultUrl"u8))
                 {
                     keyVaultUrl = property.Value.GetString();
                     continue;
                 }
             }
-            return new WorkspaceKeyDetails(name.Value, keyVaultUrl.Value);
+            return new WorkspaceKeyDetails(name, keyVaultUrl);
         }
 
         internal partial class WorkspaceKeyDetailsConverter : JsonConverter<WorkspaceKeyDetails>
         {
             public override void Write(Utf8JsonWriter writer, WorkspaceKeyDetails model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<WorkspaceKeyDetails>(model);
             }
             public override WorkspaceKeyDetails Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

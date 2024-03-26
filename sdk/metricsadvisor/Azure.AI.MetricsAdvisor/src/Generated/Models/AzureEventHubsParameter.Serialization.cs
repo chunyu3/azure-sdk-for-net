@@ -17,32 +17,36 @@ namespace Azure.AI.MetricsAdvisor.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(ConnectionString))
             {
-                writer.WritePropertyName("connectionString");
+                writer.WritePropertyName("connectionString"u8);
                 writer.WriteStringValue(ConnectionString);
             }
-            writer.WritePropertyName("consumerGroup");
+            writer.WritePropertyName("consumerGroup"u8);
             writer.WriteStringValue(ConsumerGroup);
             writer.WriteEndObject();
         }
 
         internal static AzureEventHubsParameter DeserializeAzureEventHubsParameter(JsonElement element)
         {
-            Optional<string> connectionString = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string connectionString = default;
             string consumerGroup = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("connectionString"))
+                if (property.NameEquals("connectionString"u8))
                 {
                     connectionString = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("consumerGroup"))
+                if (property.NameEquals("consumerGroup"u8))
                 {
                     consumerGroup = property.Value.GetString();
                     continue;
                 }
             }
-            return new AzureEventHubsParameter(connectionString.Value, consumerGroup);
+            return new AzureEventHubsParameter(connectionString, consumerGroup);
         }
     }
 }

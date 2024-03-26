@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Legacy
 {
@@ -14,16 +13,20 @@ namespace Azure.AI.TextAnalytics.Legacy
     {
         internal static Pagination DeserializePagination(JsonElement element)
         {
-            Optional<string> nextLink = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string nextLink = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("@nextLink"))
+                if (property.NameEquals("@nextLink"u8))
                 {
                     nextLink = property.Value.GetString();
                     continue;
                 }
             }
-            return new Pagination(nextLink.Value);
+            return new Pagination(nextLink);
         }
     }
 }

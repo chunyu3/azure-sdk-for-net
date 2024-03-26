@@ -6,10 +6,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Communication.Email.Extensions;
 using Azure.Core;
 
-namespace Azure.Communication.Email.Models
+namespace Azure.Communication.Email
 {
     [CodeGenModel("EmailRecipients")]
     public partial class EmailRecipients
@@ -22,34 +21,28 @@ namespace Azure.Communication.Email.Models
         /// <param name="bcc">Email bcc recipients. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="to"/> is null. </exception>
         public EmailRecipients(
-            IEnumerable<EmailAddress> to,
+            IEnumerable<EmailAddress> to = null,
             IEnumerable<EmailAddress> cc = null,
             IEnumerable<EmailAddress> bcc = null)
-            :this(to)
+            :this(to ?? Enumerable.Empty<EmailAddress>())
         {
             if (cc != null)
             {
-                CC = new ChangeTrackingList<EmailAddress>(new Optional<IList<EmailAddress>>(cc.ToList()));
+                CC = new ChangeTrackingList<EmailAddress>((IList<EmailAddress>)cc.ToList());
             }
 
-            if (cc != null)
+            if (bcc != null)
             {
-                BCC = new ChangeTrackingList<EmailAddress>(new Optional<IList<EmailAddress>>(bcc.ToList()));
+                BCC = new ChangeTrackingList<EmailAddress>((IList<EmailAddress>)bcc.ToList());
             }
         }
 
         internal void Validate()
         {
-            if (To.Count == 0)
+            if (To.Count == 0 && CC.Count == 0 && BCC.Count == 0)
             {
                 throw new ArgumentException(ErrorMessages.EmptyToRecipients);
             }
-
-            To.Validate();
-
-            CC.Validate();
-
-            BCC.Validate();
         }
     }
 }

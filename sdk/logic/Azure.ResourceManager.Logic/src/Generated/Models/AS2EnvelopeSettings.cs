@@ -6,39 +6,88 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
+using Azure.Core;
 
 namespace Azure.ResourceManager.Logic.Models
 {
     /// <summary> The AS2 agreement envelope settings. </summary>
     public partial class AS2EnvelopeSettings
     {
-        /// <summary> Initializes a new instance of AS2EnvelopeSettings. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="AS2EnvelopeSettings"/>. </summary>
         /// <param name="messageContentType"> The message content type. </param>
         /// <param name="transmitFileNameInMimeHeader"> The value indicating whether to transmit file name in mime header. </param>
         /// <param name="fileNameTemplate"> The template for file name. </param>
         /// <param name="suspendMessageOnFileNameGenerationError"> The value indicating whether to suspend message on file name generation error. </param>
-        /// <param name="autogenerateFileName"> The value indicating whether to auto generate file name. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="messageContentType"/> or <paramref name="fileNameTemplate"/> is null. </exception>
-        public AS2EnvelopeSettings(string messageContentType, bool transmitFileNameInMimeHeader, string fileNameTemplate, bool suspendMessageOnFileNameGenerationError, bool autogenerateFileName)
+        /// <param name="autoGenerateFileName"> The value indicating whether to auto generate file name. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="fileNameTemplate"/> is null. </exception>
+        public AS2EnvelopeSettings(ContentType messageContentType, bool transmitFileNameInMimeHeader, string fileNameTemplate, bool suspendMessageOnFileNameGenerationError, bool autoGenerateFileName)
         {
-            if (messageContentType == null)
-            {
-                throw new ArgumentNullException(nameof(messageContentType));
-            }
-            if (fileNameTemplate == null)
-            {
-                throw new ArgumentNullException(nameof(fileNameTemplate));
-            }
+            Argument.AssertNotNull(fileNameTemplate, nameof(fileNameTemplate));
 
             MessageContentType = messageContentType;
             TransmitFileNameInMimeHeader = transmitFileNameInMimeHeader;
             FileNameTemplate = fileNameTemplate;
             SuspendMessageOnFileNameGenerationError = suspendMessageOnFileNameGenerationError;
-            AutogenerateFileName = autogenerateFileName;
+            AutoGenerateFileName = autoGenerateFileName;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="AS2EnvelopeSettings"/>. </summary>
+        /// <param name="messageContentType"> The message content type. </param>
+        /// <param name="transmitFileNameInMimeHeader"> The value indicating whether to transmit file name in mime header. </param>
+        /// <param name="fileNameTemplate"> The template for file name. </param>
+        /// <param name="suspendMessageOnFileNameGenerationError"> The value indicating whether to suspend message on file name generation error. </param>
+        /// <param name="autoGenerateFileName"> The value indicating whether to auto generate file name. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal AS2EnvelopeSettings(ContentType messageContentType, bool transmitFileNameInMimeHeader, string fileNameTemplate, bool suspendMessageOnFileNameGenerationError, bool autoGenerateFileName, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        {
+            MessageContentType = messageContentType;
+            TransmitFileNameInMimeHeader = transmitFileNameInMimeHeader;
+            FileNameTemplate = fileNameTemplate;
+            SuspendMessageOnFileNameGenerationError = suspendMessageOnFileNameGenerationError;
+            AutoGenerateFileName = autoGenerateFileName;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="AS2EnvelopeSettings"/> for deserialization. </summary>
+        internal AS2EnvelopeSettings()
+        {
         }
 
         /// <summary> The message content type. </summary>
-        public string MessageContentType { get; set; }
+        public ContentType MessageContentType { get; set; }
         /// <summary> The value indicating whether to transmit file name in mime header. </summary>
         public bool TransmitFileNameInMimeHeader { get; set; }
         /// <summary> The template for file name. </summary>
@@ -46,6 +95,6 @@ namespace Azure.ResourceManager.Logic.Models
         /// <summary> The value indicating whether to suspend message on file name generation error. </summary>
         public bool SuspendMessageOnFileNameGenerationError { get; set; }
         /// <summary> The value indicating whether to auto generate file name. </summary>
-        public bool AutogenerateFileName { get; set; }
+        public bool AutoGenerateFileName { get; set; }
     }
 }

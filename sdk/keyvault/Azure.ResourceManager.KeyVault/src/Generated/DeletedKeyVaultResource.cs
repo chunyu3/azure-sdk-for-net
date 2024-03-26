@@ -9,23 +9,24 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.KeyVault
 {
     /// <summary>
     /// A Class representing a DeletedKeyVault along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="DeletedKeyVaultResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetDeletedKeyVaultResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetDeletedKeyVault method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="DeletedKeyVaultResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetDeletedKeyVaultResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetDeletedKeyVault method.
     /// </summary>
     public partial class DeletedKeyVaultResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="DeletedKeyVaultResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="location"> The location. </param>
+        /// <param name="vaultName"> The vaultName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, AzureLocation location, string vaultName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}";
@@ -36,12 +37,15 @@ namespace Azure.ResourceManager.KeyVault
         private readonly VaultsRestOperations _deletedKeyVaultVaultsRestClient;
         private readonly DeletedKeyVaultData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.KeyVault/locations/deletedVaults";
+
         /// <summary> Initializes a new instance of the <see cref="DeletedKeyVaultResource"/> class for mocking. </summary>
         protected DeletedKeyVaultResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "DeletedKeyVaultResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="DeletedKeyVaultResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal DeletedKeyVaultResource(ArmClient client, DeletedKeyVaultData data) : this(client, data.Id)
@@ -62,9 +66,6 @@ namespace Azure.ResourceManager.KeyVault
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.KeyVault/locations/deletedVaults";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +90,24 @@ namespace Azure.ResourceManager.KeyVault
 
         /// <summary>
         /// Gets the deleted Azure key vault.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}
-        /// Operation Id: Vaults_GetDeleted
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Vaults_GetDeleted</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DeletedKeyVaultResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<DeletedKeyVaultResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -113,8 +130,24 @@ namespace Azure.ResourceManager.KeyVault
 
         /// <summary>
         /// Gets the deleted Azure key vault.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}
-        /// Operation Id: Vaults_GetDeleted
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Vaults_GetDeleted</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DeletedKeyVaultResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<DeletedKeyVaultResource> Get(CancellationToken cancellationToken = default)
@@ -137,8 +170,24 @@ namespace Azure.ResourceManager.KeyVault
 
         /// <summary>
         /// Permanently deletes the specified vault. aka Purges the deleted Azure key vault.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}/purge
-        /// Operation Id: Vaults_PurgeDeleted
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}/purge</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Vaults_PurgeDeleted</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DeletedKeyVaultResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -163,8 +212,24 @@ namespace Azure.ResourceManager.KeyVault
 
         /// <summary>
         /// Permanently deletes the specified vault. aka Purges the deleted Azure key vault.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}/purge
-        /// Operation Id: Vaults_PurgeDeleted
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.KeyVault/locations/{location}/deletedVaults/{vaultName}/purge</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Vaults_PurgeDeleted</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2023-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DeletedKeyVaultResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

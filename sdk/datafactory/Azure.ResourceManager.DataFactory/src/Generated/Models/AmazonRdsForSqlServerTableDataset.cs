@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Amazon RDS for SQL Server dataset. </summary>
-    public partial class AmazonRdsForSqlServerTableDataset : Dataset
+    public partial class AmazonRdsForSqlServerTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of AmazonRdsForSqlServerTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForSqlServerTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public AmazonRdsForSqlServerTableDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public AmazonRdsForSqlServerTableDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "AmazonRdsForSqlServerTable";
         }
 
-        /// <summary> Initializes a new instance of AmazonRdsForSqlServerTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForSqlServerTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -38,16 +36,21 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="schemaTypePropertiesSchema"> The schema name of the SQL Server dataset. Type: string (or Expression with resultType string). </param>
         /// <param name="table"> The table name of the SQL Server dataset. Type: string (or Expression with resultType string). </param>
-        internal AmazonRdsForSqlServerTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData schemaTypePropertiesSchema, BinaryData table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal AmazonRdsForSqlServerTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> schemaTypePropertiesSchema, DataFactoryElement<string> table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             SchemaTypePropertiesSchema = schemaTypePropertiesSchema;
             Table = table;
             DatasetType = datasetType ?? "AmazonRdsForSqlServerTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AmazonRdsForSqlServerTableDataset"/> for deserialization. </summary>
+        internal AmazonRdsForSqlServerTableDataset()
+        {
+        }
+
         /// <summary> The schema name of the SQL Server dataset. Type: string (or Expression with resultType string). </summary>
-        public BinaryData SchemaTypePropertiesSchema { get; set; }
+        public DataFactoryElement<string> SchemaTypePropertiesSchema { get; set; }
         /// <summary> The table name of the SQL Server dataset. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Table { get; set; }
+        public DataFactoryElement<string> Table { get; set; }
     }
 }

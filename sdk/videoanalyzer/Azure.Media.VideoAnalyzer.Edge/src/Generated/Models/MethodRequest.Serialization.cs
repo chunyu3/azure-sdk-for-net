@@ -15,9 +15,11 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
+            writer.WritePropertyName("methodName"u8);
+            writer.WriteStringValue(MethodName);
             if (Optional.IsDefined(ApiVersion))
             {
-                writer.WritePropertyName("@apiVersion");
+                writer.WritePropertyName("@apiVersion"u8);
                 writer.WriteStringValue(ApiVersion);
             }
             writer.WriteEndObject();
@@ -25,48 +27,37 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static MethodRequest DeserializeMethodRequest(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("methodName", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
-                    case "MethodRequestEmptyBodyBase": return MethodRequestEmptyBodyBase.DeserializeMethodRequestEmptyBodyBase(element);
-                    case "PipelineTopologySetRequestBody": return PipelineTopologySetRequestBody.DeserializePipelineTopologySetRequestBody(element);
-                    case "RemoteDeviceAdapterSetRequestBody": return RemoteDeviceAdapterSetRequestBody.DeserializeRemoteDeviceAdapterSetRequestBody(element);
                     case "livePipelineActivate": return LivePipelineActivateRequest.DeserializeLivePipelineActivateRequest(element);
                     case "livePipelineDeactivate": return LivePipelineDeactivateRequest.DeserializeLivePipelineDeactivateRequest(element);
                     case "livePipelineDelete": return LivePipelineDeleteRequest.DeserializeLivePipelineDeleteRequest(element);
                     case "livePipelineGet": return LivePipelineGetRequest.DeserializeLivePipelineGetRequest(element);
                     case "livePipelineList": return LivePipelineListRequest.DeserializeLivePipelineListRequest(element);
                     case "livePipelineSet": return LivePipelineSetRequest.DeserializeLivePipelineSetRequest(element);
+                    case "LivePipelineSetRequestBody": return LivePipelineSetRequestBody.DeserializeLivePipelineSetRequestBody(element);
+                    case "MethodRequestEmptyBodyBase": return MethodRequestEmptyBodyBase.DeserializeMethodRequestEmptyBodyBase(element);
                     case "onvifDeviceDiscover": return OnvifDeviceDiscoverRequest.DeserializeOnvifDeviceDiscoverRequest(element);
                     case "onvifDeviceGet": return OnvifDeviceGetRequest.DeserializeOnvifDeviceGetRequest(element);
                     case "pipelineTopologyDelete": return PipelineTopologyDeleteRequest.DeserializePipelineTopologyDeleteRequest(element);
                     case "pipelineTopologyGet": return PipelineTopologyGetRequest.DeserializePipelineTopologyGetRequest(element);
                     case "pipelineTopologyList": return PipelineTopologyListRequest.DeserializePipelineTopologyListRequest(element);
                     case "pipelineTopologySet": return PipelineTopologySetRequest.DeserializePipelineTopologySetRequest(element);
+                    case "PipelineTopologySetRequestBody": return PipelineTopologySetRequestBody.DeserializePipelineTopologySetRequestBody(element);
                     case "remoteDeviceAdapterDelete": return RemoteDeviceAdapterDeleteRequest.DeserializeRemoteDeviceAdapterDeleteRequest(element);
                     case "remoteDeviceAdapterGet": return RemoteDeviceAdapterGetRequest.DeserializeRemoteDeviceAdapterGetRequest(element);
                     case "remoteDeviceAdapterList": return RemoteDeviceAdapterListRequest.DeserializeRemoteDeviceAdapterListRequest(element);
                     case "remoteDeviceAdapterSet": return RemoteDeviceAdapterSetRequest.DeserializeRemoteDeviceAdapterSetRequest(element);
-                    case "LivePipelineSetRequestBody": return LivePipelineSetRequestBody.DeserializeLivePipelineSetRequestBody(element);
+                    case "RemoteDeviceAdapterSetRequestBody": return RemoteDeviceAdapterSetRequestBody.DeserializeRemoteDeviceAdapterSetRequestBody(element);
                 }
             }
-            string methodName = default;
-            Optional<string> apiVersion = default;
-            foreach (var property in element.EnumerateObject())
-            {
-                if (property.NameEquals("methodName"))
-                {
-                    methodName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("@apiVersion"))
-                {
-                    apiVersion = property.Value.GetString();
-                    continue;
-                }
-            }
-            return new MethodRequest(methodName, apiVersion.Value);
+            return UnknownMethodRequest.DeserializeUnknownMethodRequest(element);
         }
     }
 }

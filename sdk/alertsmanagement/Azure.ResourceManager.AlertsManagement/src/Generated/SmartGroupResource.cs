@@ -9,10 +9,8 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.AlertsManagement.Models;
 using Azure.ResourceManager.Resources;
 
@@ -20,14 +18,16 @@ namespace Azure.ResourceManager.AlertsManagement
 {
     /// <summary>
     /// A Class representing a SmartGroup along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="SmartGroupResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetSmartGroupResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetSmartGroup method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="SmartGroupResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetSmartGroupResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetSmartGroup method.
     /// </summary>
     public partial class SmartGroupResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="SmartGroupResource"/> instance. </summary>
-        public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string smartGroupId)
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="smartGroupId"> The smartGroupId. </param>
+        public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, Guid smartGroupId)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}";
             return new ResourceIdentifier(resourceId);
@@ -37,12 +37,15 @@ namespace Azure.ResourceManager.AlertsManagement
         private readonly SmartGroupsRestOperations _smartGroupRestClient;
         private readonly SmartGroupData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.AlertsManagement/smartGroups";
+
         /// <summary> Initializes a new instance of the <see cref="SmartGroupResource"/> class for mocking. </summary>
         protected SmartGroupResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "SmartGroupResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="SmartGroupResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal SmartGroupResource(ArmClient client, SmartGroupData data) : this(client, data.Id)
@@ -63,9 +66,6 @@ namespace Azure.ResourceManager.AlertsManagement
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.AlertsManagement/smartGroups";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -90,8 +90,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get information related to a specific Smart Group.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}
-        /// Operation Id: SmartGroups_GetById
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_GetById</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<SmartGroupResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -100,7 +116,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = await _smartGroupRestClient.GetByIdAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _smartGroupRestClient.GetByIdAsync(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SmartGroupResource(Client, response.Value), response.GetRawResponse());
@@ -114,8 +130,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get information related to a specific Smart Group.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}
-        /// Operation Id: SmartGroups_GetById
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_GetById</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<SmartGroupResource> Get(CancellationToken cancellationToken = default)
@@ -124,7 +156,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = _smartGroupRestClient.GetById(Id.SubscriptionId, Id.Name, cancellationToken);
+                var response = _smartGroupRestClient.GetById(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new SmartGroupResource(Client, response.Value), response.GetRawResponse());
@@ -138,18 +170,34 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Change the state of a Smart Group.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/changeState
-        /// Operation Id: SmartGroups_ChangeState
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/changeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_ChangeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="newState"> New state of the alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual async Task<Response<SmartGroupResource>> ChangeStateAsync(AlertState newState, CancellationToken cancellationToken = default)
+        public virtual async Task<Response<SmartGroupResource>> ChangeStateAsync(ServiceAlertState newState, CancellationToken cancellationToken = default)
         {
             using var scope = _smartGroupClientDiagnostics.CreateScope("SmartGroupResource.ChangeState");
             scope.Start();
             try
             {
-                var response = await _smartGroupRestClient.ChangeStateAsync(Id.SubscriptionId, Id.Name, newState, cancellationToken).ConfigureAwait(false);
+                var response = await _smartGroupRestClient.ChangeStateAsync(Id.SubscriptionId, Guid.Parse(Id.Name), newState, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new SmartGroupResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -161,18 +209,34 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Change the state of a Smart Group.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/changeState
-        /// Operation Id: SmartGroups_ChangeState
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/changeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_ChangeState</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="newState"> New state of the alert. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual Response<SmartGroupResource> ChangeState(AlertState newState, CancellationToken cancellationToken = default)
+        public virtual Response<SmartGroupResource> ChangeState(ServiceAlertState newState, CancellationToken cancellationToken = default)
         {
             using var scope = _smartGroupClientDiagnostics.CreateScope("SmartGroupResource.ChangeState");
             scope.Start();
             try
             {
-                var response = _smartGroupRestClient.ChangeState(Id.SubscriptionId, Id.Name, newState, cancellationToken);
+                var response = _smartGroupRestClient.ChangeState(Id.SubscriptionId, Guid.Parse(Id.Name), newState, cancellationToken);
                 return Response.FromValue(new SmartGroupResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -184,8 +248,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get the history a smart group, which captures any Smart Group state changes (New/Acknowledged/Closed) .
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/history
-        /// Operation Id: SmartGroups_GetHistory
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/history</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_GetHistory</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<SmartGroupModification>> GetHistoryAsync(CancellationToken cancellationToken = default)
@@ -194,7 +274,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = await _smartGroupRestClient.GetHistoryAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _smartGroupRestClient.GetHistoryAsync(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken).ConfigureAwait(false);
                 return response;
             }
             catch (Exception e)
@@ -206,8 +286,24 @@ namespace Azure.ResourceManager.AlertsManagement
 
         /// <summary>
         /// Get the history a smart group, which captures any Smart Group state changes (New/Acknowledged/Closed) .
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/history
-        /// Operation Id: SmartGroups_GetHistory
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.AlertsManagement/smartGroups/{smartGroupId}/history</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SmartGroups_GetHistory</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-05-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SmartGroupResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<SmartGroupModification> GetHistory(CancellationToken cancellationToken = default)
@@ -216,7 +312,7 @@ namespace Azure.ResourceManager.AlertsManagement
             scope.Start();
             try
             {
-                var response = _smartGroupRestClient.GetHistory(Id.SubscriptionId, Id.Name, cancellationToken);
+                var response = _smartGroupRestClient.GetHistory(Id.SubscriptionId, Guid.Parse(Id.Name), cancellationToken);
                 return response;
             }
             catch (Exception e)

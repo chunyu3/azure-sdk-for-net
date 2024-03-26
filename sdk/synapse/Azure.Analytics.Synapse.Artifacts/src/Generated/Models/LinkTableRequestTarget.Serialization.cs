@@ -20,58 +20,76 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(TableName))
             {
-                writer.WritePropertyName("tableName");
+                writer.WritePropertyName("tableName"u8);
                 writer.WriteStringValue(TableName);
             }
             if (Optional.IsDefined(SchemaName))
             {
-                writer.WritePropertyName("schemaName");
+                writer.WritePropertyName("schemaName"u8);
                 writer.WriteStringValue(SchemaName);
             }
             if (Optional.IsDefined(DistributionOptions))
             {
-                writer.WritePropertyName("distributionOptions");
-                writer.WriteObjectValue(DistributionOptions);
+                writer.WritePropertyName("distributionOptions"u8);
+                writer.WriteObjectValue<LinkTableRequestTargetDistributionOptions>(DistributionOptions);
+            }
+            if (Optional.IsDefined(StructureOptions))
+            {
+                writer.WritePropertyName("structureOptions"u8);
+                writer.WriteObjectValue<LinkTableRequestTargetStructureOptions>(StructureOptions);
             }
             writer.WriteEndObject();
         }
 
         internal static LinkTableRequestTarget DeserializeLinkTableRequestTarget(JsonElement element)
         {
-            Optional<string> tableName = default;
-            Optional<string> schemaName = default;
-            Optional<LinkTableRequestTargetDistributionOptions> distributionOptions = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string tableName = default;
+            string schemaName = default;
+            LinkTableRequestTargetDistributionOptions distributionOptions = default;
+            LinkTableRequestTargetStructureOptions structureOptions = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("tableName"))
+                if (property.NameEquals("tableName"u8))
                 {
                     tableName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("schemaName"))
+                if (property.NameEquals("schemaName"u8))
                 {
                     schemaName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("distributionOptions"))
+                if (property.NameEquals("distributionOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     distributionOptions = LinkTableRequestTargetDistributionOptions.DeserializeLinkTableRequestTargetDistributionOptions(property.Value);
                     continue;
                 }
+                if (property.NameEquals("structureOptions"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    structureOptions = LinkTableRequestTargetStructureOptions.DeserializeLinkTableRequestTargetStructureOptions(property.Value);
+                    continue;
+                }
             }
-            return new LinkTableRequestTarget(tableName.Value, schemaName.Value, distributionOptions.Value);
+            return new LinkTableRequestTarget(tableName, schemaName, distributionOptions, structureOptions);
         }
 
         internal partial class LinkTableRequestTargetConverter : JsonConverter<LinkTableRequestTarget>
         {
             public override void Write(Utf8JsonWriter writer, LinkTableRequestTarget model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LinkTableRequestTarget>(model);
             }
             public override LinkTableRequestTarget Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

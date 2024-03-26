@@ -6,18 +6,51 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.AlertsManagement.Models
 {
     /// <summary> This object contains consistent fields across different monitor services. </summary>
     public partial class ServiceAlertEssentials
     {
-        /// <summary> Initializes a new instance of ServiceAlertEssentials. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceAlertEssentials"/>. </summary>
         public ServiceAlertEssentials()
         {
         }
 
-        /// <summary> Initializes a new instance of ServiceAlertEssentials. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServiceAlertEssentials"/>. </summary>
         /// <param name="severity"> Severity of alert Sev0 being highest and Sev4 being lowest. </param>
         /// <param name="signalType"> The type of signal the alert is based on, which could be metrics, logs or activity logs. </param>
         /// <param name="alertState"> Alert object state, which can be modified by the user. </param>
@@ -31,13 +64,14 @@ namespace Azure.ResourceManager.AlertsManagement.Models
         /// <param name="sourceCreatedId"> Unique Id created by monitor service for each alert instance. This could be used to track the issue at the monitor service, in case of Nagios, Zabbix, SCOM etc. </param>
         /// <param name="smartGroupId"> Unique Id of the smart group. </param>
         /// <param name="smartGroupingReason"> Verbose reason describing the reason why this alert instance is added to a smart group. </param>
-        /// <param name="startedOn"> Creation time(ISO-8601 format) of alert instance. </param>
+        /// <param name="startOn"> Creation time(ISO-8601 format) of alert instance. </param>
         /// <param name="lastModifiedOn"> Last modification time(ISO-8601 format) of alert instance. </param>
         /// <param name="monitorConditionResolvedOn"> Resolved time(ISO-8601 format) of alert instance. This will be updated when monitor service resolves the alert instance because the rule condition is no longer met. </param>
-        /// <param name="lastModifiedBy"> User who last modified the alert, in case of monitor service updates user would be &apos;system&apos;, otherwise name of the user. </param>
+        /// <param name="lastModifiedBy"> User who last modified the alert, in case of monitor service updates user would be 'system', otherwise name of the user. </param>
         /// <param name="actionStatus"> Action status. </param>
         /// <param name="description"> Alert description. </param>
-        internal ServiceAlertEssentials(ServiceAlertSeverity? severity, ServiceAlertSignalType? signalType, AlertState? alertState, MonitorCondition? monitorCondition, string targetResource, string targetResourceName, string targetResourceGroup, string targetResourceType, MonitorService? monitorService, string alertRule, string sourceCreatedId, string smartGroupId, string smartGroupingReason, DateTimeOffset? startedOn, DateTimeOffset? lastModifiedOn, DateTimeOffset? monitorConditionResolvedOn, string lastModifiedBy, ServiceAlertActionStatus actionStatus, string description)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceAlertEssentials(ServiceAlertSeverity? severity, ServiceAlertSignalType? signalType, ServiceAlertState? alertState, MonitorCondition? monitorCondition, string targetResource, string targetResourceName, string targetResourceGroup, string targetResourceType, MonitorServiceSourceForAlert? monitorService, string alertRule, string sourceCreatedId, Guid? smartGroupId, string smartGroupingReason, DateTimeOffset? startOn, DateTimeOffset? lastModifiedOn, DateTimeOffset? monitorConditionResolvedOn, string lastModifiedBy, ServiceAlertActionStatus actionStatus, string description, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Severity = severity;
             SignalType = signalType;
@@ -52,12 +86,13 @@ namespace Azure.ResourceManager.AlertsManagement.Models
             SourceCreatedId = sourceCreatedId;
             SmartGroupId = smartGroupId;
             SmartGroupingReason = smartGroupingReason;
-            StartedOn = startedOn;
+            StartOn = startOn;
             LastModifiedOn = lastModifiedOn;
             MonitorConditionResolvedOn = monitorConditionResolvedOn;
             LastModifiedBy = lastModifiedBy;
             ActionStatus = actionStatus;
             Description = description;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Severity of alert Sev0 being highest and Sev4 being lowest. </summary>
@@ -65,7 +100,7 @@ namespace Azure.ResourceManager.AlertsManagement.Models
         /// <summary> The type of signal the alert is based on, which could be metrics, logs or activity logs. </summary>
         public ServiceAlertSignalType? SignalType { get; }
         /// <summary> Alert object state, which can be modified by the user. </summary>
-        public AlertState? AlertState { get; }
+        public ServiceAlertState? AlertState { get; }
         /// <summary> Condition of the rule at the monitor service. It represents whether the underlying conditions have crossed the defined alert rule thresholds. </summary>
         public MonitorCondition? MonitorCondition { get; }
         /// <summary> Target ARM resource, on which alert got created. </summary>
@@ -77,22 +112,22 @@ namespace Azure.ResourceManager.AlertsManagement.Models
         /// <summary> Resource type of target ARM resource, on which alert got created. </summary>
         public string TargetResourceType { get; set; }
         /// <summary> Monitor service on which the rule(monitor) is set. </summary>
-        public MonitorService? MonitorService { get; }
+        public MonitorServiceSourceForAlert? MonitorService { get; }
         /// <summary> Rule(monitor) which fired alert instance. Depending on the monitor service,  this would be ARM id or name of the rule. </summary>
         public string AlertRule { get; }
         /// <summary> Unique Id created by monitor service for each alert instance. This could be used to track the issue at the monitor service, in case of Nagios, Zabbix, SCOM etc. </summary>
         public string SourceCreatedId { get; }
         /// <summary> Unique Id of the smart group. </summary>
-        public string SmartGroupId { get; }
+        public Guid? SmartGroupId { get; }
         /// <summary> Verbose reason describing the reason why this alert instance is added to a smart group. </summary>
         public string SmartGroupingReason { get; }
         /// <summary> Creation time(ISO-8601 format) of alert instance. </summary>
-        public DateTimeOffset? StartedOn { get; }
+        public DateTimeOffset? StartOn { get; }
         /// <summary> Last modification time(ISO-8601 format) of alert instance. </summary>
         public DateTimeOffset? LastModifiedOn { get; }
         /// <summary> Resolved time(ISO-8601 format) of alert instance. This will be updated when monitor service resolves the alert instance because the rule condition is no longer met. </summary>
         public DateTimeOffset? MonitorConditionResolvedOn { get; }
-        /// <summary> User who last modified the alert, in case of monitor service updates user would be &apos;system&apos;, otherwise name of the user. </summary>
+        /// <summary> User who last modified the alert, in case of monitor service updates user would be 'system', otherwise name of the user. </summary>
         public string LastModifiedBy { get; }
         /// <summary> Action status. </summary>
         internal ServiceAlertActionStatus ActionStatus { get; set; }

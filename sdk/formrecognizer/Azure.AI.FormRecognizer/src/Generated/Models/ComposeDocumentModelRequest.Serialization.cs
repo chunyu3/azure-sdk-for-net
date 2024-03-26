@@ -15,23 +15,23 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("modelId");
+            writer.WritePropertyName("modelId"u8);
             writer.WriteStringValue(ModelId);
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
+                writer.WritePropertyName("description"u8);
                 writer.WriteStringValue(Description);
             }
-            writer.WritePropertyName("componentModels");
+            writer.WritePropertyName("componentModels"u8);
             writer.WriteStartArray();
             foreach (var item in ComponentModels)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<ComponentDocumentModelDetails>(item);
             }
             writer.WriteEndArray();
             if (Optional.IsCollectionDefined(Tags))
             {
-                writer.WritePropertyName("tags");
+                writer.WritePropertyName("tags"u8);
                 writer.WriteStartObject();
                 foreach (var item in Tags)
                 {

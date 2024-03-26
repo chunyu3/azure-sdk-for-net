@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.MixedReality.Authentication;
+using Azure.MixedReality.Common;
 
 namespace Azure.MixedReality.ObjectAnchors.Conversion
 {
@@ -103,6 +104,7 @@ namespace Azure.MixedReality.ObjectAnchors.Conversion
             Uri serviceEndpoint = options.ServiceEndpoint ?? ConstructObjectAnchorsEndpointUrl(accountDomain);
 
             AccountId = accountId;
+            AccountDomain = accountDomain;
             SupportedAssetFileTypesSet = options.SupportedAssetFileTypes;
             _clientDiagnostics = new ClientDiagnostics(options);
             _pipeline = HttpPipelineBuilder.Build(options, new BearerTokenAuthenticationPolicy(mrTokenCredential, GetDefaultScope(serviceEndpoint)));

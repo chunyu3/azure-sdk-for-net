@@ -15,16 +15,16 @@ namespace Azure.Communication.CallingServer
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("participantsToRemove");
+            writer.WritePropertyName("participantsToRemove"u8);
             writer.WriteStartArray();
             foreach (var item in ParticipantsToRemove)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<CommunicationIdentifierModel>(item);
             }
             writer.WriteEndArray();
             if (Optional.IsDefined(OperationContext))
             {
-                writer.WritePropertyName("operationContext");
+                writer.WritePropertyName("operationContext"u8);
                 writer.WriteStringValue(OperationContext);
             }
             writer.WriteEndObject();

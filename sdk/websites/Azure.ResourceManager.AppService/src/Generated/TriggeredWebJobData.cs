@@ -13,16 +13,51 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AppService
 {
-    /// <summary> A class representing the TriggeredWebJob data model. </summary>
+    /// <summary>
+    /// A class representing the TriggeredWebJob data model.
+    /// Triggered Web Job Information.
+    /// </summary>
     public partial class TriggeredWebJobData : ResourceData
     {
-        /// <summary> Initializes a new instance of TriggeredWebJobData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="TriggeredWebJobData"/>. </summary>
         public TriggeredWebJobData()
         {
             Settings = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of TriggeredWebJobData. </summary>
+        /// <summary> Initializes a new instance of <see cref="TriggeredWebJobData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -35,10 +70,11 @@ namespace Azure.ResourceManager.AppService
         /// <param name="extraInfoUri"> Extra Info URL. </param>
         /// <param name="webJobType"> Job type. </param>
         /// <param name="error"> Error information. </param>
-        /// <param name="usingSdk"> Using SDK?. </param>
+        /// <param name="isUsingSdk"> Using SDK?. </param>
         /// <param name="settings"> Job settings. </param>
         /// <param name="kind"> Kind of resource. </param>
-        internal TriggeredWebJobData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, TriggeredJobRun latestRun, Uri historyUri, Uri schedulerLogsUri, string runCommand, Uri uri, Uri extraInfoUri, WebJobType? webJobType, string error, bool? usingSdk, IDictionary<string, BinaryData> settings, string kind) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal TriggeredWebJobData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, TriggeredJobRun latestRun, Uri historyUri, Uri schedulerLogsUri, string runCommand, Uri uri, Uri extraInfoUri, WebJobType? webJobType, string error, bool? isUsingSdk, IDictionary<string, BinaryData> settings, string kind, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             LatestRun = latestRun;
             HistoryUri = historyUri;
@@ -48,32 +84,73 @@ namespace Azure.ResourceManager.AppService
             ExtraInfoUri = extraInfoUri;
             WebJobType = webJobType;
             Error = error;
-            UsingSdk = usingSdk;
+            IsUsingSdk = isUsingSdk;
             Settings = settings;
             Kind = kind;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Latest job run information. </summary>
+        [WirePath("properties.latest_run")]
         public TriggeredJobRun LatestRun { get; set; }
         /// <summary> History URL. </summary>
+        [WirePath("properties.history_url")]
         public Uri HistoryUri { get; set; }
         /// <summary> Scheduler Logs URL. </summary>
+        [WirePath("properties.scheduler_logs_url")]
         public Uri SchedulerLogsUri { get; set; }
         /// <summary> Run command. </summary>
+        [WirePath("properties.run_command")]
         public string RunCommand { get; set; }
         /// <summary> Job URL. </summary>
+        [WirePath("properties.url")]
         public Uri Uri { get; set; }
         /// <summary> Extra Info URL. </summary>
+        [WirePath("properties.extra_info_url")]
         public Uri ExtraInfoUri { get; set; }
         /// <summary> Job type. </summary>
+        [WirePath("properties.web_job_type")]
         public WebJobType? WebJobType { get; set; }
         /// <summary> Error information. </summary>
+        [WirePath("properties.error")]
         public string Error { get; set; }
         /// <summary> Using SDK?. </summary>
-        public bool? UsingSdk { get; set; }
-        /// <summary> Job settings. </summary>
+        [WirePath("properties.using_sdk")]
+        public bool? IsUsingSdk { get; set; }
+        /// <summary>
+        /// Job settings.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        [WirePath("properties.settings")]
         public IDictionary<string, BinaryData> Settings { get; }
         /// <summary> Kind of resource. </summary>
+        [WirePath("kind")]
         public string Kind { get; set; }
     }
 }

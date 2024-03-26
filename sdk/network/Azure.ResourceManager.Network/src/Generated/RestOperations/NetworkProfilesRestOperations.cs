@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Network.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Network
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-02-01";
+            _apiVersion = apiVersion ?? "2023-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -215,7 +215,7 @@ namespace Azure.ResourceManager.Network
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<NetworkProfileData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -285,7 +285,7 @@ namespace Azure.ResourceManager.Network
             }
         }
 
-        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string networkProfileName, TagsObject tagsObject)
+        internal HttpMessage CreateUpdateTagsRequest(string subscriptionId, string resourceGroupName, string networkProfileName, NetworkTagsObject networkTagsObject)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -303,7 +303,7 @@ namespace Azure.ResourceManager.Network
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(tagsObject);
+            content.JsonWriter.WriteObjectValue<NetworkTagsObject>(networkTagsObject, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -313,18 +313,18 @@ namespace Azure.ResourceManager.Network
         /// <param name="subscriptionId"> The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="networkProfileName"> The name of the network profile. </param>
-        /// <param name="tagsObject"> Parameters supplied to update network profile tags. </param>
+        /// <param name="networkTagsObject"> Parameters supplied to update network profile tags. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="networkProfileName"/> or <paramref name="tagsObject"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="networkProfileName"/> or <paramref name="networkTagsObject"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="networkProfileName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<NetworkProfileData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string networkProfileName, TagsObject tagsObject, CancellationToken cancellationToken = default)
+        public async Task<Response<NetworkProfileData>> UpdateTagsAsync(string subscriptionId, string resourceGroupName, string networkProfileName, NetworkTagsObject networkTagsObject, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(networkProfileName, nameof(networkProfileName));
-            Argument.AssertNotNull(tagsObject, nameof(tagsObject));
+            Argument.AssertNotNull(networkTagsObject, nameof(networkTagsObject));
 
-            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, networkProfileName, tagsObject);
+            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, networkProfileName, networkTagsObject);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
@@ -344,18 +344,18 @@ namespace Azure.ResourceManager.Network
         /// <param name="subscriptionId"> The subscription credentials which uniquely identify the Microsoft Azure subscription. The subscription ID forms part of the URI for every service call. </param>
         /// <param name="resourceGroupName"> The name of the resource group. </param>
         /// <param name="networkProfileName"> The name of the network profile. </param>
-        /// <param name="tagsObject"> Parameters supplied to update network profile tags. </param>
+        /// <param name="networkTagsObject"> Parameters supplied to update network profile tags. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="networkProfileName"/> or <paramref name="tagsObject"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="networkProfileName"/> or <paramref name="networkTagsObject"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="networkProfileName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<NetworkProfileData> UpdateTags(string subscriptionId, string resourceGroupName, string networkProfileName, TagsObject tagsObject, CancellationToken cancellationToken = default)
+        public Response<NetworkProfileData> UpdateTags(string subscriptionId, string resourceGroupName, string networkProfileName, NetworkTagsObject networkTagsObject, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
             Argument.AssertNotNullOrEmpty(networkProfileName, nameof(networkProfileName));
-            Argument.AssertNotNull(tagsObject, nameof(tagsObject));
+            Argument.AssertNotNull(networkTagsObject, nameof(networkTagsObject));
 
-            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, networkProfileName, tagsObject);
+            using var message = CreateUpdateTagsRequest(subscriptionId, resourceGroupName, networkProfileName, networkTagsObject);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {

@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Azure Data Explorer (Kusto) dataset. </summary>
-    public partial class AzureDataExplorerTableDataset : Dataset
+    public partial class AzureDataExplorerTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of AzureDataExplorerTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataExplorerTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public AzureDataExplorerTableDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public AzureDataExplorerTableDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "AzureDataExplorerTable";
         }
 
-        /// <summary> Initializes a new instance of AzureDataExplorerTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AzureDataExplorerTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="table"> The table name of the Azure Data Explorer database. Type: string (or Expression with resultType string). </param>
-        internal AzureDataExplorerTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal AzureDataExplorerTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> table) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             Table = table;
             DatasetType = datasetType ?? "AzureDataExplorerTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AzureDataExplorerTableDataset"/> for deserialization. </summary>
+        internal AzureDataExplorerTableDataset()
+        {
+        }
+
         /// <summary> The table name of the Azure Data Explorer database. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Table { get; set; }
+        public DataFactoryElement<string> Table { get; set; }
     }
 }

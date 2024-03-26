@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.AI.FormRecognizer.DocumentAnalysis
 {
@@ -15,26 +14,28 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
     {
         internal static DocumentTable DeserializeDocumentTable(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             int rowCount = default;
             int columnCount = default;
             IReadOnlyList<DocumentTableCell> cells = default;
-            Optional<DocumentCaption> caption = default;
-            Optional<IReadOnlyList<DocumentFootnote>> footnotes = default;
-            Optional<IReadOnlyList<BoundingRegion>> boundingRegions = default;
+            IReadOnlyList<BoundingRegion> boundingRegions = default;
             IReadOnlyList<DocumentSpan> spans = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("rowCount"))
+                if (property.NameEquals("rowCount"u8))
                 {
                     rowCount = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("columnCount"))
+                if (property.NameEquals("columnCount"u8))
                 {
                     columnCount = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("cells"))
+                if (property.NameEquals("cells"u8))
                 {
                     List<DocumentTableCell> array = new List<DocumentTableCell>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -44,36 +45,10 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
                     cells = array;
                     continue;
                 }
-                if (property.NameEquals("caption"))
+                if (property.NameEquals("boundingRegions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    caption = DocumentCaption.DeserializeDocumentCaption(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("footnotes"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    List<DocumentFootnote> array = new List<DocumentFootnote>();
-                    foreach (var item in property.Value.EnumerateArray())
-                    {
-                        array.Add(DocumentFootnote.DeserializeDocumentFootnote(item));
-                    }
-                    footnotes = array;
-                    continue;
-                }
-                if (property.NameEquals("boundingRegions"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<BoundingRegion> array = new List<BoundingRegion>();
@@ -84,7 +59,7 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
                     boundingRegions = array;
                     continue;
                 }
-                if (property.NameEquals("spans"))
+                if (property.NameEquals("spans"u8))
                 {
                     List<DocumentSpan> array = new List<DocumentSpan>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -95,7 +70,7 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis
                     continue;
                 }
             }
-            return new DocumentTable(rowCount, columnCount, cells, caption.Value, Optional.ToList(footnotes), Optional.ToList(boundingRegions), spans);
+            return new DocumentTable(rowCount, columnCount, cells, boundingRegions ?? new ChangeTrackingList<BoundingRegion>(), spans);
         }
     }
 }

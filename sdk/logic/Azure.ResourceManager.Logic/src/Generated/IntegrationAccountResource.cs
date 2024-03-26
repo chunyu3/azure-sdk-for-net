@@ -10,10 +10,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Logic.Models;
 using Azure.ResourceManager.Resources;
 
@@ -21,13 +20,16 @@ namespace Azure.ResourceManager.Logic
 {
     /// <summary>
     /// A Class representing an IntegrationAccount along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct an <see cref="IntegrationAccountResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetIntegrationAccountResource method.
-    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource" /> using the GetIntegrationAccount method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct an <see cref="IntegrationAccountResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetIntegrationAccountResource method.
+    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource"/> using the GetIntegrationAccount method.
     /// </summary>
     public partial class IntegrationAccountResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="IntegrationAccountResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="integrationAccountName"> The integrationAccountName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string integrationAccountName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}";
@@ -38,12 +40,15 @@ namespace Azure.ResourceManager.Logic
         private readonly IntegrationAccountsRestOperations _integrationAccountRestClient;
         private readonly IntegrationAccountData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Logic/integrationAccounts";
+
         /// <summary> Initializes a new instance of the <see cref="IntegrationAccountResource"/> class for mocking. </summary>
         protected IntegrationAccountResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "IntegrationAccountResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="IntegrationAccountResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal IntegrationAccountResource(ArmClient client, IntegrationAccountData data) : this(client, data.Id)
@@ -64,9 +69,6 @@ namespace Azure.ResourceManager.Logic
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Logic/integrationAccounts";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,96 +91,176 @@ namespace Azure.ResourceManager.Logic
                 throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, ResourceType), nameof(id));
         }
 
-        /// <summary> Gets a collection of AssemblyDefinitionResources in the IntegrationAccount. </summary>
-        /// <returns> An object representing collection of AssemblyDefinitionResources and their operations over a AssemblyDefinitionResource. </returns>
-        public virtual AssemblyDefinitionCollection GetAssemblyDefinitions()
+        /// <summary> Gets a collection of IntegrationAccountAssemblyDefinitionResources in the IntegrationAccount. </summary>
+        /// <returns> An object representing collection of IntegrationAccountAssemblyDefinitionResources and their operations over a IntegrationAccountAssemblyDefinitionResource. </returns>
+        public virtual IntegrationAccountAssemblyDefinitionCollection GetIntegrationAccountAssemblyDefinitions()
         {
-            return GetCachedClient(Client => new AssemblyDefinitionCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountAssemblyDefinitionCollection(client, Id));
         }
 
         /// <summary>
         /// Get an assembly for an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/assemblies/{assemblyArtifactName}
-        /// Operation Id: IntegrationAccountAssemblies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/assemblies/{assemblyArtifactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountAssemblies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountAssemblyDefinitionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assemblyArtifactName"> The assembly artifact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assemblyArtifactName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assemblyArtifactName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assemblyArtifactName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
-        public virtual async Task<Response<AssemblyDefinitionResource>> GetAssemblyDefinitionAsync(string assemblyArtifactName, CancellationToken cancellationToken = default)
+        public virtual async Task<Response<IntegrationAccountAssemblyDefinitionResource>> GetIntegrationAccountAssemblyDefinitionAsync(string assemblyArtifactName, CancellationToken cancellationToken = default)
         {
-            return await GetAssemblyDefinitions().GetAsync(assemblyArtifactName, cancellationToken).ConfigureAwait(false);
+            return await GetIntegrationAccountAssemblyDefinitions().GetAsync(assemblyArtifactName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get an assembly for an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/assemblies/{assemblyArtifactName}
-        /// Operation Id: IntegrationAccountAssemblies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/assemblies/{assemblyArtifactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountAssemblies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountAssemblyDefinitionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assemblyArtifactName"> The assembly artifact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assemblyArtifactName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assemblyArtifactName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assemblyArtifactName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
-        public virtual Response<AssemblyDefinitionResource> GetAssemblyDefinition(string assemblyArtifactName, CancellationToken cancellationToken = default)
+        public virtual Response<IntegrationAccountAssemblyDefinitionResource> GetIntegrationAccountAssemblyDefinition(string assemblyArtifactName, CancellationToken cancellationToken = default)
         {
-            return GetAssemblyDefinitions().Get(assemblyArtifactName, cancellationToken);
+            return GetIntegrationAccountAssemblyDefinitions().Get(assemblyArtifactName, cancellationToken);
         }
 
-        /// <summary> Gets a collection of BatchConfigurationResources in the IntegrationAccount. </summary>
-        /// <returns> An object representing collection of BatchConfigurationResources and their operations over a BatchConfigurationResource. </returns>
-        public virtual BatchConfigurationCollection GetBatchConfigurations()
+        /// <summary> Gets a collection of IntegrationAccountBatchConfigurationResources in the IntegrationAccount. </summary>
+        /// <returns> An object representing collection of IntegrationAccountBatchConfigurationResources and their operations over a IntegrationAccountBatchConfigurationResource. </returns>
+        public virtual IntegrationAccountBatchConfigurationCollection GetIntegrationAccountBatchConfigurations()
         {
-            return GetCachedClient(Client => new BatchConfigurationCollection(Client, Id));
-        }
-
-        /// <summary>
-        /// Get a batch configuration for an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/batchConfigurations/{batchConfigurationName}
-        /// Operation Id: IntegrationAccountBatchConfigurations_Get
-        /// </summary>
-        /// <param name="batchConfigurationName"> The batch configuration name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="batchConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="batchConfigurationName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public virtual async Task<Response<BatchConfigurationResource>> GetBatchConfigurationAsync(string batchConfigurationName, CancellationToken cancellationToken = default)
-        {
-            return await GetBatchConfigurations().GetAsync(batchConfigurationName, cancellationToken).ConfigureAwait(false);
+            return GetCachedClient(client => new IntegrationAccountBatchConfigurationCollection(client, Id));
         }
 
         /// <summary>
         /// Get a batch configuration for an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/batchConfigurations/{batchConfigurationName}
-        /// Operation Id: IntegrationAccountBatchConfigurations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/batchConfigurations/{batchConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountBatchConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountBatchConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="batchConfigurationName"> The batch configuration name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="batchConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="batchConfigurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="batchConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
-        public virtual Response<BatchConfigurationResource> GetBatchConfiguration(string batchConfigurationName, CancellationToken cancellationToken = default)
+        public virtual async Task<Response<IntegrationAccountBatchConfigurationResource>> GetIntegrationAccountBatchConfigurationAsync(string batchConfigurationName, CancellationToken cancellationToken = default)
         {
-            return GetBatchConfigurations().Get(batchConfigurationName, cancellationToken);
+            return await GetIntegrationAccountBatchConfigurations().GetAsync(batchConfigurationName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get a batch configuration for an integration account.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/batchConfigurations/{batchConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountBatchConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountBatchConfigurationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="batchConfigurationName"> The batch configuration name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="batchConfigurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="batchConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public virtual Response<IntegrationAccountBatchConfigurationResource> GetIntegrationAccountBatchConfiguration(string batchConfigurationName, CancellationToken cancellationToken = default)
+        {
+            return GetIntegrationAccountBatchConfigurations().Get(batchConfigurationName, cancellationToken);
         }
 
         /// <summary> Gets a collection of IntegrationAccountSchemaResources in the IntegrationAccount. </summary>
         /// <returns> An object representing collection of IntegrationAccountSchemaResources and their operations over a IntegrationAccountSchemaResource. </returns>
         public virtual IntegrationAccountSchemaCollection GetIntegrationAccountSchemas()
         {
-            return GetCachedClient(Client => new IntegrationAccountSchemaCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountSchemaCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account schema.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/schemas/{schemaName}
-        /// Operation Id: IntegrationAccountSchemas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/schemas/{schemaName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountSchemas_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountSchemaResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="schemaName"> The integration account schema name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="schemaName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="schemaName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="schemaName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountSchemaResource>> GetIntegrationAccountSchemaAsync(string schemaName, CancellationToken cancellationToken = default)
         {
@@ -187,13 +269,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account schema.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/schemas/{schemaName}
-        /// Operation Id: IntegrationAccountSchemas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/schemas/{schemaName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountSchemas_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountSchemaResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="schemaName"> The integration account schema name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="schemaName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="schemaName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="schemaName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountSchemaResource> GetIntegrationAccountSchema(string schemaName, CancellationToken cancellationToken = default)
         {
@@ -204,18 +302,34 @@ namespace Azure.ResourceManager.Logic
         /// <returns> An object representing collection of IntegrationAccountMapResources and their operations over a IntegrationAccountMapResource. </returns>
         public virtual IntegrationAccountMapCollection GetIntegrationAccountMaps()
         {
-            return GetCachedClient(Client => new IntegrationAccountMapCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountMapCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account map.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/maps/{mapName}
-        /// Operation Id: IntegrationAccountMaps_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/maps/{mapName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountMaps_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="mapName"> The integration account map name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="mapName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountMapResource>> GetIntegrationAccountMapAsync(string mapName, CancellationToken cancellationToken = default)
         {
@@ -224,13 +338,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account map.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/maps/{mapName}
-        /// Operation Id: IntegrationAccountMaps_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/maps/{mapName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountMaps_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="mapName"> The integration account map name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="mapName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="mapName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountMapResource> GetIntegrationAccountMap(string mapName, CancellationToken cancellationToken = default)
         {
@@ -241,18 +371,34 @@ namespace Azure.ResourceManager.Logic
         /// <returns> An object representing collection of IntegrationAccountPartnerResources and their operations over a IntegrationAccountPartnerResource. </returns>
         public virtual IntegrationAccountPartnerCollection GetIntegrationAccountPartners()
         {
-            return GetCachedClient(Client => new IntegrationAccountPartnerCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountPartnerCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account partner.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/partners/{partnerName}
-        /// Operation Id: IntegrationAccountPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/partners/{partnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="partnerName"> The integration account partner name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="partnerName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="partnerName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="partnerName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountPartnerResource>> GetIntegrationAccountPartnerAsync(string partnerName, CancellationToken cancellationToken = default)
         {
@@ -261,13 +407,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account partner.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/partners/{partnerName}
-        /// Operation Id: IntegrationAccountPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/partners/{partnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="partnerName"> The integration account partner name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="partnerName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="partnerName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="partnerName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountPartnerResource> GetIntegrationAccountPartner(string partnerName, CancellationToken cancellationToken = default)
         {
@@ -278,18 +440,34 @@ namespace Azure.ResourceManager.Logic
         /// <returns> An object representing collection of IntegrationAccountAgreementResources and their operations over a IntegrationAccountAgreementResource. </returns>
         public virtual IntegrationAccountAgreementCollection GetIntegrationAccountAgreements()
         {
-            return GetCachedClient(Client => new IntegrationAccountAgreementCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountAgreementCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account agreement.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/agreements/{agreementName}
-        /// Operation Id: IntegrationAccountAgreements_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/agreements/{agreementName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountAgreements_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="agreementName"> The integration account agreement name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="agreementName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="agreementName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="agreementName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountAgreementResource>> GetIntegrationAccountAgreementAsync(string agreementName, CancellationToken cancellationToken = default)
         {
@@ -298,13 +476,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account agreement.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/agreements/{agreementName}
-        /// Operation Id: IntegrationAccountAgreements_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/agreements/{agreementName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountAgreements_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="agreementName"> The integration account agreement name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="agreementName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="agreementName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="agreementName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountAgreementResource> GetIntegrationAccountAgreement(string agreementName, CancellationToken cancellationToken = default)
         {
@@ -315,18 +509,34 @@ namespace Azure.ResourceManager.Logic
         /// <returns> An object representing collection of IntegrationAccountCertificateResources and their operations over a IntegrationAccountCertificateResource. </returns>
         public virtual IntegrationAccountCertificateCollection GetIntegrationAccountCertificates()
         {
-            return GetCachedClient(Client => new IntegrationAccountCertificateCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountCertificateCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account certificate.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/certificates/{certificateName}
-        /// Operation Id: IntegrationAccountCertificates_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/certificates/{certificateName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountCertificates_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountCertificateResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="certificateName"> The integration account certificate name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="certificateName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="certificateName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="certificateName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountCertificateResource>> GetIntegrationAccountCertificateAsync(string certificateName, CancellationToken cancellationToken = default)
         {
@@ -335,13 +545,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account certificate.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/certificates/{certificateName}
-        /// Operation Id: IntegrationAccountCertificates_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/certificates/{certificateName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountCertificates_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountCertificateResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="certificateName"> The integration account certificate name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="certificateName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="certificateName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="certificateName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountCertificateResource> GetIntegrationAccountCertificate(string certificateName, CancellationToken cancellationToken = default)
         {
@@ -352,18 +578,34 @@ namespace Azure.ResourceManager.Logic
         /// <returns> An object representing collection of IntegrationAccountSessionResources and their operations over a IntegrationAccountSessionResource. </returns>
         public virtual IntegrationAccountSessionCollection GetIntegrationAccountSessions()
         {
-            return GetCachedClient(Client => new IntegrationAccountSessionCollection(Client, Id));
+            return GetCachedClient(client => new IntegrationAccountSessionCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an integration account session.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/sessions/{sessionName}
-        /// Operation Id: IntegrationAccountSessions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/sessions/{sessionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountSessions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountSessionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sessionName"> The integration account session name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="sessionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sessionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="sessionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<IntegrationAccountSessionResource>> GetIntegrationAccountSessionAsync(string sessionName, CancellationToken cancellationToken = default)
         {
@@ -372,13 +614,29 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account session.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/sessions/{sessionName}
-        /// Operation Id: IntegrationAccountSessions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/sessions/{sessionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccountSessions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountSessionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sessionName"> The integration account session name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="sessionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="sessionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="sessionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<IntegrationAccountSessionResource> GetIntegrationAccountSession(string sessionName, CancellationToken cancellationToken = default)
         {
@@ -387,8 +645,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<IntegrationAccountResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -411,8 +685,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<IntegrationAccountResource> Get(CancellationToken cancellationToken = default)
@@ -435,8 +725,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Deletes an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -461,8 +767,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Deletes an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -487,8 +809,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Updates an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="data"> The integration account. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -513,8 +851,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Updates an integration account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="data"> The integration account. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -539,21 +893,37 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets the integration account callback URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listCallbackUrl
-        /// Operation Id: IntegrationAccounts_ListCallbackUrl
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listCallbackUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_ListCallbackUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="getCallbackUrlParameters"> The callback URL parameters. </param>
+        /// <param name="info"> The callback URL parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="getCallbackUrlParameters"/> is null. </exception>
-        public virtual async Task<Response<CallbackUri>> GetCallbackUrlAsync(GetCallbackUrlParameters getCallbackUrlParameters, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="info"/> is null. </exception>
+        public virtual async Task<Response<ListOperationCallbackUri>> GetCallbackUrlAsync(ListOperationCallbackUrlParameterInfo info, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(getCallbackUrlParameters, nameof(getCallbackUrlParameters));
+            Argument.AssertNotNull(info, nameof(info));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.GetCallbackUrl");
             scope.Start();
             try
             {
-                var response = await _integrationAccountRestClient.ListCallbackUrlAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, getCallbackUrlParameters, cancellationToken).ConfigureAwait(false);
+                var response = await _integrationAccountRestClient.ListCallbackUrlAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, info, cancellationToken).ConfigureAwait(false);
                 return response;
             }
             catch (Exception e)
@@ -565,21 +935,37 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets the integration account callback URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listCallbackUrl
-        /// Operation Id: IntegrationAccounts_ListCallbackUrl
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listCallbackUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_ListCallbackUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="getCallbackUrlParameters"> The callback URL parameters. </param>
+        /// <param name="info"> The callback URL parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="getCallbackUrlParameters"/> is null. </exception>
-        public virtual Response<CallbackUri> GetCallbackUrl(GetCallbackUrlParameters getCallbackUrlParameters, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="info"/> is null. </exception>
+        public virtual Response<ListOperationCallbackUri> GetCallbackUrl(ListOperationCallbackUrlParameterInfo info, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(getCallbackUrlParameters, nameof(getCallbackUrlParameters));
+            Argument.AssertNotNull(info, nameof(info));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.GetCallbackUrl");
             scope.Start();
             try
             {
-                var response = _integrationAccountRestClient.ListCallbackUrl(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, getCallbackUrlParameters, cancellationToken);
+                var response = _integrationAccountRestClient.ListCallbackUrl(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, info, cancellationToken);
                 return response;
             }
             catch (Exception e)
@@ -590,84 +976,104 @@ namespace Azure.ResourceManager.Logic
         }
 
         /// <summary>
-        /// Gets the integration account&apos;s Key Vault keys.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listKeyVaultKeys
-        /// Operation Id: IntegrationAccounts_ListKeyVaultKeys
+        /// Gets the integration account's Key Vault keys.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listKeyVaultKeys</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_ListKeyVaultKeys</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="listKeyVaultKeys"> The key vault parameters. </param>
+        /// <param name="content"> The key vault parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="listKeyVaultKeys"/> is null. </exception>
-        /// <returns> An async collection of <see cref="KeyVaultKey" /> that may take multiple service requests to iterate over. </returns>
-        public virtual AsyncPageable<KeyVaultKey> GetKeyVaultKeysAsync(ListKeyVaultKeysDefinition listKeyVaultKeys, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        /// <returns> An async collection of <see cref="IntegrationAccountKeyVaultKey"/> that may take multiple service requests to iterate over. </returns>
+        public virtual AsyncPageable<IntegrationAccountKeyVaultKey> GetKeyVaultKeysAsync(IntegrationAccountListKeyVaultKeyContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(listKeyVaultKeys, nameof(listKeyVaultKeys));
+            Argument.AssertNotNull(content, nameof(content));
 
-            async Task<Page<KeyVaultKey>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.GetKeyVaultKeys");
-                scope.Start();
-                try
-                {
-                    var response = await _integrationAccountRestClient.ListKeyVaultKeysAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, listKeyVaultKeys, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _integrationAccountRestClient.CreateListKeyVaultKeysRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, null, e => IntegrationAccountKeyVaultKey.DeserializeIntegrationAccountKeyVaultKey(e), _integrationAccountClientDiagnostics, Pipeline, "IntegrationAccountResource.GetKeyVaultKeys", "value", null, cancellationToken);
         }
 
         /// <summary>
-        /// Gets the integration account&apos;s Key Vault keys.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listKeyVaultKeys
-        /// Operation Id: IntegrationAccounts_ListKeyVaultKeys
+        /// Gets the integration account's Key Vault keys.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/listKeyVaultKeys</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_ListKeyVaultKeys</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="listKeyVaultKeys"> The key vault parameters. </param>
+        /// <param name="content"> The key vault parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="listKeyVaultKeys"/> is null. </exception>
-        /// <returns> A collection of <see cref="KeyVaultKey" /> that may take multiple service requests to iterate over. </returns>
-        public virtual Pageable<KeyVaultKey> GetKeyVaultKeys(ListKeyVaultKeysDefinition listKeyVaultKeys, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        /// <returns> A collection of <see cref="IntegrationAccountKeyVaultKey"/> that may take multiple service requests to iterate over. </returns>
+        public virtual Pageable<IntegrationAccountKeyVaultKey> GetKeyVaultKeys(IntegrationAccountListKeyVaultKeyContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(listKeyVaultKeys, nameof(listKeyVaultKeys));
+            Argument.AssertNotNull(content, nameof(content));
 
-            Page<KeyVaultKey> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.GetKeyVaultKeys");
-                scope.Start();
-                try
-                {
-                    var response = _integrationAccountRestClient.ListKeyVaultKeys(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, listKeyVaultKeys, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _integrationAccountRestClient.CreateListKeyVaultKeysRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, null, e => IntegrationAccountKeyVaultKey.DeserializeIntegrationAccountKeyVaultKey(e), _integrationAccountClientDiagnostics, Pipeline, "IntegrationAccountResource.GetKeyVaultKeys", "value", null, cancellationToken);
         }
 
         /// <summary>
-        /// Logs the integration account&apos;s tracking events.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/logTrackingEvents
-        /// Operation Id: IntegrationAccounts_LogTrackingEvents
+        /// Logs the integration account's tracking events.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/logTrackingEvents</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_LogTrackingEvents</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="logTrackingEvents"> The callback URL parameters. </param>
+        /// <param name="content"> The callback URL parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="logTrackingEvents"/> is null. </exception>
-        public virtual async Task<Response> LogTrackingEventsAsync(TrackingEventsDefinition logTrackingEvents, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        public virtual async Task<Response> LogTrackingEventsAsync(IntegrationAccountTrackingEventsContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(logTrackingEvents, nameof(logTrackingEvents));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.LogTrackingEvents");
             scope.Start();
             try
             {
-                var response = await _integrationAccountRestClient.LogTrackingEventsAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, logTrackingEvents, cancellationToken).ConfigureAwait(false);
+                var response = await _integrationAccountRestClient.LogTrackingEventsAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content, cancellationToken).ConfigureAwait(false);
                 return response;
             }
             catch (Exception e)
@@ -678,22 +1084,38 @@ namespace Azure.ResourceManager.Logic
         }
 
         /// <summary>
-        /// Logs the integration account&apos;s tracking events.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/logTrackingEvents
-        /// Operation Id: IntegrationAccounts_LogTrackingEvents
+        /// Logs the integration account's tracking events.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/logTrackingEvents</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_LogTrackingEvents</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="logTrackingEvents"> The callback URL parameters. </param>
+        /// <param name="content"> The callback URL parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="logTrackingEvents"/> is null. </exception>
-        public virtual Response LogTrackingEvents(TrackingEventsDefinition logTrackingEvents, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        public virtual Response LogTrackingEvents(IntegrationAccountTrackingEventsContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(logTrackingEvents, nameof(logTrackingEvents));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.LogTrackingEvents");
             scope.Start();
             try
             {
-                var response = _integrationAccountRestClient.LogTrackingEvents(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, logTrackingEvents, cancellationToken);
+                var response = _integrationAccountRestClient.LogTrackingEvents(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content, cancellationToken);
                 return response;
             }
             catch (Exception e)
@@ -705,21 +1127,37 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Regenerates the integration account access key.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/regenerateAccessKey
-        /// Operation Id: IntegrationAccounts_RegenerateAccessKey
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/regenerateAccessKey</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_RegenerateAccessKey</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="regenerateAccessKey"> The access key type. </param>
+        /// <param name="content"> The access key type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="regenerateAccessKey"/> is null. </exception>
-        public virtual async Task<Response<IntegrationAccountResource>> RegenerateAccessKeyAsync(RegenerateActionParameter regenerateAccessKey, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        public virtual async Task<Response<IntegrationAccountResource>> RegenerateAccessKeyAsync(LogicWorkflowRegenerateActionContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(regenerateAccessKey, nameof(regenerateAccessKey));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.RegenerateAccessKey");
             scope.Start();
             try
             {
-                var response = await _integrationAccountRestClient.RegenerateAccessKeyAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, regenerateAccessKey, cancellationToken).ConfigureAwait(false);
+                var response = await _integrationAccountRestClient.RegenerateAccessKeyAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content, cancellationToken).ConfigureAwait(false);
                 return Response.FromValue(new IntegrationAccountResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -731,21 +1169,37 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Regenerates the integration account access key.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/regenerateAccessKey
-        /// Operation Id: IntegrationAccounts_RegenerateAccessKey
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}/regenerateAccessKey</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_RegenerateAccessKey</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="regenerateAccessKey"> The access key type. </param>
+        /// <param name="content"> The access key type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="regenerateAccessKey"/> is null. </exception>
-        public virtual Response<IntegrationAccountResource> RegenerateAccessKey(RegenerateActionParameter regenerateAccessKey, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        public virtual Response<IntegrationAccountResource> RegenerateAccessKey(LogicWorkflowRegenerateActionContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(regenerateAccessKey, nameof(regenerateAccessKey));
+            Argument.AssertNotNull(content, nameof(content));
 
             using var scope = _integrationAccountClientDiagnostics.CreateScope("IntegrationAccountResource.RegenerateAccessKey");
             scope.Start();
             try
             {
-                var response = _integrationAccountRestClient.RegenerateAccessKey(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, regenerateAccessKey, cancellationToken);
+                var response = _integrationAccountRestClient.RegenerateAccessKey(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, content, cancellationToken);
                 return Response.FromValue(new IntegrationAccountResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -757,8 +1211,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Add a tag to the current resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -773,11 +1243,26 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
-                originalTags.Value.Data.TagValues[key] = value;
-                await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (await CanUseTagResourceAsync(cancellationToken: cancellationToken).ConfigureAwait(false))
+                {
+                    var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
+                    originalTags.Value.Data.TagValues[key] = value;
+                    await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = (await GetAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    foreach (var tag in current.Tags)
+                    {
+                        patch.Tags.Add(tag);
+                    }
+                    patch.Tags[key] = value;
+                    var result = await UpdateAsync(patch, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -788,8 +1273,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Add a tag to the current resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -804,11 +1305,26 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                var originalTags = GetTagResource().Get(cancellationToken);
-                originalTags.Value.Data.TagValues[key] = value;
-                GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (CanUseTagResource(cancellationToken: cancellationToken))
+                {
+                    var originalTags = GetTagResource().Get(cancellationToken);
+                    originalTags.Value.Data.TagValues[key] = value;
+                    GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
+                    var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = Get(cancellationToken: cancellationToken).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    foreach (var tag in current.Tags)
+                    {
+                        patch.Tags.Add(tag);
+                    }
+                    patch.Tags[key] = value;
+                    var result = Update(patch, cancellationToken: cancellationToken);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -819,8 +1335,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Replace the tags on the resource with the given set.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -833,12 +1365,23 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                await GetTagResource().DeleteAsync(WaitUntil.Completed, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
-                originalTags.Value.Data.TagValues.ReplaceWith(tags);
-                await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (await CanUseTagResourceAsync(cancellationToken: cancellationToken).ConfigureAwait(false))
+                {
+                    await GetTagResource().DeleteAsync(WaitUntil.Completed, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
+                    originalTags.Value.Data.TagValues.ReplaceWith(tags);
+                    await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = (await GetAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    patch.Tags.ReplaceWith(tags);
+                    var result = await UpdateAsync(patch, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -849,8 +1392,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Replace the tags on the resource with the given set.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -863,12 +1422,23 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                GetTagResource().Delete(WaitUntil.Completed, cancellationToken: cancellationToken);
-                var originalTags = GetTagResource().Get(cancellationToken);
-                originalTags.Value.Data.TagValues.ReplaceWith(tags);
-                GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (CanUseTagResource(cancellationToken: cancellationToken))
+                {
+                    GetTagResource().Delete(WaitUntil.Completed, cancellationToken: cancellationToken);
+                    var originalTags = GetTagResource().Get(cancellationToken);
+                    originalTags.Value.Data.TagValues.ReplaceWith(tags);
+                    GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
+                    var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = Get(cancellationToken: cancellationToken).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    patch.Tags.ReplaceWith(tags);
+                    var result = Update(patch, cancellationToken: cancellationToken);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -879,8 +1449,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Removes a tag by key from the resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -893,11 +1479,26 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
-                originalTags.Value.Data.TagValues.Remove(key);
-                await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
-                var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (await CanUseTagResourceAsync(cancellationToken: cancellationToken).ConfigureAwait(false))
+                {
+                    var originalTags = await GetTagResource().GetAsync(cancellationToken).ConfigureAwait(false);
+                    originalTags.Value.Data.TagValues.Remove(key);
+                    await GetTagResource().CreateOrUpdateAsync(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    var originalResponse = await _integrationAccountRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken).ConfigureAwait(false);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = (await GetAsync(cancellationToken: cancellationToken).ConfigureAwait(false)).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    foreach (var tag in current.Tags)
+                    {
+                        patch.Tags.Add(tag);
+                    }
+                    patch.Tags.Remove(key);
+                    var result = await UpdateAsync(patch, cancellationToken: cancellationToken).ConfigureAwait(false);
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -908,8 +1509,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Removes a tag by key from the resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}
-        /// Operation Id: IntegrationAccounts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/integrationAccounts/{integrationAccountName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IntegrationAccounts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="IntegrationAccountResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -922,11 +1539,26 @@ namespace Azure.ResourceManager.Logic
             scope.Start();
             try
             {
-                var originalTags = GetTagResource().Get(cancellationToken);
-                originalTags.Value.Data.TagValues.Remove(key);
-                GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
-                var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
-                return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                if (CanUseTagResource(cancellationToken: cancellationToken))
+                {
+                    var originalTags = GetTagResource().Get(cancellationToken);
+                    originalTags.Value.Data.TagValues.Remove(key);
+                    GetTagResource().CreateOrUpdate(WaitUntil.Completed, originalTags.Value.Data, cancellationToken: cancellationToken);
+                    var originalResponse = _integrationAccountRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken);
+                    return Response.FromValue(new IntegrationAccountResource(Client, originalResponse.Value), originalResponse.GetRawResponse());
+                }
+                else
+                {
+                    var current = Get(cancellationToken: cancellationToken).Value.Data;
+                    var patch = new IntegrationAccountData(current.Location);
+                    foreach (var tag in current.Tags)
+                    {
+                        patch.Tags.Add(tag);
+                    }
+                    patch.Tags.Remove(key);
+                    var result = Update(patch, cancellationToken: cancellationToken);
+                    return result;
+                }
             }
             catch (Exception e)
             {

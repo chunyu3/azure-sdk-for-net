@@ -19,55 +19,57 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type);
             if (Optional.IsDefined(MaxConcurrentConnections))
             {
-                writer.WritePropertyName("maxConcurrentConnections");
-                writer.WriteObjectValue(MaxConcurrentConnections);
+                writer.WritePropertyName("maxConcurrentConnections"u8);
+                writer.WriteObjectValue<object>(MaxConcurrentConnections);
             }
             if (Optional.IsDefined(CopyBehavior))
             {
-                writer.WritePropertyName("copyBehavior");
-                writer.WriteObjectValue(CopyBehavior);
+                writer.WritePropertyName("copyBehavior"u8);
+                writer.WriteObjectValue<object>(CopyBehavior);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static AzureFileStorageWriteSettings DeserializeAzureFileStorageWriteSettings(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string type = default;
-            Optional<object> maxConcurrentConnections = default;
-            Optional<object> copyBehavior = default;
+            object maxConcurrentConnections = default;
+            object copyBehavior = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("maxConcurrentConnections"))
+                if (property.NameEquals("maxConcurrentConnections"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxConcurrentConnections = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("copyBehavior"))
+                if (property.NameEquals("copyBehavior"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     copyBehavior = property.Value.GetObject();
@@ -76,14 +78,14 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new AzureFileStorageWriteSettings(type, maxConcurrentConnections.Value, copyBehavior.Value, additionalProperties);
+            return new AzureFileStorageWriteSettings(type, maxConcurrentConnections, copyBehavior, additionalProperties);
         }
 
         internal partial class AzureFileStorageWriteSettingsConverter : JsonConverter<AzureFileStorageWriteSettings>
         {
             public override void Write(Utf8JsonWriter writer, AzureFileStorageWriteSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<AzureFileStorageWriteSettings>(model);
             }
             public override AzureFileStorageWriteSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

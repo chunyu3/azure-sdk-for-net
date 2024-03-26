@@ -20,47 +20,49 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Cmk))
             {
-                writer.WritePropertyName("cmk");
-                writer.WriteObjectValue(Cmk);
+                writer.WritePropertyName("cmk"u8);
+                writer.WriteObjectValue<CustomerManagedKeyDetails>(Cmk);
             }
             writer.WriteEndObject();
         }
 
         internal static EncryptionDetails DeserializeEncryptionDetails(JsonElement element)
         {
-            Optional<bool> doubleEncryptionEnabled = default;
-            Optional<CustomerManagedKeyDetails> cmk = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? doubleEncryptionEnabled = default;
+            CustomerManagedKeyDetails cmk = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("doubleEncryptionEnabled"))
+                if (property.NameEquals("doubleEncryptionEnabled"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     doubleEncryptionEnabled = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("cmk"))
+                if (property.NameEquals("cmk"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     cmk = CustomerManagedKeyDetails.DeserializeCustomerManagedKeyDetails(property.Value);
                     continue;
                 }
             }
-            return new EncryptionDetails(Optional.ToNullable(doubleEncryptionEnabled), cmk.Value);
+            return new EncryptionDetails(doubleEncryptionEnabled, cmk);
         }
 
         internal partial class EncryptionDetailsConverter : JsonConverter<EncryptionDetails>
         {
             public override void Write(Utf8JsonWriter writer, EncryptionDetails model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<EncryptionDetails>(model);
             }
             public override EncryptionDetails Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

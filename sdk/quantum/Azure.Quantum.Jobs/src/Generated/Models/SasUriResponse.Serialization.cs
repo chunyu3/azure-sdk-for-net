@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Quantum.Jobs.Models
 {
@@ -14,16 +13,20 @@ namespace Azure.Quantum.Jobs.Models
     {
         internal static SasUriResponse DeserializeSasUriResponse(JsonElement element)
         {
-            Optional<string> sasUri = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string sasUri = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sasUri"))
+                if (property.NameEquals("sasUri"u8))
                 {
                     sasUri = property.Value.GetString();
                     continue;
                 }
             }
-            return new SasUriResponse(sasUri.Value);
+            return new SasUriResponse(sasUri);
         }
     }
 }

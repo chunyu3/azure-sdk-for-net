@@ -5,26 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ContainerInstance.Models
 {
-    public partial class ContainerInstanceContainer : IUtf8JsonSerializable
+    public partial class ContainerInstanceContainer : IUtf8JsonSerializable, IJsonModel<ContainerInstanceContainer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ContainerInstanceContainer>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<ContainerInstanceContainer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ContainerInstanceContainer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContainerInstanceContainer)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
-            writer.WritePropertyName("image");
+            writer.WritePropertyName("image"u8);
             writer.WriteStringValue(Image);
             if (Optional.IsCollectionDefined(Command))
             {
-                writer.WritePropertyName("command");
+                writer.WritePropertyName("command"u8);
                 writer.WriteStartArray();
                 foreach (var item in Command)
                 {
@@ -34,70 +44,116 @@ namespace Azure.ResourceManager.ContainerInstance.Models
             }
             if (Optional.IsCollectionDefined(Ports))
             {
-                writer.WritePropertyName("ports");
+                writer.WritePropertyName("ports"u8);
                 writer.WriteStartArray();
                 foreach (var item in Ports)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ContainerPort>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(EnvironmentVariables))
             {
-                writer.WritePropertyName("environmentVariables");
+                writer.WritePropertyName("environmentVariables"u8);
                 writer.WriteStartArray();
                 foreach (var item in EnvironmentVariables)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ContainerEnvironmentVariable>(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("resources");
-            writer.WriteObjectValue(Resources);
+            if (options.Format != "W" && Optional.IsDefined(InstanceView))
+            {
+                writer.WritePropertyName("instanceView"u8);
+                writer.WriteObjectValue<ContainerInstanceView>(InstanceView, options);
+            }
+            writer.WritePropertyName("resources"u8);
+            writer.WriteObjectValue<ContainerResourceRequirements>(Resources, options);
             if (Optional.IsCollectionDefined(VolumeMounts))
             {
-                writer.WritePropertyName("volumeMounts");
+                writer.WritePropertyName("volumeMounts"u8);
                 writer.WriteStartArray();
                 foreach (var item in VolumeMounts)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ContainerVolumeMount>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(LivenessProbe))
             {
-                writer.WritePropertyName("livenessProbe");
-                writer.WriteObjectValue(LivenessProbe);
+                writer.WritePropertyName("livenessProbe"u8);
+                writer.WriteObjectValue<ContainerProbe>(LivenessProbe, options);
             }
             if (Optional.IsDefined(ReadinessProbe))
             {
-                writer.WritePropertyName("readinessProbe");
-                writer.WriteObjectValue(ReadinessProbe);
+                writer.WritePropertyName("readinessProbe"u8);
+                writer.WriteObjectValue<ContainerProbe>(ReadinessProbe, options);
+            }
+            if (Optional.IsDefined(SecurityContext))
+            {
+                writer.WritePropertyName("securityContext"u8);
+                writer.WriteObjectValue<ContainerSecurityContextDefinition>(SecurityContext, options);
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static ContainerInstanceContainer DeserializeContainerInstanceContainer(JsonElement element)
+        ContainerInstanceContainer IJsonModel<ContainerInstanceContainer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ContainerInstanceContainer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContainerInstanceContainer)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeContainerInstanceContainer(document.RootElement, options);
+        }
+
+        internal static ContainerInstanceContainer DeserializeContainerInstanceContainer(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
             string image = default;
-            Optional<IList<string>> command = default;
-            Optional<IList<ContainerPort>> ports = default;
-            Optional<IList<EnvironmentVariable>> environmentVariables = default;
-            Optional<ContainerPropertiesInstanceView> instanceView = default;
-            ResourceRequirements resources = default;
-            Optional<IList<VolumeMount>> volumeMounts = default;
-            Optional<ContainerProbe> livenessProbe = default;
-            Optional<ContainerProbe> readinessProbe = default;
+            IList<string> command = default;
+            IList<ContainerPort> ports = default;
+            IList<ContainerEnvironmentVariable> environmentVariables = default;
+            ContainerInstanceView instanceView = default;
+            ContainerResourceRequirements resources = default;
+            IList<ContainerVolumeMount> volumeMounts = default;
+            ContainerProbe livenessProbe = default;
+            ContainerProbe readinessProbe = default;
+            ContainerSecurityContextDefinition securityContext = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -106,16 +162,15 @@ namespace Azure.ResourceManager.ContainerInstance.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("image"))
+                        if (property0.NameEquals("image"u8))
                         {
                             image = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("command"))
+                        if (property0.NameEquals("command"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -126,91 +181,142 @@ namespace Azure.ResourceManager.ContainerInstance.Models
                             command = array;
                             continue;
                         }
-                        if (property0.NameEquals("ports"))
+                        if (property0.NameEquals("ports"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<ContainerPort> array = new List<ContainerPort>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(ContainerPort.DeserializeContainerPort(item));
+                                array.Add(ContainerPort.DeserializeContainerPort(item, options));
                             }
                             ports = array;
                             continue;
                         }
-                        if (property0.NameEquals("environmentVariables"))
+                        if (property0.NameEquals("environmentVariables"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            List<EnvironmentVariable> array = new List<EnvironmentVariable>();
+                            List<ContainerEnvironmentVariable> array = new List<ContainerEnvironmentVariable>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(EnvironmentVariable.DeserializeEnvironmentVariable(item));
+                                array.Add(ContainerEnvironmentVariable.DeserializeContainerEnvironmentVariable(item, options));
                             }
                             environmentVariables = array;
                             continue;
                         }
-                        if (property0.NameEquals("instanceView"))
+                        if (property0.NameEquals("instanceView"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            instanceView = ContainerPropertiesInstanceView.DeserializeContainerPropertiesInstanceView(property0.Value);
+                            instanceView = ContainerInstanceView.DeserializeContainerInstanceView(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("resources"))
+                        if (property0.NameEquals("resources"u8))
                         {
-                            resources = ResourceRequirements.DeserializeResourceRequirements(property0.Value);
+                            resources = ContainerResourceRequirements.DeserializeContainerResourceRequirements(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("volumeMounts"))
+                        if (property0.NameEquals("volumeMounts"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            List<VolumeMount> array = new List<VolumeMount>();
+                            List<ContainerVolumeMount> array = new List<ContainerVolumeMount>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(VolumeMount.DeserializeVolumeMount(item));
+                                array.Add(ContainerVolumeMount.DeserializeContainerVolumeMount(item, options));
                             }
                             volumeMounts = array;
                             continue;
                         }
-                        if (property0.NameEquals("livenessProbe"))
+                        if (property0.NameEquals("livenessProbe"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            livenessProbe = ContainerProbe.DeserializeContainerProbe(property0.Value);
+                            livenessProbe = ContainerProbe.DeserializeContainerProbe(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("readinessProbe"))
+                        if (property0.NameEquals("readinessProbe"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            readinessProbe = ContainerProbe.DeserializeContainerProbe(property0.Value);
+                            readinessProbe = ContainerProbe.DeserializeContainerProbe(property0.Value, options);
+                            continue;
+                        }
+                        if (property0.NameEquals("securityContext"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            securityContext = ContainerSecurityContextDefinition.DeserializeContainerSecurityContextDefinition(property0.Value, options);
                             continue;
                         }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ContainerInstanceContainer(name, image, Optional.ToList(command), Optional.ToList(ports), Optional.ToList(environmentVariables), instanceView.Value, resources, Optional.ToList(volumeMounts), livenessProbe.Value, readinessProbe.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new ContainerInstanceContainer(
+                name,
+                image,
+                command ?? new ChangeTrackingList<string>(),
+                ports ?? new ChangeTrackingList<ContainerPort>(),
+                environmentVariables ?? new ChangeTrackingList<ContainerEnvironmentVariable>(),
+                instanceView,
+                resources,
+                volumeMounts ?? new ChangeTrackingList<ContainerVolumeMount>(),
+                livenessProbe,
+                readinessProbe,
+                securityContext,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<ContainerInstanceContainer>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContainerInstanceContainer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(ContainerInstanceContainer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ContainerInstanceContainer IPersistableModel<ContainerInstanceContainer>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContainerInstanceContainer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeContainerInstanceContainer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ContainerInstanceContainer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ContainerInstanceContainer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

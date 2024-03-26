@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.MixedReality.Common;
 using Azure.MixedReality.ObjectAnchors.Conversion.Models;
 
 namespace Azure.MixedReality.ObjectAnchors.Conversion
@@ -19,13 +20,16 @@ namespace Azure.MixedReality.ObjectAnchors.Conversion
         /// </summary>
         /// <param name="gravity">Gravity vector with respect to object's nominal position.</param>
         /// <param name="scale">Scale of transformation of asset units into meter space.</param>
-        internal AssetConversionConfiguration(System.Numerics.Vector3 gravity, float scale)
+        /// <param name="disableDetectScaleUnits">Whether or not disable automatic detection of FBX scale units.</param>
+        internal AssetConversionConfiguration(System.Numerics.Vector3 gravity, float scale, bool disableDetectScaleUnits)
             : this(new Vector3(gravity), scale)
         {
             if (!gravity.IsNormalized())
             {
                 throw new ArgumentException("The value must be normalized.", nameof(gravity));
             }
+
+            DisableDetectScaleUnits = disableDetectScaleUnits;
         }
 
         /// <summary>
@@ -44,6 +48,7 @@ namespace Azure.MixedReality.ObjectAnchors.Conversion
             KeyFrameIndexes = new ChangeTrackingList<int>();
             GroundTruthTrajectoryCameraPoses = new List<TrajectoryPose>();
             Scale = scale;
+            DisableDetectScaleUnits = false;
             TestTrajectoryCameraPoses = new List<TrajectoryPose>();
         }
 
@@ -51,6 +56,9 @@ namespace Azure.MixedReality.ObjectAnchors.Conversion
         /// Scale of transformation of asset units into meter space.
         /// </summary>
         public float Scale { get; internal set; }
+
+        /// <summary> Whether or not disable the scale units in the model metadata. </summary>
+        public bool DisableDetectScaleUnits { get; internal set; }
 
         /// <summary>
         /// Ground truth trajectory.

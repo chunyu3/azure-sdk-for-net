@@ -12,9 +12,9 @@ using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Common;
 using Azure.Storage.Cryptography;
 using Azure.Storage.Sas;
-using Azure.Storage.Shared;
 using Metadata = System.Collections.Generic.IDictionary<string, string>;
 
 #pragma warning disable SA1402  // File may only contain a single type
@@ -187,17 +187,22 @@ namespace Azure.Storage.Blobs
         public BlobContainerClient(string connectionString, string blobContainerName, BlobClientOptions options)
         {
             var conn = StorageConnectionString.Parse(connectionString);
-            var builder = new BlobUriBuilder(conn.BlobEndpoint) { BlobContainerName = blobContainerName };
+            var builder = new BlobUriBuilder(conn.BlobEndpoint, options?.TrimBlobNameSlashes ?? Constants.DefaultTrimBlobNameSlashes)
+            {
+                BlobContainerName = blobContainerName
+            };
             _uri = builder.ToUri();
             options ??= new BlobClientOptions();
 
             _clientConfiguration = new BlobClientConfiguration(
                 pipeline: options.Build(conn.Credentials),
                 sharedKeyCredential: conn.Credentials as StorageSharedKeyCredential,
-                clientDiagnostics: new StorageClientDiagnostics(options),
+                clientDiagnostics: new ClientDiagnostics(options),
                 version: options.Version,
                 customerProvidedKey: options.CustomerProvidedKey,
-                encryptionScope: options.EncryptionScope);
+                transferValidation: options.TransferValidation,
+                encryptionScope: options.EncryptionScope,
+                trimBlobNameSlashes: options.TrimBlobNameSlashes);
 
             _authenticationPolicy = StorageClientOptions.GetAuthenticationPolicy(conn.Credentials);
             _containerRestClient = BuildContainerRestClient(_uri);
@@ -221,8 +226,29 @@ namespace Azure.Storage.Blobs
         /// every request.
         /// </param>
         public BlobContainerClient(Uri blobContainerUri, BlobClientOptions options = default)
-            : this(blobContainerUri, (HttpPipelinePolicy)null, options)
         {
+            Argument.AssertNotNull(blobContainerUri, nameof(blobContainerUri));
+            _uri = blobContainerUri;
+            _authenticationPolicy = null;
+            options ??= new BlobClientOptions();
+
+            _clientConfiguration = new BlobClientConfiguration(
+                pipeline: options.Build(null),
+                sharedKeyCredential: null,
+                sasCredential: null,
+                tokenCredential: null,
+                clientDiagnostics: new ClientDiagnostics(options),
+                version: options.Version,
+                customerProvidedKey: options.CustomerProvidedKey,
+                transferValidation: options.TransferValidation,
+                encryptionScope: options.EncryptionScope,
+                trimBlobNameSlashes: options.TrimBlobNameSlashes);
+
+            _clientSideEncryption = options._clientSideEncryptionOptions?.Clone();
+            _containerRestClient = BuildContainerRestClient(blobContainerUri);
+
+            BlobErrors.VerifyHttpsCustomerProvidedKey(_uri, _clientConfiguration.CustomerProvidedKey);
+            BlobErrors.VerifyCpkAndEncryptionScopeNotBothSet(_clientConfiguration.CustomerProvidedKey, _clientConfiguration.EncryptionScope);
         }
 
         /// <summary>
@@ -253,10 +279,12 @@ namespace Azure.Storage.Blobs
             _clientConfiguration = new BlobClientConfiguration(
                 pipeline: options.Build(authPolicy),
                 sharedKeyCredential: credential,
-                clientDiagnostics: new StorageClientDiagnostics(options),
+                clientDiagnostics: new ClientDiagnostics(options),
                 version: options.Version,
                 customerProvidedKey: options.CustomerProvidedKey,
-                encryptionScope: options.EncryptionScope);
+                transferValidation: options.TransferValidation,
+                encryptionScope: options.EncryptionScope,
+                trimBlobNameSlashes: options.TrimBlobNameSlashes);
 
             _clientSideEncryption = options._clientSideEncryptionOptions?.Clone();
             _containerRestClient = BuildContainerRestClient(blobContainerUri);
@@ -287,8 +315,27 @@ namespace Azure.Storage.Blobs
         /// This constructor should only be used when shared access signature needs to be updated during lifespan of this client.
         /// </remarks>
         public BlobContainerClient(Uri blobContainerUri, AzureSasCredential credential, BlobClientOptions options = default)
-            : this(blobContainerUri, credential.AsPolicy<BlobUriBuilder>(blobContainerUri), options)
         {
+            Argument.AssertNotNull(blobContainerUri, nameof(blobContainerUri));
+            _uri = blobContainerUri;
+            _authenticationPolicy = credential.AsPolicy<BlobUriBuilder>(blobContainerUri);
+            options ??= new BlobClientOptions();
+
+            _clientConfiguration = new BlobClientConfiguration(
+                pipeline: options.Build(_authenticationPolicy),
+                sasCredential: credential,
+                clientDiagnostics: new ClientDiagnostics(options),
+                version: options.Version,
+                customerProvidedKey: options.CustomerProvidedKey,
+                transferValidation: options.TransferValidation,
+                encryptionScope: options.EncryptionScope,
+                trimBlobNameSlashes: options.TrimBlobNameSlashes);
+
+            _clientSideEncryption = options._clientSideEncryptionOptions?.Clone();
+            _containerRestClient = BuildContainerRestClient(blobContainerUri);
+
+            BlobErrors.VerifyHttpsCustomerProvidedKey(_uri, _clientConfiguration.CustomerProvidedKey);
+            BlobErrors.VerifyCpkAndEncryptionScopeNotBothSet(_clientConfiguration.CustomerProvidedKey, _clientConfiguration.EncryptionScope);
         }
 
         /// <summary>
@@ -309,42 +356,25 @@ namespace Azure.Storage.Blobs
         /// every request.
         /// </param>
         public BlobContainerClient(Uri blobContainerUri, TokenCredential credential, BlobClientOptions options = default)
-            : this(blobContainerUri, credential.AsPolicy(options), options)
         {
             Errors.VerifyHttpsTokenAuth(blobContainerUri);
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BlobContainerClient"/>
-        /// class.
-        /// </summary>
-        /// <param name="blobContainerUri">
-        /// A <see cref="Uri"/> referencing the blob container that includes the
-        /// name of the account and the name of the container.
-        /// This is likely to be similar to "https://{account_name}.blob.core.windows.net/{container_name}".
-        /// </param>
-        /// <param name="authentication">
-        /// An optional authentication policy used to sign requests.
-        /// </param>
-        /// <param name="options">
-        /// Optional client options that define the transport pipeline
-        /// policies for authentication, retries, etc., that are applied to
-        /// every request.
-        /// </param>
-        internal BlobContainerClient(Uri blobContainerUri, HttpPipelinePolicy authentication, BlobClientOptions options)
-        {
             Argument.AssertNotNull(blobContainerUri, nameof(blobContainerUri));
             _uri = blobContainerUri;
-            _authenticationPolicy = authentication;
+
+            string audienceScope = string.IsNullOrEmpty(options?.Audience?.ToString()) ? BlobAudience.DefaultAudience.CreateDefaultScope() : options.Audience.Value.CreateDefaultScope();
+
+            _authenticationPolicy = credential.AsPolicy(audienceScope, options);
             options ??= new BlobClientOptions();
 
             _clientConfiguration = new BlobClientConfiguration(
-                pipeline: options.Build(authentication),
-                sharedKeyCredential: null,
-                clientDiagnostics: new StorageClientDiagnostics(options),
+                pipeline: options.Build(_authenticationPolicy),
+                tokenCredential: credential,
+                clientDiagnostics: new ClientDiagnostics(options),
                 version: options.Version,
                 customerProvidedKey: options.CustomerProvidedKey,
-                encryptionScope: options.EncryptionScope);
+                transferValidation: options.TransferValidation,
+                encryptionScope: options.EncryptionScope,
+                trimBlobNameSlashes: options.TrimBlobNameSlashes);
 
             _clientSideEncryption = options._clientSideEncryptionOptions?.Clone();
             _containerRestClient = BuildContainerRestClient(blobContainerUri);
@@ -410,10 +440,12 @@ namespace Azure.Storage.Blobs
                 new BlobClientConfiguration(
                     pipeline: pipeline,
                     sharedKeyCredential: null,
-                    clientDiagnostics: new StorageClientDiagnostics(options),
+                    clientDiagnostics: new ClientDiagnostics(options),
                     version: options.Version,
                     customerProvidedKey: null,
-                    encryptionScope: null),
+                    transferValidation: options.TransferValidation,
+                    encryptionScope: null,
+                    trimBlobNameSlashes: options.TrimBlobNameSlashes),
                 clientSideEncryption: null);
         }
 
@@ -437,7 +469,7 @@ namespace Azure.Storage.Blobs
         /// <returns>A new <see cref="BlobBaseClient"/> instance.</returns>
         protected internal virtual BlobBaseClient GetBlobBaseClientCore(string blobName)
         {
-            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 BlobName = blobName
             };
@@ -458,7 +490,7 @@ namespace Azure.Storage.Blobs
         /// <returns>A new <see cref="BlobClient"/> instance.</returns>
         public virtual BlobClient GetBlobClient(string blobName)
         {
-            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 BlobName = blobName
             };
@@ -486,7 +518,7 @@ namespace Azure.Storage.Blobs
                 throw Errors.ClientSideEncryption.TypeNotSupported(typeof(BlockBlobClient));
             }
 
-            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 BlobName = blobName
             };
@@ -513,7 +545,7 @@ namespace Azure.Storage.Blobs
                 throw Errors.ClientSideEncryption.TypeNotSupported(typeof(AppendBlobClient));
             }
 
-            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 BlobName = blobName
             };
@@ -540,7 +572,7 @@ namespace Azure.Storage.Blobs
                 throw Errors.ClientSideEncryption.TypeNotSupported(typeof(PageBlobClient));
             }
 
-            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+            BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 BlobName = blobName
             };
@@ -567,7 +599,7 @@ namespace Azure.Storage.Blobs
         {
             if (_name == null || _accountName == null)
             {
-                var builder = new BlobUriBuilder(Uri);
+                var builder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes);
                 _name = builder.BlobContainerName;
                 _accountName = builder.AccountName;
             }
@@ -2171,6 +2203,7 @@ namespace Azure.Storage.Blobs
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-blobs")]
         public virtual Response<BlobContainerInfo> SetAccessPolicy(
             PublicAccessType accessType = PublicAccessType.None,
             IEnumerable<BlobSignedIdentifier> permissions = default,
@@ -2226,6 +2259,7 @@ namespace Azure.Storage.Blobs
         /// A <see cref="RequestFailedException"/> will be thrown if
         /// a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-blobs")]
         public virtual async Task<Response<BlobContainerInfo>> SetAccessPolicyAsync(
             PublicAccessType accessType = PublicAccessType.None,
             IEnumerable<BlobSignedIdentifier> permissions = default,
@@ -3342,7 +3376,7 @@ namespace Azure.Storage.Blobs
                 {
                     scope.Start();
 
-                    BlobUriBuilder uriBuilder = new BlobUriBuilder(Uri)
+                    BlobUriBuilder uriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
                     {
                         BlobContainerName = destinationContainerName
                     };
@@ -3390,9 +3424,8 @@ namespace Azure.Storage.Blobs
 
         #region FilterBlobs
         /// <summary>
-        /// The Filter Blobs operation enables callers to list blobs across all containers whose tags
-        /// match a given search expression. Filter blobs searches across all containers within a
-        /// storage account but can be scoped within the expression to a single container.
+        /// The Filter Blobs operation enables callers to list blobs in the container whose tags
+        /// match a given search expression and only the tags appearing in the expression will be returned.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/en-us/rest/api/storageservices/find-blobs-by-tags">
@@ -3402,7 +3435,7 @@ namespace Azure.Storage.Blobs
         /// The where parameter finds blobs in the storage account whose tags match a given expression.
         /// The expression must evaluate to true for a blob to be returned in the result set.
         /// The storage service supports a subset of the ANSI SQL WHERE clause grammar for the value of the where=expression query parameter.
-        /// The following operators are supported: =, &gt;, &gt;=, &lt;, &lt;=, AND. and @container.
+        /// The following operators are supported: =, &gt;, &gt;=, &lt;, &lt;=, AND.
         /// Example expression: "tagKey"='tagValue'.
         /// </param>
         /// <param name="cancellationToken">
@@ -3422,9 +3455,8 @@ namespace Azure.Storage.Blobs
             new FilterBlobsAsyncCollection(this, tagFilterSqlExpression).ToSyncCollection(cancellationToken);
 
         /// <summary>
-        /// The Filter Blobs operation enables callers to list blobs across all containers whose tags
-        /// match a given search expression. Filter blobs searches across all containers within a
-        /// storage account but can be scoped within the expression to a single container.
+        /// The Filter Blobs operation enables callers to list blobs in the container whose tags
+        /// match a given search expression and only the tags appearing in the expression will be returned.
         ///
         /// For more information, see
         /// <see href="https://docs.microsoft.com/en-us/rest/api/storageservices/find-blobs-by-tags">
@@ -3434,7 +3466,7 @@ namespace Azure.Storage.Blobs
         /// The where parameter finds blobs in the storage account whose tags match a given expression.
         /// The expression must evaluate to true for a blob to be returned in the result set.
         /// The storage service supports a subset of the ANSI SQL WHERE clause grammar for the value of the where=expression query parameter.
-        /// The following operators are supported: =, &gt;, &gt;=, &lt;, &lt;=, AND. and @container.
+        /// The following operators are supported: =, &gt;, &gt;=, &lt;, &lt;=, AND.
         /// Example expression: "tagKey"='tagValue'.
         /// </param>
         /// <param name="cancellationToken">
@@ -3541,6 +3573,7 @@ namespace Azure.Storage.Blobs
         /// <remarks>
         /// A <see cref="Exception"/> will be thrown if a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-blobs")]
         public virtual Uri GenerateSasUri(BlobContainerSasPermissions permissions, DateTimeOffset expiresOn) =>
             GenerateSasUri(new BlobSasBuilder(permissions, expiresOn) { BlobContainerName = Name });
 
@@ -3566,6 +3599,7 @@ namespace Azure.Storage.Blobs
         /// <remarks>
         /// A <see cref="Exception"/> will be thrown if a failure occurs.
         /// </remarks>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-blobs")]
         public virtual Uri GenerateSasUri(BlobSasBuilder builder)
         {
             builder = builder ?? throw Errors.ArgumentNull(nameof(builder));
@@ -3590,7 +3624,7 @@ namespace Azure.Storage.Blobs
                     nameof(builder.BlobName),
                     nameof(Constants.Blob.Container.Name));
             }
-            BlobUriBuilder sasUri = new BlobUriBuilder(Uri)
+            BlobUriBuilder sasUri = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
             {
                 Sas = builder.ToSasQueryParameters(ClientConfiguration.SharedKeyCredential)
             };
@@ -3613,7 +3647,7 @@ namespace Azure.Storage.Blobs
         {
             if (_parentBlobServiceClient == null)
             {
-                BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri)
+                BlobUriBuilder blobUriBuilder = new BlobUriBuilder(Uri, ClientConfiguration.TrimBlobNameSlashes)
                 {
                     // erase parameters unrelated to service
                     BlobContainerName = null,

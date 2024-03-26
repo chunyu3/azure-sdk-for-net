@@ -15,23 +15,23 @@ namespace Azure.AI.Language.QuestionAnswering
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("question");
+            writer.WritePropertyName("question"u8);
             writer.WriteStringValue(Question);
-            writer.WritePropertyName("records");
+            writer.WritePropertyName("records"u8);
             writer.WriteStartArray();
             foreach (var item in TextDocuments)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<TextDocument>(item);
             }
             writer.WriteEndArray();
             if (Optional.IsDefined(Language))
             {
-                writer.WritePropertyName("language");
+                writer.WritePropertyName("language"u8);
                 writer.WriteStringValue(Language);
             }
             if (Optional.IsDefined(StringIndexType))
             {
-                writer.WritePropertyName("stringIndexType");
+                writer.WritePropertyName("stringIndexType"u8);
                 writer.WriteStringValue(StringIndexType.Value.ToString());
             }
             writer.WriteEndObject();

@@ -21,99 +21,99 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Location))
             {
-                writer.WritePropertyName("location");
+                writer.WritePropertyName("location"u8);
                 writer.WriteStringValue(Location);
             }
             if (Optional.IsDefined(NodeSize))
             {
-                writer.WritePropertyName("nodeSize");
+                writer.WritePropertyName("nodeSize"u8);
                 writer.WriteStringValue(NodeSize);
             }
             if (Optional.IsDefined(NumberOfNodes))
             {
-                writer.WritePropertyName("numberOfNodes");
+                writer.WritePropertyName("numberOfNodes"u8);
                 writer.WriteNumberValue(NumberOfNodes.Value);
             }
             if (Optional.IsDefined(MaxParallelExecutionsPerNode))
             {
-                writer.WritePropertyName("maxParallelExecutionsPerNode");
+                writer.WritePropertyName("maxParallelExecutionsPerNode"u8);
                 writer.WriteNumberValue(MaxParallelExecutionsPerNode.Value);
             }
             if (Optional.IsDefined(DataFlowProperties))
             {
-                writer.WritePropertyName("dataFlowProperties");
-                writer.WriteObjectValue(DataFlowProperties);
+                writer.WritePropertyName("dataFlowProperties"u8);
+                writer.WriteObjectValue<IntegrationRuntimeDataFlowProperties>(DataFlowProperties);
             }
             if (Optional.IsDefined(VNetProperties))
             {
-                writer.WritePropertyName("vNetProperties");
-                writer.WriteObjectValue(VNetProperties);
+                writer.WritePropertyName("vNetProperties"u8);
+                writer.WriteObjectValue<IntegrationRuntimeVNetProperties>(VNetProperties);
             }
             foreach (var item in AdditionalProperties)
             {
                 writer.WritePropertyName(item.Key);
-                writer.WriteObjectValue(item.Value);
+                writer.WriteObjectValue<object>(item.Value);
             }
             writer.WriteEndObject();
         }
 
         internal static IntegrationRuntimeComputeProperties DeserializeIntegrationRuntimeComputeProperties(JsonElement element)
         {
-            Optional<string> location = default;
-            Optional<string> nodeSize = default;
-            Optional<int> numberOfNodes = default;
-            Optional<int> maxParallelExecutionsPerNode = default;
-            Optional<IntegrationRuntimeDataFlowProperties> dataFlowProperties = default;
-            Optional<IntegrationRuntimeVNetProperties> vNetProperties = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string location = default;
+            string nodeSize = default;
+            int? numberOfNodes = default;
+            int? maxParallelExecutionsPerNode = default;
+            IntegrationRuntimeDataFlowProperties dataFlowProperties = default;
+            IntegrationRuntimeVNetProperties vNetProperties = default;
             IDictionary<string, object> additionalProperties = default;
             Dictionary<string, object> additionalPropertiesDictionary = new Dictionary<string, object>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     location = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("nodeSize"))
+                if (property.NameEquals("nodeSize"u8))
                 {
                     nodeSize = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("numberOfNodes"))
+                if (property.NameEquals("numberOfNodes"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     numberOfNodes = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxParallelExecutionsPerNode"))
+                if (property.NameEquals("maxParallelExecutionsPerNode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxParallelExecutionsPerNode = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("dataFlowProperties"))
+                if (property.NameEquals("dataFlowProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     dataFlowProperties = IntegrationRuntimeDataFlowProperties.DeserializeIntegrationRuntimeDataFlowProperties(property.Value);
                     continue;
                 }
-                if (property.NameEquals("vNetProperties"))
+                if (property.NameEquals("vNetProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     vNetProperties = IntegrationRuntimeVNetProperties.DeserializeIntegrationRuntimeVNetProperties(property.Value);
@@ -122,14 +122,21 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
                 additionalPropertiesDictionary.Add(property.Name, property.Value.GetObject());
             }
             additionalProperties = additionalPropertiesDictionary;
-            return new IntegrationRuntimeComputeProperties(location.Value, nodeSize.Value, Optional.ToNullable(numberOfNodes), Optional.ToNullable(maxParallelExecutionsPerNode), dataFlowProperties.Value, vNetProperties.Value, additionalProperties);
+            return new IntegrationRuntimeComputeProperties(
+                location,
+                nodeSize,
+                numberOfNodes,
+                maxParallelExecutionsPerNode,
+                dataFlowProperties,
+                vNetProperties,
+                additionalProperties);
         }
 
         internal partial class IntegrationRuntimeComputePropertiesConverter : JsonConverter<IntegrationRuntimeComputeProperties>
         {
             public override void Write(Utf8JsonWriter writer, IntegrationRuntimeComputeProperties model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<IntegrationRuntimeComputeProperties>(model);
             }
             public override IntegrationRuntimeComputeProperties Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

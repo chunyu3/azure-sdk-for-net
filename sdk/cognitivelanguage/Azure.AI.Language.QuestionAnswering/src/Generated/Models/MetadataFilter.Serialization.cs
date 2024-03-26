@@ -17,17 +17,17 @@ namespace Azure.AI.Language.QuestionAnswering
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Metadata))
             {
-                writer.WritePropertyName("metadata");
+                writer.WritePropertyName("metadata"u8);
                 writer.WriteStartArray();
                 foreach (var item in Metadata)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<MetadataRecord>(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(LogicalOperation))
             {
-                writer.WritePropertyName("logicalOperation");
+                writer.WritePropertyName("logicalOperation"u8);
                 writer.WriteStringValue(LogicalOperation.Value.ToString());
             }
             writer.WriteEndObject();

@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Batch.Models;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Batch
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-06-01";
+            _apiVersion = apiVersion ?? "2024-02-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
@@ -55,7 +55,7 @@ namespace Azure.ResourceManager.Batch
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<BatchAccountCreateOrUpdateContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
@@ -132,9 +132,9 @@ namespace Azure.ResourceManager.Batch
             request.Uri = uri;
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
-            var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(patch);
-            request.Content = content0;
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue<BatchAccountPatch>(patch, new ModelReaderWriterOptions("W"));
+            request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
@@ -583,13 +583,13 @@ namespace Azure.ResourceManager.Batch
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue<BatchAccountRegenerateKeyContent>(content, new ModelReaderWriterOptions("W"));
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing &apos;SharedKey&apos;. If the Batch account doesn&apos;t contain &apos;SharedKey&apos; in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, regenerating the keys will fail. </summary>
+        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing 'SharedKey'. If the Batch account doesn't contain 'SharedKey' in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, regenerating the keys will fail. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
@@ -620,7 +620,7 @@ namespace Azure.ResourceManager.Batch
             }
         }
 
-        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing &apos;SharedKey&apos;. If the Batch account doesn&apos;t contain &apos;SharedKey&apos; in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, regenerating the keys will fail. </summary>
+        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing 'SharedKey'. If the Batch account doesn't contain 'SharedKey' in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, regenerating the keys will fail. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
@@ -672,7 +672,7 @@ namespace Azure.ResourceManager.Batch
             return message;
         }
 
-        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing &apos;SharedKey&apos;. If the Batch account doesn&apos;t contain &apos;SharedKey&apos; in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, getting the keys will fail. </summary>
+        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing 'SharedKey'. If the Batch account doesn't contain 'SharedKey' in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, getting the keys will fail. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
@@ -701,7 +701,7 @@ namespace Azure.ResourceManager.Batch
             }
         }
 
-        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing &apos;SharedKey&apos;. If the Batch account doesn&apos;t contain &apos;SharedKey&apos; in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, getting the keys will fail. </summary>
+        /// <summary> This operation applies only to Batch accounts with allowedAuthenticationModes containing 'SharedKey'. If the Batch account doesn't contain 'SharedKey' in its allowedAuthenticationMode, clients cannot use shared keys to authenticate, and must use another allowedAuthenticationModes instead. In this case, getting the keys will fail. </summary>
         /// <param name="subscriptionId"> The Azure subscription ID. This is a GUID-formatted string (e.g. 00000000-0000-0000-0000-000000000000). </param>
         /// <param name="resourceGroupName"> The name of the resource group that contains the Batch account. </param>
         /// <param name="accountName"> The name of the Batch account. </param>
@@ -839,7 +839,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="detectorId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="detectorId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<DetectorResponseData>> GetDetectorAsync(string subscriptionId, string resourceGroupName, string accountName, string detectorId, CancellationToken cancellationToken = default)
+        public async Task<Response<BatchAccountDetectorData>> GetDetectorAsync(string subscriptionId, string resourceGroupName, string accountName, string detectorId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -852,13 +852,13 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        DetectorResponseData value = default;
+                        BatchAccountDetectorData value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = DetectorResponseData.DeserializeDetectorResponseData(document.RootElement);
+                        value = BatchAccountDetectorData.DeserializeBatchAccountDetectorData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((DetectorResponseData)null, message.Response);
+                    return Response.FromValue((BatchAccountDetectorData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
@@ -872,7 +872,7 @@ namespace Azure.ResourceManager.Batch
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="detectorId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="accountName"/> or <paramref name="detectorId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<DetectorResponseData> GetDetector(string subscriptionId, string resourceGroupName, string accountName, string detectorId, CancellationToken cancellationToken = default)
+        public Response<BatchAccountDetectorData> GetDetector(string subscriptionId, string resourceGroupName, string accountName, string detectorId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -885,13 +885,13 @@ namespace Azure.ResourceManager.Batch
             {
                 case 200:
                     {
-                        DetectorResponseData value = default;
+                        BatchAccountDetectorData value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = DetectorResponseData.DeserializeDetectorResponseData(document.RootElement);
+                        value = BatchAccountDetectorData.DeserializeBatchAccountDetectorData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((DetectorResponseData)null, message.Response);
+                    return Response.FromValue((BatchAccountDetectorData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }

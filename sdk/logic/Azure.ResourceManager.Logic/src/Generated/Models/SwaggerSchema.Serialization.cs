@@ -6,62 +6,74 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Logic.Models
 {
-    public partial class SwaggerSchema : IUtf8JsonSerializable
+    public partial class SwaggerSchema : IUtf8JsonSerializable, IJsonModel<SwaggerSchema>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SwaggerSchema>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SwaggerSchema>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            writer.WriteStartObject();
-            if (Optional.IsDefined(Ref))
+            var format = options.Format == "W" ? ((IPersistableModel<SwaggerSchema>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("ref");
-                writer.WriteStringValue(Ref);
+                throw new FormatException($"The model {nameof(SwaggerSchema)} does not support writing '{format}' format.");
+            }
+
+            writer.WriteStartObject();
+            if (Optional.IsDefined(Reference))
+            {
+                writer.WritePropertyName("ref"u8);
+                writer.WriteStringValue(Reference);
             }
             if (Optional.IsDefined(SchemaType))
             {
-                writer.WritePropertyName("type");
+                writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(SchemaType.Value.ToString());
             }
             if (Optional.IsDefined(Title))
             {
-                writer.WritePropertyName("title");
+                writer.WritePropertyName("title"u8);
                 writer.WriteStringValue(Title);
             }
             if (Optional.IsDefined(Items))
             {
-                writer.WritePropertyName("items");
-                writer.WriteObjectValue(Items);
+                writer.WritePropertyName("items"u8);
+                writer.WriteObjectValue<SwaggerSchema>(Items, options);
             }
             if (Optional.IsCollectionDefined(Properties))
             {
-                writer.WritePropertyName("properties");
+                writer.WritePropertyName("properties"u8);
                 writer.WriteStartObject();
                 foreach (var item in Properties)
                 {
                     writer.WritePropertyName(item.Key);
-                    writer.WriteObjectValue(item.Value);
+                    writer.WriteObjectValue<SwaggerSchema>(item.Value, options);
                 }
                 writer.WriteEndObject();
             }
             if (Optional.IsDefined(AdditionalProperties))
             {
-                writer.WritePropertyName("additionalProperties");
+                writer.WritePropertyName("additionalProperties"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(AdditionalProperties);
 #else
-                JsonSerializer.Serialize(writer, JsonDocument.Parse(AdditionalProperties.ToString()).RootElement);
+                using (JsonDocument document = JsonDocument.Parse(AdditionalProperties))
+                {
+                    JsonSerializer.Serialize(writer, document.RootElement);
+                }
 #endif
             }
-            if (Optional.IsCollectionDefined(Required))
+            if (Optional.IsCollectionDefined(RequiredProperties))
             {
-                writer.WritePropertyName("required");
+                writer.WritePropertyName("required"u8);
                 writer.WriteStartArray();
-                foreach (var item in Required)
+                foreach (var item in RequiredProperties)
                 {
                     writer.WriteStringValue(item);
                 }
@@ -69,165 +81,198 @@ namespace Azure.ResourceManager.Logic.Models
             }
             if (Optional.IsDefined(MaxProperties))
             {
-                writer.WritePropertyName("maxProperties");
+                writer.WritePropertyName("maxProperties"u8);
                 writer.WriteNumberValue(MaxProperties.Value);
             }
             if (Optional.IsDefined(MinProperties))
             {
-                writer.WritePropertyName("minProperties");
+                writer.WritePropertyName("minProperties"u8);
                 writer.WriteNumberValue(MinProperties.Value);
             }
             if (Optional.IsCollectionDefined(AllOf))
             {
-                writer.WritePropertyName("allOf");
+                writer.WritePropertyName("allOf"u8);
                 writer.WriteStartArray();
                 foreach (var item in AllOf)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<SwaggerSchema>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(Discriminator))
             {
-                writer.WritePropertyName("discriminator");
+                writer.WritePropertyName("discriminator"u8);
                 writer.WriteStringValue(Discriminator);
             }
-            if (Optional.IsDefined(ReadOnly))
+            if (Optional.IsDefined(IsReadOnly))
             {
-                writer.WritePropertyName("readOnly");
-                writer.WriteBooleanValue(ReadOnly.Value);
+                writer.WritePropertyName("readOnly"u8);
+                writer.WriteBooleanValue(IsReadOnly.Value);
             }
             if (Optional.IsDefined(Xml))
             {
-                writer.WritePropertyName("xml");
-                writer.WriteObjectValue(Xml);
+                writer.WritePropertyName("xml"u8);
+                writer.WriteObjectValue<SwaggerXml>(Xml, options);
             }
             if (Optional.IsDefined(ExternalDocs))
             {
-                writer.WritePropertyName("externalDocs");
-                writer.WriteObjectValue(ExternalDocs);
+                writer.WritePropertyName("externalDocs"u8);
+                writer.WriteObjectValue<SwaggerExternalDocumentation>(ExternalDocs, options);
             }
             if (Optional.IsDefined(Example))
             {
-                writer.WritePropertyName("example");
+                writer.WritePropertyName("example"u8);
 #if NET6_0_OR_GREATER
 				writer.WriteRawValue(Example);
 #else
-                JsonSerializer.Serialize(writer, JsonDocument.Parse(Example.ToString()).RootElement);
+                using (JsonDocument document = JsonDocument.Parse(Example))
+                {
+                    JsonSerializer.Serialize(writer, document.RootElement);
+                }
 #endif
             }
-            if (Optional.IsDefined(NotificationUrlExtension))
+            if (Optional.IsDefined(IsNotificationUrlExtension))
             {
-                writer.WritePropertyName("notificationUrlExtension");
-                writer.WriteBooleanValue(NotificationUrlExtension.Value);
+                writer.WritePropertyName("notificationUrlExtension"u8);
+                writer.WriteBooleanValue(IsNotificationUrlExtension.Value);
             }
             if (Optional.IsDefined(DynamicSchemaOld))
             {
-                writer.WritePropertyName("dynamicSchemaOld");
-                writer.WriteObjectValue(DynamicSchemaOld);
+                writer.WritePropertyName("dynamicSchemaOld"u8);
+                writer.WriteObjectValue<SwaggerCustomDynamicSchema>(DynamicSchemaOld, options);
             }
             if (Optional.IsDefined(DynamicSchemaNew))
             {
-                writer.WritePropertyName("dynamicSchemaNew");
-                writer.WriteObjectValue(DynamicSchemaNew);
+                writer.WritePropertyName("dynamicSchemaNew"u8);
+                writer.WriteObjectValue<SwaggerCustomDynamicProperties>(DynamicSchemaNew, options);
             }
             if (Optional.IsDefined(DynamicListNew))
             {
-                writer.WritePropertyName("dynamicListNew");
-                writer.WriteObjectValue(DynamicListNew);
+                writer.WritePropertyName("dynamicListNew"u8);
+                writer.WriteObjectValue<SwaggerCustomDynamicList>(DynamicListNew, options);
             }
             if (Optional.IsDefined(DynamicTree))
             {
-                writer.WritePropertyName("dynamicTree");
-                writer.WriteObjectValue(DynamicTree);
+                writer.WritePropertyName("dynamicTree"u8);
+                writer.WriteObjectValue<SwaggerCustomDynamicTree>(DynamicTree, options);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static SwaggerSchema DeserializeSwaggerSchema(JsonElement element)
+        SwaggerSchema IJsonModel<SwaggerSchema>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> @ref = default;
-            Optional<SwaggerSchemaType> type = default;
-            Optional<string> title = default;
-            Optional<SwaggerSchema> items = default;
-            Optional<IDictionary<string, SwaggerSchema>> properties = default;
-            Optional<BinaryData> additionalProperties = default;
-            Optional<IList<string>> required = default;
-            Optional<int> maxProperties = default;
-            Optional<int> minProperties = default;
-            Optional<IList<SwaggerSchema>> allOf = default;
-            Optional<string> discriminator = default;
-            Optional<bool> readOnly = default;
-            Optional<SwaggerXml> xml = default;
-            Optional<SwaggerExternalDocumentation> externalDocs = default;
-            Optional<BinaryData> example = default;
-            Optional<bool> notificationUrlExtension = default;
-            Optional<SwaggerCustomDynamicSchema> dynamicSchemaOld = default;
-            Optional<SwaggerCustomDynamicProperties> dynamicSchemaNew = default;
-            Optional<SwaggerCustomDynamicList> dynamicListNew = default;
-            Optional<SwaggerCustomDynamicTree> dynamicTree = default;
+            var format = options.Format == "W" ? ((IPersistableModel<SwaggerSchema>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SwaggerSchema)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSwaggerSchema(document.RootElement, options);
+        }
+
+        internal static SwaggerSchema DeserializeSwaggerSchema(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string @ref = default;
+            SwaggerSchemaType? type = default;
+            string title = default;
+            SwaggerSchema items = default;
+            IDictionary<string, SwaggerSchema> properties = default;
+            BinaryData additionalProperties = default;
+            IList<string> required = default;
+            int? maxProperties = default;
+            int? minProperties = default;
+            IList<SwaggerSchema> allOf = default;
+            string discriminator = default;
+            bool? readOnly = default;
+            SwaggerXml xml = default;
+            SwaggerExternalDocumentation externalDocs = default;
+            BinaryData example = default;
+            bool? notificationUrlExtension = default;
+            SwaggerCustomDynamicSchema dynamicSchemaOld = default;
+            SwaggerCustomDynamicProperties dynamicSchemaNew = default;
+            SwaggerCustomDynamicList dynamicListNew = default;
+            SwaggerCustomDynamicTree dynamicTree = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("ref"))
+                if (property.NameEquals("ref"u8))
                 {
                     @ref = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new SwaggerSchemaType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("title"))
+                if (property.NameEquals("title"u8))
                 {
                     title = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("items"))
+                if (property.NameEquals("items"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    items = DeserializeSwaggerSchema(property.Value);
+                    items = DeserializeSwaggerSchema(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     Dictionary<string, SwaggerSchema> dictionary = new Dictionary<string, SwaggerSchema>();
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        dictionary.Add(property0.Name, DeserializeSwaggerSchema(property0.Value));
+                        dictionary.Add(property0.Name, DeserializeSwaggerSchema(property0.Value, options));
                     }
                     properties = dictionary;
                     continue;
                 }
-                if (property.NameEquals("additionalProperties"))
+                if (property.NameEquals("additionalProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     additionalProperties = BinaryData.FromString(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("required"))
+                if (property.NameEquals("required"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -238,138 +283,183 @@ namespace Azure.ResourceManager.Logic.Models
                     required = array;
                     continue;
                 }
-                if (property.NameEquals("maxProperties"))
+                if (property.NameEquals("maxProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxProperties = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("minProperties"))
+                if (property.NameEquals("minProperties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     minProperties = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("allOf"))
+                if (property.NameEquals("allOf"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<SwaggerSchema> array = new List<SwaggerSchema>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(DeserializeSwaggerSchema(item));
+                        array.Add(DeserializeSwaggerSchema(item, options));
                     }
                     allOf = array;
                     continue;
                 }
-                if (property.NameEquals("discriminator"))
+                if (property.NameEquals("discriminator"u8))
                 {
                     discriminator = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("readOnly"))
+                if (property.NameEquals("readOnly"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     readOnly = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("xml"))
+                if (property.NameEquals("xml"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    xml = SwaggerXml.DeserializeSwaggerXml(property.Value);
+                    xml = SwaggerXml.DeserializeSwaggerXml(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("externalDocs"))
+                if (property.NameEquals("externalDocs"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    externalDocs = SwaggerExternalDocumentation.DeserializeSwaggerExternalDocumentation(property.Value);
+                    externalDocs = SwaggerExternalDocumentation.DeserializeSwaggerExternalDocumentation(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("example"))
+                if (property.NameEquals("example"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     example = BinaryData.FromString(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("notificationUrlExtension"))
+                if (property.NameEquals("notificationUrlExtension"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     notificationUrlExtension = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("dynamicSchemaOld"))
+                if (property.NameEquals("dynamicSchemaOld"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dynamicSchemaOld = SwaggerCustomDynamicSchema.DeserializeSwaggerCustomDynamicSchema(property.Value);
+                    dynamicSchemaOld = SwaggerCustomDynamicSchema.DeserializeSwaggerCustomDynamicSchema(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dynamicSchemaNew"))
+                if (property.NameEquals("dynamicSchemaNew"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dynamicSchemaNew = SwaggerCustomDynamicProperties.DeserializeSwaggerCustomDynamicProperties(property.Value);
+                    dynamicSchemaNew = SwaggerCustomDynamicProperties.DeserializeSwaggerCustomDynamicProperties(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dynamicListNew"))
+                if (property.NameEquals("dynamicListNew"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dynamicListNew = SwaggerCustomDynamicList.DeserializeSwaggerCustomDynamicList(property.Value);
+                    dynamicListNew = SwaggerCustomDynamicList.DeserializeSwaggerCustomDynamicList(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dynamicTree"))
+                if (property.NameEquals("dynamicTree"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dynamicTree = SwaggerCustomDynamicTree.DeserializeSwaggerCustomDynamicTree(property.Value);
+                    dynamicTree = SwaggerCustomDynamicTree.DeserializeSwaggerCustomDynamicTree(property.Value, options);
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
-            return new SwaggerSchema(@ref.Value, Optional.ToNullable(type), title.Value, items.Value, Optional.ToDictionary(properties), additionalProperties.Value, Optional.ToList(required), Optional.ToNullable(maxProperties), Optional.ToNullable(minProperties), Optional.ToList(allOf), discriminator.Value, Optional.ToNullable(readOnly), xml.Value, externalDocs.Value, example.Value, Optional.ToNullable(notificationUrlExtension), dynamicSchemaOld.Value, dynamicSchemaNew.Value, dynamicListNew.Value, dynamicTree.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SwaggerSchema(
+                @ref,
+                type,
+                title,
+                items,
+                properties ?? new ChangeTrackingDictionary<string, SwaggerSchema>(),
+                additionalProperties,
+                required ?? new ChangeTrackingList<string>(),
+                maxProperties,
+                minProperties,
+                allOf ?? new ChangeTrackingList<SwaggerSchema>(),
+                discriminator,
+                readOnly,
+                xml,
+                externalDocs,
+                example,
+                notificationUrlExtension,
+                dynamicSchemaOld,
+                dynamicSchemaNew,
+                dynamicListNew,
+                dynamicTree,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<SwaggerSchema>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SwaggerSchema>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(SwaggerSchema)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SwaggerSchema IPersistableModel<SwaggerSchema>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SwaggerSchema>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSwaggerSchema(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SwaggerSchema)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SwaggerSchema>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

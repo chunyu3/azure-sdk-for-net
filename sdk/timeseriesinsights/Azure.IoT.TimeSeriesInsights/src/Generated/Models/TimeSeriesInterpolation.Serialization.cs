@@ -17,45 +17,47 @@ namespace Azure.IoT.TimeSeriesInsights
             writer.WriteStartObject();
             if (Optional.IsDefined(Kind))
             {
-                writer.WritePropertyName("kind");
+                writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind.Value.ToString());
             }
             if (Optional.IsDefined(Boundary))
             {
-                writer.WritePropertyName("boundary");
-                writer.WriteObjectValue(Boundary);
+                writer.WritePropertyName("boundary"u8);
+                writer.WriteObjectValue<InterpolationBoundary>(Boundary);
             }
             writer.WriteEndObject();
         }
 
         internal static TimeSeriesInterpolation DeserializeTimeSeriesInterpolation(JsonElement element)
         {
-            Optional<InterpolationKind> kind = default;
-            Optional<InterpolationBoundary> boundary = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            InterpolationKind? kind = default;
+            InterpolationBoundary boundary = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     kind = new InterpolationKind(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("boundary"))
+                if (property.NameEquals("boundary"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     boundary = InterpolationBoundary.DeserializeInterpolationBoundary(property.Value);
                     continue;
                 }
             }
-            return new TimeSeriesInterpolation(Optional.ToNullable(kind), boundary.Value);
+            return new TimeSeriesInterpolation(kind, boundary);
         }
     }
 }

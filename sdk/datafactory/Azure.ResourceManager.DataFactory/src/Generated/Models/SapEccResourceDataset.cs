@@ -7,32 +7,27 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The path of the SAP ECC OData entity. </summary>
-    public partial class SapEccResourceDataset : Dataset
+    public partial class SapEccResourceDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of SapEccResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapEccResourceDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <param name="path"> The path of the SAP ECC OData entity. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> or <paramref name="path"/> is null. </exception>
-        public SapEccResourceDataset(LinkedServiceReference linkedServiceName, BinaryData path) : base(linkedServiceName)
+        public SapEccResourceDataset(DataFactoryLinkedServiceReference linkedServiceName, DataFactoryElement<string> path) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
-            if (path == null)
-            {
-                throw new ArgumentNullException(nameof(path));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
+            Argument.AssertNotNull(path, nameof(path));
 
             Path = path;
             DatasetType = "SapEccResource";
         }
 
-        /// <summary> Initializes a new instance of SapEccResourceDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapEccResourceDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -43,13 +38,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="path"> The path of the SAP ECC OData entity. Type: string (or Expression with resultType string). </param>
-        internal SapEccResourceDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData path) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal SapEccResourceDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> path) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             Path = path;
             DatasetType = datasetType ?? "SapEccResource";
         }
 
+        /// <summary> Initializes a new instance of <see cref="SapEccResourceDataset"/> for deserialization. </summary>
+        internal SapEccResourceDataset()
+        {
+        }
+
         /// <summary> The path of the SAP ECC OData entity. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Path { get; set; }
+        public DataFactoryElement<string> Path { get; set; }
     }
 }

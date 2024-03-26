@@ -7,48 +7,38 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Informix linked service. </summary>
-    public partial class InformixLinkedService : LinkedService
+    public partial class InformixLinkedService : DataFactoryLinkedServiceProperties
     {
-        /// <summary> Initializes a new instance of InformixLinkedService. </summary>
-        /// <param name="connectionString"> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, SecureString or AzureKeyVaultSecretReference. </param>
+        /// <summary> Initializes a new instance of <see cref="InformixLinkedService"/>. </summary>
+        /// <param name="connectionString"> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with resultType string. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="connectionString"/> is null. </exception>
-        public InformixLinkedService(BinaryData connectionString)
+        public InformixLinkedService(DataFactoryElement<string> connectionString)
         {
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
+            Argument.AssertNotNull(connectionString, nameof(connectionString));
 
             ConnectionString = connectionString;
             LinkedServiceType = "Informix";
         }
 
-        /// <summary> Initializes a new instance of InformixLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="InformixLinkedService"/>. </summary>
         /// <param name="linkedServiceType"> Type of linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
         /// <param name="parameters"> Parameters for linked service. </param>
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="connectionString"> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, SecureString or AzureKeyVaultSecretReference. </param>
+        /// <param name="connectionString"> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with resultType string. </param>
         /// <param name="authenticationType"> Type of authentication used to connect to the Informix as ODBC data store. Possible values are: Anonymous and Basic. Type: string (or Expression with resultType string). </param>
-        /// <param name="credential">
-        /// The access credential portion of the connection string specified in driver-specific property-value format.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
+        /// <param name="credential"> The access credential portion of the connection string specified in driver-specific property-value format. </param>
         /// <param name="userName"> User name for Basic authentication. Type: string (or Expression with resultType string). </param>
-        /// <param name="password">
-        /// Password for Basic authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </param>
-        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
-        internal InformixLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, BinaryData connectionString, BinaryData authenticationType, SecretBase credential, BinaryData userName, SecretBase password, BinaryData encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="password"> Password for Basic authentication. </param>
+        /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </param>
+        internal InformixLinkedService(string linkedServiceType, IntegrationRuntimeReference connectVia, string description, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> connectionString, DataFactoryElement<string> authenticationType, DataFactorySecret credential, DataFactoryElement<string> userName, DataFactorySecret password, string encryptedCredential) : base(linkedServiceType, connectVia, description, parameters, annotations, additionalProperties)
         {
             ConnectionString = connectionString;
             AuthenticationType = authenticationType;
@@ -59,25 +49,22 @@ namespace Azure.ResourceManager.DataFactory.Models
             LinkedServiceType = linkedServiceType ?? "Informix";
         }
 
-        /// <summary> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, SecureString or AzureKeyVaultSecretReference. </summary>
-        public BinaryData ConnectionString { get; set; }
+        /// <summary> Initializes a new instance of <see cref="InformixLinkedService"/> for deserialization. </summary>
+        internal InformixLinkedService()
+        {
+        }
+
+        /// <summary> The non-access credential portion of the connection string as well as an optional encrypted credential. Type: string, or SecureString, or AzureKeyVaultSecretReference, or Expression with resultType string. </summary>
+        public DataFactoryElement<string> ConnectionString { get; set; }
         /// <summary> Type of authentication used to connect to the Informix as ODBC data store. Possible values are: Anonymous and Basic. Type: string (or Expression with resultType string). </summary>
-        public BinaryData AuthenticationType { get; set; }
-        /// <summary>
-        /// The access credential portion of the connection string specified in driver-specific property-value format.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Credential { get; set; }
+        public DataFactoryElement<string> AuthenticationType { get; set; }
+        /// <summary> The access credential portion of the connection string specified in driver-specific property-value format. </summary>
+        public DataFactorySecret Credential { get; set; }
         /// <summary> User name for Basic authentication. Type: string (or Expression with resultType string). </summary>
-        public BinaryData UserName { get; set; }
-        /// <summary>
-        /// Password for Basic authentication.
-        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="SecureString"/> and <see cref="AzureKeyVaultSecretReference"/>.
-        /// </summary>
-        public SecretBase Password { get; set; }
-        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
-        public BinaryData EncryptedCredential { get; set; }
+        public DataFactoryElement<string> UserName { get; set; }
+        /// <summary> Password for Basic authentication. </summary>
+        public DataFactorySecret Password { get; set; }
+        /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string. </summary>
+        public string EncryptedCredential { get; set; }
     }
 }

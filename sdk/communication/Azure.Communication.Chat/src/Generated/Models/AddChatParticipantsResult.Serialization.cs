@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Communication.Chat
 {
@@ -15,14 +14,17 @@ namespace Azure.Communication.Chat
     {
         internal static AddChatParticipantsResult DeserializeAddChatParticipantsResult(JsonElement element)
         {
-            Optional<IReadOnlyList<ChatError>> invalidParticipants = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<ChatError> invalidParticipants = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("invalidParticipants"))
+                if (property.NameEquals("invalidParticipants"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ChatError> array = new List<ChatError>();
@@ -34,7 +36,7 @@ namespace Azure.Communication.Chat
                     continue;
                 }
             }
-            return new AddChatParticipantsResult(Optional.ToList(invalidParticipants));
+            return new AddChatParticipantsResult(invalidParticipants ?? new ChangeTrackingList<ChatError>());
         }
     }
 }

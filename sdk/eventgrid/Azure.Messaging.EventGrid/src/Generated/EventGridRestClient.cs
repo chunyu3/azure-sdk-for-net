@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Messaging.EventGrid.Models;
@@ -36,7 +35,7 @@ namespace Azure.Messaging.EventGrid
             _apiVersion = apiVersion ?? throw new ArgumentNullException(nameof(apiVersion));
         }
 
-        internal HttpMessage CreatePublishEventsRequest(string topicHostname, IEnumerable<EventGridEventInternal> events)
+        internal HttpMessage CreatePublishEventGridEventsRequest(string topicHostname, IEnumerable<EventGridEventInternal> events)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -44,7 +43,6 @@ namespace Azure.Messaging.EventGrid
             var uri = new RawRequestUriBuilder();
             uri.AppendRaw("https://", false);
             uri.AppendRaw(topicHostname, false);
-            uri.AppendPath("/api/events", false);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Content-Type", "application/json");
@@ -52,7 +50,7 @@ namespace Azure.Messaging.EventGrid
             content.JsonWriter.WriteStartArray();
             foreach (var item in events)
             {
-                content.JsonWriter.WriteObjectValue(item);
+                content.JsonWriter.WriteObjectValue<EventGridEventInternal>(item);
             }
             content.JsonWriter.WriteEndArray();
             request.Content = content;
@@ -64,7 +62,7 @@ namespace Azure.Messaging.EventGrid
         /// <param name="events"> An array of events to be published to Event Grid. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="topicHostname"/> or <paramref name="events"/> is null. </exception>
-        public async Task<Response> PublishEventsAsync(string topicHostname, IEnumerable<EventGridEventInternal> events, CancellationToken cancellationToken = default)
+        public async Task<Response> PublishEventGridEventsAsync(string topicHostname, IEnumerable<EventGridEventInternal> events, CancellationToken cancellationToken = default)
         {
             if (topicHostname == null)
             {
@@ -75,14 +73,14 @@ namespace Azure.Messaging.EventGrid
                 throw new ArgumentNullException(nameof(events));
             }
 
-            using var message = CreatePublishEventsRequest(topicHostname, events);
+            using var message = CreatePublishEventGridEventsRequest(topicHostname, events);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -91,7 +89,7 @@ namespace Azure.Messaging.EventGrid
         /// <param name="events"> An array of events to be published to Event Grid. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="topicHostname"/> or <paramref name="events"/> is null. </exception>
-        public Response PublishEvents(string topicHostname, IEnumerable<EventGridEventInternal> events, CancellationToken cancellationToken = default)
+        public Response PublishEventGridEvents(string topicHostname, IEnumerable<EventGridEventInternal> events, CancellationToken cancellationToken = default)
         {
             if (topicHostname == null)
             {
@@ -102,14 +100,14 @@ namespace Azure.Messaging.EventGrid
                 throw new ArgumentNullException(nameof(events));
             }
 
-            using var message = CreatePublishEventsRequest(topicHostname, events);
+            using var message = CreatePublishEventGridEventsRequest(topicHostname, events);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -121,7 +119,6 @@ namespace Azure.Messaging.EventGrid
             var uri = new RawRequestUriBuilder();
             uri.AppendRaw("https://", false);
             uri.AppendRaw(topicHostname, false);
-            uri.AppendPath("/api/events", false);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             if (aegChannelName != null)
@@ -133,7 +130,7 @@ namespace Azure.Messaging.EventGrid
             content.JsonWriter.WriteStartArray();
             foreach (var item in events)
             {
-                content.JsonWriter.WriteObjectValue(item);
+                content.JsonWriter.WriteObjectValue<CloudEventInternal>(item);
             }
             content.JsonWriter.WriteEndArray();
             request.Content = content;
@@ -164,7 +161,7 @@ namespace Azure.Messaging.EventGrid
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -192,7 +189,7 @@ namespace Azure.Messaging.EventGrid
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -204,7 +201,6 @@ namespace Azure.Messaging.EventGrid
             var uri = new RawRequestUriBuilder();
             uri.AppendRaw("https://", false);
             uri.AppendRaw(topicHostname, false);
-            uri.AppendPath("/api/events", false);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
             request.Headers.Add("Content-Type", "application/json");
@@ -212,7 +208,12 @@ namespace Azure.Messaging.EventGrid
             content.JsonWriter.WriteStartArray();
             foreach (var item in events)
             {
-                content.JsonWriter.WriteObjectValue(item);
+                if (item == null)
+                {
+                    content.JsonWriter.WriteNullValue();
+                    continue;
+                }
+                content.JsonWriter.WriteObjectValue<object>(item);
             }
             content.JsonWriter.WriteEndArray();
             request.Content = content;
@@ -242,7 +243,7 @@ namespace Azure.Messaging.EventGrid
                 case 200:
                     return message.Response;
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -269,7 +270,7 @@ namespace Azure.Messaging.EventGrid
                 case 200:
                     return message.Response;
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

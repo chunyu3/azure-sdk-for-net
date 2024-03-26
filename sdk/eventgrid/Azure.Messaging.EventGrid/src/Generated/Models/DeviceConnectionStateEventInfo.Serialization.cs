@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Messaging.EventGrid.SystemEvents
 {
@@ -14,16 +13,20 @@ namespace Azure.Messaging.EventGrid.SystemEvents
     {
         internal static DeviceConnectionStateEventInfo DeserializeDeviceConnectionStateEventInfo(JsonElement element)
         {
-            Optional<string> sequenceNumber = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string sequenceNumber = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sequenceNumber"))
+                if (property.NameEquals("sequenceNumber"u8))
                 {
                     sequenceNumber = property.Value.GetString();
                     continue;
                 }
             }
-            return new DeviceConnectionStateEventInfo(sequenceNumber.Value);
+            return new DeviceConnectionStateEventInfo(sequenceNumber);
         }
     }
 }

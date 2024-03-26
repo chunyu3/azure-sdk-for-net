@@ -18,46 +18,49 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
+            writer.WritePropertyName("type"u8);
             writer.WriteStringValue(Type.ToString());
             if (Optional.IsDefined(DefaultValue))
             {
-                writer.WritePropertyName("defaultValue");
-                writer.WriteObjectValue(DefaultValue);
+                writer.WritePropertyName("defaultValue"u8);
+                writer.WriteObjectValue<object>(DefaultValue);
             }
             writer.WriteEndObject();
         }
 
         internal static ParameterSpecification DeserializeParameterSpecification(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             ParameterType type = default;
-            Optional<object> defaultValue = default;
+            object defaultValue = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ParameterType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("defaultValue"))
+                if (property.NameEquals("defaultValue"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     defaultValue = property.Value.GetObject();
                     continue;
                 }
             }
-            return new ParameterSpecification(type, defaultValue.Value);
+            return new ParameterSpecification(type, defaultValue);
         }
 
         internal partial class ParameterSpecificationConverter : JsonConverter<ParameterSpecification>
         {
             public override void Write(Utf8JsonWriter writer, ParameterSpecification model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<ParameterSpecification>(model);
             }
             public override ParameterSpecification Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

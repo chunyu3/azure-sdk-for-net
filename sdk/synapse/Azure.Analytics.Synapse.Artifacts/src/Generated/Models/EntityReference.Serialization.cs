@@ -20,12 +20,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(Type))
             {
-                writer.WritePropertyName("type");
+                writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(Type.Value.ToString());
             }
             if (Optional.IsDefined(ReferenceName))
             {
-                writer.WritePropertyName("referenceName");
+                writer.WritePropertyName("referenceName"u8);
                 writer.WriteStringValue(ReferenceName);
             }
             writer.WriteEndObject();
@@ -33,34 +33,37 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
 
         internal static EntityReference DeserializeEntityReference(JsonElement element)
         {
-            Optional<IntegrationRuntimeEntityReferenceType> type = default;
-            Optional<string> referenceName = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IntegrationRuntimeEntityReferenceType? type = default;
+            string referenceName = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new IntegrationRuntimeEntityReferenceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("referenceName"))
+                if (property.NameEquals("referenceName"u8))
                 {
                     referenceName = property.Value.GetString();
                     continue;
                 }
             }
-            return new EntityReference(Optional.ToNullable(type), referenceName.Value);
+            return new EntityReference(type, referenceName);
         }
 
         internal partial class EntityReferenceConverter : JsonConverter<EntityReference>
         {
             public override void Write(Utf8JsonWriter writer, EntityReference model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<EntityReference>(model);
             }
             public override EntityReference Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

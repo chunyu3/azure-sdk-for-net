@@ -5,68 +5,147 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.NetworkFunction.Models
 {
-    public partial class EmissionPoliciesPropertiesFormat : IUtf8JsonSerializable
+    public partial class EmissionPoliciesPropertiesFormat : IUtf8JsonSerializable, IJsonModel<EmissionPoliciesPropertiesFormat>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<EmissionPoliciesPropertiesFormat>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<EmissionPoliciesPropertiesFormat>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<EmissionPoliciesPropertiesFormat>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EmissionPoliciesPropertiesFormat)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(EmissionType))
             {
-                writer.WritePropertyName("emissionType");
+                writer.WritePropertyName("emissionType"u8);
                 writer.WriteStringValue(EmissionType.Value.ToString());
             }
             if (Optional.IsCollectionDefined(EmissionDestinations))
             {
-                writer.WritePropertyName("emissionDestinations");
+                writer.WritePropertyName("emissionDestinations"u8);
                 writer.WriteStartArray();
                 foreach (var item in EmissionDestinations)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<EmissionPolicyDestination>(item, options);
                 }
                 writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static EmissionPoliciesPropertiesFormat DeserializeEmissionPoliciesPropertiesFormat(JsonElement element)
+        EmissionPoliciesPropertiesFormat IJsonModel<EmissionPoliciesPropertiesFormat>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<EmissionType> emissionType = default;
-            Optional<IList<EmissionPolicyDestination>> emissionDestinations = default;
+            var format = options.Format == "W" ? ((IPersistableModel<EmissionPoliciesPropertiesFormat>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EmissionPoliciesPropertiesFormat)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeEmissionPoliciesPropertiesFormat(document.RootElement, options);
+        }
+
+        internal static EmissionPoliciesPropertiesFormat DeserializeEmissionPoliciesPropertiesFormat(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            EmissionType? emissionType = default;
+            IList<EmissionPolicyDestination> emissionDestinations = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("emissionType"))
+                if (property.NameEquals("emissionType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     emissionType = new EmissionType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("emissionDestinations"))
+                if (property.NameEquals("emissionDestinations"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<EmissionPolicyDestination> array = new List<EmissionPolicyDestination>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(EmissionPolicyDestination.DeserializeEmissionPolicyDestination(item));
+                        array.Add(EmissionPolicyDestination.DeserializeEmissionPolicyDestination(item, options));
                     }
                     emissionDestinations = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new EmissionPoliciesPropertiesFormat(Optional.ToNullable(emissionType), Optional.ToList(emissionDestinations));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new EmissionPoliciesPropertiesFormat(emissionType, emissionDestinations ?? new ChangeTrackingList<EmissionPolicyDestination>(), serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<EmissionPoliciesPropertiesFormat>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EmissionPoliciesPropertiesFormat>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(EmissionPoliciesPropertiesFormat)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        EmissionPoliciesPropertiesFormat IPersistableModel<EmissionPoliciesPropertiesFormat>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EmissionPoliciesPropertiesFormat>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeEmissionPoliciesPropertiesFormat(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(EmissionPoliciesPropertiesFormat)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<EmissionPoliciesPropertiesFormat>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

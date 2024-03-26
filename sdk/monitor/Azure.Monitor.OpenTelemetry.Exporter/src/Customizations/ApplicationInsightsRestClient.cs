@@ -3,17 +3,22 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Azure.Core;
+using Azure.Core.Pipeline;
 using Azure.Monitor.OpenTelemetry.Exporter.Internals;
+using Azure.Monitor.OpenTelemetry.Exporter.Internals.Diagnostics;
 using Azure.Monitor.OpenTelemetry.Exporter.Models;
 
 namespace Azure.Monitor.OpenTelemetry.Exporter
 {
     internal partial class ApplicationInsightsRestClient
     {
+        private RawRequestUriBuilder _rawRequestUriBuilder;
+
         /// <summary>
         /// This operation sends a sequence of telemetry events that will be monitored by Azure Monitor.
         /// </summary>
@@ -31,12 +36,13 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
 
             try
             {
+                RedirectPolicy.SetAllowAutoRedirect(message, false);
                 await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                AzureMonitorExporterEventSource.Log.WriteError("FailedToSend", ex);
-                if (ex.InnerException?.Source != "System.Net.Http")
+                AzureMonitorExporterEventSource.Log.FailedToTransmit(ex);
+                if (ex.InnerException?.Source != "System.Net.Http" && ex.InnerException?.Source != "System")
                 {
                     message?.Dispose();
                     throw;
@@ -58,12 +64,13 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
 
             try
             {
+                RedirectPolicy.SetAllowAutoRedirect(message, false);
                 await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                AzureMonitorExporterEventSource.Log.WriteError("FailedToSend", ex);
-                if (ex.InnerException?.Source != "System.Net.Http")
+                AzureMonitorExporterEventSource.Log.FailedToTransmit(ex);
+                if (ex.InnerException?.Source != "System.Net.Http" && ex.InnerException?.Source != "System")
                 {
                     message?.Dispose();
                     throw;
@@ -75,42 +82,46 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
 
         internal HttpMessage CreateTrackRequest(IEnumerable<TelemetryItem> body)
         {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Post;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw(_host, false);
-            uri.AppendRaw("/v2", false);
-            uri.AppendPath("/track", false);
-            request.Uri = uri;
-            request.Headers.Add("Content-Type", "application/json");
-            request.Headers.Add("Accept", "application/json");
             using var content = new NDJsonWriter();
             foreach (var item in body)
             {
                 content.JsonWriter.WriteObjectValue(item);
                 content.WriteNewLine();
             }
-            request.Content = RequestContent.Create(content.ToBytes());
+
+#if DEBUG
             TelemetryDebugWriter.WriteTelemetry(content);
-            return message;
+#endif
+
+            return CreateRequest(RequestContent.Create(content.ToBytes()));
         }
 
         internal HttpMessage CreateTrackRequest(ReadOnlyMemory<byte> body)
         {
+#if DEBUG
+            TelemetryDebugWriter.WriteTelemetryFromStorage(body);
+#endif
+
+            return CreateRequest(RequestContent.Create(body));
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private HttpMessage CreateRequest(RequestContent requestContent)
+        {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
             request.Method = RequestMethod.Post;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw(_host, false);
-            uri.AppendRaw("/v2", false);
-            uri.AppendPath("/track", false);
-            request.Uri = uri;
+            request.Uri = LazyInitializer.EnsureInitialized(ref _rawRequestUriBuilder, () =>
+            {
+                var uri = new RawRequestUriBuilder();
+                uri.AppendRaw(_host, false);
+                uri.AppendRaw("/v2.1/track", false);
+                return uri;
+            });
             request.Headers.Add("Content-Type", "application/json");
             request.Headers.Add("Accept", "application/json");
-            using var content = new NDJsonWriter();
-            request.Content = RequestContent.Create(body);
-            TelemetryDebugWriter.WriteTelemetry(content);
+            request.Content = requestContent;
+
             return message;
         }
     }

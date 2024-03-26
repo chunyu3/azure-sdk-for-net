@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Salesforce Service Cloud object dataset. </summary>
-    public partial class SalesforceServiceCloudObjectDataset : Dataset
+    public partial class SalesforceServiceCloudObjectDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of SalesforceServiceCloudObjectDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SalesforceServiceCloudObjectDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public SalesforceServiceCloudObjectDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public SalesforceServiceCloudObjectDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "SalesforceServiceCloudObject";
         }
 
-        /// <summary> Initializes a new instance of SalesforceServiceCloudObjectDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="SalesforceServiceCloudObjectDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -37,13 +35,18 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="folder"> The folder that this Dataset is in. If not specified, Dataset will appear at the root level. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
         /// <param name="objectApiName"> The Salesforce Service Cloud object API name. Type: string (or Expression with resultType string). </param>
-        internal SalesforceServiceCloudObjectDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData objectApiName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal SalesforceServiceCloudObjectDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> objectApiName) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             ObjectApiName = objectApiName;
             DatasetType = datasetType ?? "SalesforceServiceCloudObject";
         }
 
+        /// <summary> Initializes a new instance of <see cref="SalesforceServiceCloudObjectDataset"/> for deserialization. </summary>
+        internal SalesforceServiceCloudObjectDataset()
+        {
+        }
+
         /// <summary> The Salesforce Service Cloud object API name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData ObjectApiName { get; set; }
+        public DataFactoryElement<string> ObjectApiName { get; set; }
     }
 }

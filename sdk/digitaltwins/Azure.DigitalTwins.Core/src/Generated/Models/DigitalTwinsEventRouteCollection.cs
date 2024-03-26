@@ -5,21 +5,26 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 
 namespace Azure.DigitalTwins.Core
 {
     /// <summary> A collection of EventRoute objects. </summary>
     internal partial class DigitalTwinsEventRouteCollection
     {
-        /// <summary> Initializes a new instance of DigitalTwinsEventRouteCollection. </summary>
-        internal DigitalTwinsEventRouteCollection()
+        /// <summary> Initializes a new instance of <see cref="DigitalTwinsEventRouteCollection"/>. </summary>
+        /// <param name="value"> The EventRoute objects. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        internal DigitalTwinsEventRouteCollection(IEnumerable<DigitalTwinsEventRoute> value)
         {
-            Value = new ChangeTrackingList<DigitalTwinsEventRoute>();
+            Argument.AssertNotNull(value, nameof(value));
+
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of DigitalTwinsEventRouteCollection. </summary>
+        /// <summary> Initializes a new instance of <see cref="DigitalTwinsEventRouteCollection"/>. </summary>
         /// <param name="value"> The EventRoute objects. </param>
         /// <param name="nextLink"> A URI to retrieve the next page of results. </param>
         internal DigitalTwinsEventRouteCollection(IReadOnlyList<DigitalTwinsEventRoute> value, string nextLink)

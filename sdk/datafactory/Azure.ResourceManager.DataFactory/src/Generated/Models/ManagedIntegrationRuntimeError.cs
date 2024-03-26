@@ -7,21 +7,20 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> Error definition for managed integration runtime. </summary>
     public partial class ManagedIntegrationRuntimeError
     {
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeError. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeError"/>. </summary>
         internal ManagedIntegrationRuntimeError()
         {
             Parameters = new ChangeTrackingList<string>();
             AdditionalProperties = new ChangeTrackingDictionary<string, BinaryData>();
         }
 
-        /// <summary> Initializes a new instance of ManagedIntegrationRuntimeError. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIntegrationRuntimeError"/>. </summary>
         /// <param name="time"> The time when the error occurred. </param>
         /// <param name="code"> Error code. </param>
         /// <param name="parameters"> Managed integration runtime error parameters. </param>
@@ -44,7 +43,36 @@ namespace Azure.ResourceManager.DataFactory.Models
         public IReadOnlyList<string> Parameters { get; }
         /// <summary> Error message. </summary>
         public string Message { get; }
-        /// <summary> Additional Properties. </summary>
+        /// <summary>
+        /// Additional Properties
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
         public IReadOnlyDictionary<string, BinaryData> AdditionalProperties { get; }
     }
 }

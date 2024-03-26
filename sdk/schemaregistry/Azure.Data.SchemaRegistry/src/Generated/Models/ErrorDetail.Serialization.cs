@@ -7,7 +7,6 @@
 
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Data.SchemaRegistry.Models
 {
@@ -15,26 +14,29 @@ namespace Azure.Data.SchemaRegistry.Models
     {
         internal static ErrorDetail DeserializeErrorDetail(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string code = default;
             string message = default;
-            Optional<IReadOnlyList<ErrorDetail>> details = default;
+            IReadOnlyList<ErrorDetail> details = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("code"))
+                if (property.NameEquals("code"u8))
                 {
                     code = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("message"))
+                if (property.NameEquals("message"u8))
                 {
                     message = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("details"))
+                if (property.NameEquals("details"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ErrorDetail> array = new List<ErrorDetail>();
@@ -46,7 +48,7 @@ namespace Azure.Data.SchemaRegistry.Models
                     continue;
                 }
             }
-            return new ErrorDetail(code, message, Optional.ToList(details));
+            return new ErrorDetail(code, message, details ?? new ChangeTrackingList<ErrorDetail>());
         }
     }
 }

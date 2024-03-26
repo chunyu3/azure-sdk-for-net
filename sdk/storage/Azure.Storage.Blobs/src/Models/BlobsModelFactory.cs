@@ -14,10 +14,53 @@ namespace Azure.Storage.Blobs.Models
     /// <summary>
     /// This class holds BlobModelFactory overloads we need for backwards compatibility.
     /// </summary>
-    [CodeGenType("AzureBlobStorageModelFactory")]
+    [CodeGenType("StorageBlobsModelFactory")]
     public static partial class BlobsModelFactory
     {
         #region BlobContentInfo
+        /// <summary> Initializes a new instance of <see cref="Models.UserDelegationKey"/>. </summary>
+        /// <param name="signedObjectId"> The Azure Active Directory object ID in GUID format. </param>
+        /// <param name="signedTenantId"> The Azure Active Directory tenant ID in GUID format. </param>
+        /// <param name="signedStartsOn"> The date-time the key is active. </param>
+        /// <param name="signedExpiresOn"> The date-time the key expires. </param>
+        /// <param name="signedService"> Abbreviation of the Azure Storage service that accepts the key. </param>
+        /// <param name="signedVersion"> The service version that created the key. </param>
+        /// <param name="value"> The key as a base64 string. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="signedObjectId"/>, <paramref name="signedTenantId"/>, <paramref name="signedService"/>, <paramref name="signedVersion"/> or <paramref name="value"/> is null. </exception>
+        /// <returns> A new <see cref="Models.UserDelegationKey"/> instance for mocking. </returns>
+        public static UserDelegationKey UserDelegationKey(string signedObjectId = null, string signedTenantId = null, DateTimeOffset signedStartsOn = default, DateTimeOffset signedExpiresOn = default, string signedService = null, string signedVersion = null, string value = null)
+        {
+            if (signedObjectId == null)
+            {
+                throw new ArgumentNullException(nameof(signedObjectId));
+            }
+            if (signedTenantId == null)
+            {
+                throw new ArgumentNullException(nameof(signedTenantId));
+            }
+            if (signedService == null)
+            {
+                throw new ArgumentNullException(nameof(signedService));
+            }
+            if (signedVersion == null)
+            {
+                throw new ArgumentNullException(nameof(signedVersion));
+            }
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            return new UserDelegationKey(
+                signedObjectId,
+                signedTenantId,
+                signedStartsOn,
+                signedExpiresOn,
+                signedService,
+                signedVersion,
+                value);
+        }
+
         /// <summary>
         /// Creates a new BlobContentInfo instance for mocking.
         /// </summary>
@@ -1517,6 +1560,82 @@ namespace Azure.Storage.Blobs.Models
         /// <summary>
         /// Creates a new BlobDownloadDetails instance for mocking.
         /// </summary>
+        public static BlobDownloadDetails BlobDownloadDetails(
+            BlobType blobType,
+            long contentLength,
+            string contentType,
+            byte[] contentHash,
+            DateTimeOffset lastModified,
+            IDictionary<string, string> metadata,
+            string contentRange,
+            string contentEncoding,
+            string cacheControl,
+            string contentDisposition,
+            string contentLanguage,
+            long blobSequenceNumber,
+            DateTimeOffset copyCompletedOn,
+            string copyStatusDescription,
+            string copyId,
+            string copyProgress,
+            Uri copySource,
+            CopyStatus copyStatus,
+            LeaseDurationType leaseDuration,
+            LeaseState leaseState,
+            LeaseStatus leaseStatus,
+            string acceptRanges,
+            int blobCommittedBlockCount,
+            bool isServerEncrypted,
+            string encryptionKeySha256,
+            string encryptionScope,
+            byte[] blobContentHash,
+            long tagCount,
+            string versionId,
+            bool isSealed,
+            IList<ObjectReplicationPolicy> objectReplicationSourceProperties,
+            string objectReplicationDestinationPolicy,
+            bool hasLegalHold,
+            DateTimeOffset createdOn)
+            => new BlobDownloadDetails
+            {
+                BlobType = blobType,
+                ContentLength = contentLength,
+                ContentType = contentType,
+                ContentHash = contentHash,
+                LastModified = lastModified,
+                Metadata = metadata,
+                ContentRange = contentRange,
+                ContentEncoding = contentEncoding,
+                CacheControl = cacheControl,
+                ContentDisposition = contentDisposition,
+                ContentLanguage = contentLanguage,
+                BlobSequenceNumber = blobSequenceNumber,
+                CopyCompletedOn = copyCompletedOn,
+                CopyStatusDescription = copyStatusDescription,
+                CopyId = copyId,
+                CopyProgress = copyProgress,
+                CopySource = copySource,
+                CopyStatus = copyStatus,
+                LeaseDuration = leaseDuration,
+                LeaseState = leaseState,
+                LeaseStatus = leaseStatus,
+                AcceptRanges = acceptRanges,
+                BlobCommittedBlockCount = blobCommittedBlockCount,
+                IsServerEncrypted = isServerEncrypted,
+                EncryptionKeySha256 = encryptionKeySha256,
+                EncryptionScope = encryptionScope,
+                BlobContentHash = blobContentHash,
+                TagCount = tagCount,
+                VersionId = versionId,
+                IsSealed = isSealed,
+                ObjectReplicationSourceProperties = objectReplicationSourceProperties,
+                ObjectReplicationDestinationPolicyId = objectReplicationDestinationPolicy,
+                HasLegalHold = hasLegalHold,
+                CreatedOn = createdOn
+            };
+
+        /// <summary>
+        /// Creates a new BlobDownloadDetails instance for mocking.
+        /// </summary>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public static BlobDownloadDetails BlobDownloadDetails(
             DateTimeOffset lastModified,
@@ -1582,6 +1701,7 @@ namespace Azure.Storage.Blobs.Models
         /// <summary>
         /// Creates a new BlobDownloadDetails instance for mocking.
         /// </summary>
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public static BlobDownloadDetails BlobDownloadDetails(
             BlobType blobType,
             long contentLength,

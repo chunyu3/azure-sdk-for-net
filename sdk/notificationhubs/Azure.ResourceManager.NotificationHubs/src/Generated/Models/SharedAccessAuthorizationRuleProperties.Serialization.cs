@@ -5,20 +5,30 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.NotificationHubs.Models
 {
-    public partial class SharedAccessAuthorizationRuleProperties : IUtf8JsonSerializable
+    public partial class SharedAccessAuthorizationRuleProperties : IUtf8JsonSerializable, IJsonModel<SharedAccessAuthorizationRuleProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SharedAccessAuthorizationRuleProperties>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<SharedAccessAuthorizationRuleProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedAccessAuthorizationRuleProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SharedAccessAuthorizationRuleProperties)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(Rights))
             {
-                writer.WritePropertyName("rights");
+                writer.WritePropertyName("rights"u8);
                 writer.WriteStartArray();
                 foreach (var item in Rights)
                 {
@@ -26,84 +36,211 @@ namespace Azure.ResourceManager.NotificationHubs.Models
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && Optional.IsDefined(PrimaryKey))
+            {
+                writer.WritePropertyName("primaryKey"u8);
+                writer.WriteStringValue(PrimaryKey);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SecondaryKey))
+            {
+                writer.WritePropertyName("secondaryKey"u8);
+                writer.WriteStringValue(SecondaryKey);
+            }
+            if (options.Format != "W" && Optional.IsDefined(KeyName))
+            {
+                writer.WritePropertyName("keyName"u8);
+                writer.WriteStringValue(KeyName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ClaimType))
+            {
+                writer.WritePropertyName("claimType"u8);
+                writer.WriteStringValue(ClaimType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ClaimValue))
+            {
+                writer.WritePropertyName("claimValue"u8);
+                writer.WriteStringValue(ClaimValue);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ModifiedOn))
+            {
+                writer.WritePropertyName("modifiedTime"u8);
+                writer.WriteStringValue(ModifiedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(CreatedOn))
+            {
+                writer.WritePropertyName("createdTime"u8);
+                writer.WriteStringValue(CreatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(Revision))
+            {
+                writer.WritePropertyName("revision"u8);
+                writer.WriteNumberValue(Revision.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static SharedAccessAuthorizationRuleProperties DeserializeSharedAccessAuthorizationRuleProperties(JsonElement element)
+        SharedAccessAuthorizationRuleProperties IJsonModel<SharedAccessAuthorizationRuleProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<IList<AccessRight>> rights = default;
-            Optional<string> primaryKey = default;
-            Optional<string> secondaryKey = default;
-            Optional<string> keyName = default;
-            Optional<string> claimType = default;
-            Optional<string> claimValue = default;
-            Optional<string> modifiedTime = default;
-            Optional<string> createdTime = default;
-            Optional<int> revision = default;
+            var format = options.Format == "W" ? ((IPersistableModel<SharedAccessAuthorizationRuleProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SharedAccessAuthorizationRuleProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSharedAccessAuthorizationRuleProperties(document.RootElement, options);
+        }
+
+        internal static SharedAccessAuthorizationRuleProperties DeserializeSharedAccessAuthorizationRuleProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<AuthorizationRuleAccessRight> rights = default;
+            string primaryKey = default;
+            string secondaryKey = default;
+            string keyName = default;
+            string claimType = default;
+            string claimValue = default;
+            DateTimeOffset? modifiedTime = default;
+            DateTimeOffset? createdTime = default;
+            int? revision = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("rights"))
+                if (property.NameEquals("rights"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<AccessRight> array = new List<AccessRight>();
+                    List<AuthorizationRuleAccessRight> array = new List<AuthorizationRuleAccessRight>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString().ToAccessRight());
+                        array.Add(item.GetString().ToAuthorizationRuleAccessRight());
                     }
                     rights = array;
                     continue;
                 }
-                if (property.NameEquals("primaryKey"))
+                if (property.NameEquals("primaryKey"u8))
                 {
                     primaryKey = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("secondaryKey"))
+                if (property.NameEquals("secondaryKey"u8))
                 {
                     secondaryKey = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("keyName"))
+                if (property.NameEquals("keyName"u8))
                 {
                     keyName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("claimType"))
+                if (property.NameEquals("claimType"u8))
                 {
                     claimType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("claimValue"))
+                if (property.NameEquals("claimValue"u8))
                 {
                     claimValue = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("modifiedTime"))
-                {
-                    modifiedTime = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("createdTime"))
-                {
-                    createdTime = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("revision"))
+                if (property.NameEquals("modifiedTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    modifiedTime = property.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (property.NameEquals("createdTime"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    createdTime = property.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (property.NameEquals("revision"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     revision = property.Value.GetInt32();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new SharedAccessAuthorizationRuleProperties(Optional.ToList(rights), primaryKey.Value, secondaryKey.Value, keyName.Value, claimType.Value, claimValue.Value, modifiedTime.Value, createdTime.Value, Optional.ToNullable(revision));
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new SharedAccessAuthorizationRuleProperties(
+                rights ?? new ChangeTrackingList<AuthorizationRuleAccessRight>(),
+                primaryKey,
+                secondaryKey,
+                keyName,
+                claimType,
+                claimValue,
+                modifiedTime,
+                createdTime,
+                revision,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<SharedAccessAuthorizationRuleProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedAccessAuthorizationRuleProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(SharedAccessAuthorizationRuleProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SharedAccessAuthorizationRuleProperties IPersistableModel<SharedAccessAuthorizationRuleProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedAccessAuthorizationRuleProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeSharedAccessAuthorizationRuleProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SharedAccessAuthorizationRuleProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SharedAccessAuthorizationRuleProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

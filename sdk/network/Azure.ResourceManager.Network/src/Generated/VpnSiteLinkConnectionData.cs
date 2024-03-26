@@ -5,30 +5,35 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the VpnSiteLinkConnection data model. </summary>
+    /// <summary>
+    /// A class representing the VpnSiteLinkConnection data model.
+    /// VpnSiteLinkConnection Resource.
+    /// </summary>
     public partial class VpnSiteLinkConnectionData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of VpnSiteLinkConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnSiteLinkConnectionData"/>. </summary>
         public VpnSiteLinkConnectionData()
         {
+            VpnGatewayCustomBgpAddresses = new ChangeTrackingList<GatewayCustomBgpIPAddressIPConfiguration>();
             IPsecPolicies = new ChangeTrackingList<IPsecPolicy>();
             IngressNatRules = new ChangeTrackingList<WritableSubResource>();
             EgressNatRules = new ChangeTrackingList<WritableSubResource>();
         }
 
-        /// <summary> Initializes a new instance of VpnSiteLinkConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnSiteLinkConnectionData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
-        /// <param name="eTag"> A unique read-only string that changes whenever the resource is updated. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="vpnSiteLink"> Id of the connected vpn site link. </param>
         /// <param name="routingWeight"> Routing weight for vpn connection. </param>
         /// <param name="vpnLinkConnectionMode"> Vpn link connection mode. </param>
@@ -39,16 +44,17 @@ namespace Azure.ResourceManager.Network
         /// <param name="connectionBandwidth"> Expected bandwidth in MBPS. </param>
         /// <param name="sharedKey"> SharedKey for the vpn connection. </param>
         /// <param name="enableBgp"> EnableBgp flag. </param>
+        /// <param name="vpnGatewayCustomBgpAddresses"> vpnGatewayCustomBgpAddresses used by this connection. </param>
         /// <param name="usePolicyBasedTrafficSelectors"> Enable policy-based traffic selectors. </param>
-        /// <param name="iPsecPolicies"> The IPSec Policies to be considered by this connection. </param>
+        /// <param name="ipsecPolicies"> The IPSec Policies to be considered by this connection. </param>
         /// <param name="enableRateLimiting"> EnableBgp flag. </param>
         /// <param name="useLocalAzureIPAddress"> Use local azure ip to initiate connection. </param>
         /// <param name="provisioningState"> The provisioning state of the VPN site link connection resource. </param>
         /// <param name="ingressNatRules"> List of ingress NatRules. </param>
         /// <param name="egressNatRules"> List of egress NatRules. </param>
-        internal VpnSiteLinkConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? eTag, WritableSubResource vpnSiteLink, int? routingWeight, VpnLinkConnectionMode? vpnLinkConnectionMode, VpnConnectionStatus? connectionStatus, VirtualNetworkGatewayConnectionProtocol? vpnConnectionProtocolType, long? ingressBytesTransferred, long? egressBytesTransferred, int? connectionBandwidth, string sharedKey, bool? enableBgp, bool? usePolicyBasedTrafficSelectors, IList<IPsecPolicy> iPsecPolicies, bool? enableRateLimiting, bool? useLocalAzureIPAddress, NetworkProvisioningState? provisioningState, IList<WritableSubResource> ingressNatRules, IList<WritableSubResource> egressNatRules) : base(id, name, resourceType)
+        internal VpnSiteLinkConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, WritableSubResource vpnSiteLink, int? routingWeight, VpnLinkConnectionMode? vpnLinkConnectionMode, VpnConnectionStatus? connectionStatus, VirtualNetworkGatewayConnectionProtocol? vpnConnectionProtocolType, long? ingressBytesTransferred, long? egressBytesTransferred, int? connectionBandwidth, string sharedKey, bool? enableBgp, IList<GatewayCustomBgpIPAddressIPConfiguration> vpnGatewayCustomBgpAddresses, bool? usePolicyBasedTrafficSelectors, IList<IPsecPolicy> ipsecPolicies, bool? enableRateLimiting, bool? useLocalAzureIPAddress, NetworkProvisioningState? provisioningState, IList<WritableSubResource> ingressNatRules, IList<WritableSubResource> egressNatRules) : base(id, name, resourceType, serializedAdditionalRawData)
         {
-            ETag = eTag;
+            ETag = etag;
             VpnSiteLink = vpnSiteLink;
             RoutingWeight = routingWeight;
             VpnLinkConnectionMode = vpnLinkConnectionMode;
@@ -59,8 +65,9 @@ namespace Azure.ResourceManager.Network
             ConnectionBandwidth = connectionBandwidth;
             SharedKey = sharedKey;
             EnableBgp = enableBgp;
+            VpnGatewayCustomBgpAddresses = vpnGatewayCustomBgpAddresses;
             UsePolicyBasedTrafficSelectors = usePolicyBasedTrafficSelectors;
-            IPsecPolicies = iPsecPolicies;
+            IPsecPolicies = ipsecPolicies;
             EnableRateLimiting = enableRateLimiting;
             UseLocalAzureIPAddress = useLocalAzureIPAddress;
             ProvisioningState = provisioningState;
@@ -102,6 +109,8 @@ namespace Azure.ResourceManager.Network
         public string SharedKey { get; set; }
         /// <summary> EnableBgp flag. </summary>
         public bool? EnableBgp { get; set; }
+        /// <summary> vpnGatewayCustomBgpAddresses used by this connection. </summary>
+        public IList<GatewayCustomBgpIPAddressIPConfiguration> VpnGatewayCustomBgpAddresses { get; }
         /// <summary> Enable policy-based traffic selectors. </summary>
         public bool? UsePolicyBasedTrafficSelectors { get; set; }
         /// <summary> The IPSec Policies to be considered by this connection. </summary>

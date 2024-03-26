@@ -5,92 +5,158 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.AppService.Models
 {
-    public partial class StorageMigrationContent : IUtf8JsonSerializable
+    public partial class StorageMigrationContent : IUtf8JsonSerializable, IJsonModel<StorageMigrationContent>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<StorageMigrationContent>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<StorageMigrationContent>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<StorageMigrationContent>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(StorageMigrationContent)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(Kind))
             {
-                writer.WritePropertyName("kind");
+                writer.WritePropertyName("kind"u8);
                 writer.WriteStringValue(Kind);
             }
-            writer.WritePropertyName("properties");
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("type"u8);
+                writer.WriteStringValue(ResourceType);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SystemData))
+            {
+                writer.WritePropertyName("systemData"u8);
+                JsonSerializer.Serialize(writer, SystemData);
+            }
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(AzurefilesConnectionString))
             {
-                writer.WritePropertyName("azurefilesConnectionString");
+                writer.WritePropertyName("azurefilesConnectionString"u8);
                 writer.WriteStringValue(AzurefilesConnectionString);
             }
             if (Optional.IsDefined(AzurefilesShare))
             {
-                writer.WritePropertyName("azurefilesShare");
+                writer.WritePropertyName("azurefilesShare"u8);
                 writer.WriteStringValue(AzurefilesShare);
             }
             if (Optional.IsDefined(SwitchSiteAfterMigration))
             {
-                writer.WritePropertyName("switchSiteAfterMigration");
+                writer.WritePropertyName("switchSiteAfterMigration"u8);
                 writer.WriteBooleanValue(SwitchSiteAfterMigration.Value);
             }
             if (Optional.IsDefined(BlockWriteAccessToSite))
             {
-                writer.WritePropertyName("blockWriteAccessToSite");
+                writer.WritePropertyName("blockWriteAccessToSite"u8);
                 writer.WriteBooleanValue(BlockWriteAccessToSite.Value);
             }
             writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
             writer.WriteEndObject();
         }
 
-        internal static StorageMigrationContent DeserializeStorageMigrationContent(JsonElement element)
+        StorageMigrationContent IJsonModel<StorageMigrationContent>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> kind = default;
+            var format = options.Format == "W" ? ((IPersistableModel<StorageMigrationContent>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(StorageMigrationContent)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeStorageMigrationContent(document.RootElement, options);
+        }
+
+        internal static StorageMigrationContent DeserializeStorageMigrationContent(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<string> azurefilesConnectionString = default;
-            Optional<string> azurefilesShare = default;
-            Optional<bool> switchSiteAfterMigration = default;
-            Optional<bool> blockWriteAccessToSite = default;
+            SystemData systemData = default;
+            string azurefilesConnectionString = default;
+            string azurefilesShare = default;
+            bool? switchSiteAfterMigration = default;
+            bool? blockWriteAccessToSite = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.ToString());
+                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -99,31 +165,29 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("azurefilesConnectionString"))
+                        if (property0.NameEquals("azurefilesConnectionString"u8))
                         {
                             azurefilesConnectionString = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("azurefilesShare"))
+                        if (property0.NameEquals("azurefilesShare"u8))
                         {
                             azurefilesShare = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("switchSiteAfterMigration"))
+                        if (property0.NameEquals("switchSiteAfterMigration"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             switchSiteAfterMigration = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("blockWriteAccessToSite"))
+                        if (property0.NameEquals("blockWriteAccessToSite"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             blockWriteAccessToSite = property0.Value.GetBoolean();
@@ -132,8 +196,220 @@ namespace Azure.ResourceManager.AppService.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new StorageMigrationContent(id, name, type, systemData.Value, azurefilesConnectionString.Value, azurefilesShare.Value, Optional.ToNullable(switchSiteAfterMigration), Optional.ToNullable(blockWriteAccessToSite), kind.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new StorageMigrationContent(
+                id,
+                name,
+                type,
+                systemData,
+                azurefilesConnectionString,
+                azurefilesShare,
+                switchSiteAfterMigration,
+                blockWriteAccessToSite,
+                kind,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (Optional.IsDefined(Name) || hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (Optional.IsDefined(Kind) || hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (Kind.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Kind}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Kind}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (Optional.IsDefined(Id) || hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (Optional.IsDefined(SystemData) || hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AzurefilesConnectionString), out propertyOverride);
+            if (Optional.IsDefined(AzurefilesConnectionString) || hasPropertyOverride)
+            {
+                builder.Append("    azurefilesConnectionString: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (AzurefilesConnectionString.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AzurefilesConnectionString}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AzurefilesConnectionString}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AzurefilesShare), out propertyOverride);
+            if (Optional.IsDefined(AzurefilesShare) || hasPropertyOverride)
+            {
+                builder.Append("    azurefilesShare: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    if (AzurefilesShare.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AzurefilesShare}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AzurefilesShare}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SwitchSiteAfterMigration), out propertyOverride);
+            if (Optional.IsDefined(SwitchSiteAfterMigration) || hasPropertyOverride)
+            {
+                builder.Append("    switchSiteAfterMigration: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = SwitchSiteAfterMigration.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(BlockWriteAccessToSite), out propertyOverride);
+            if (Optional.IsDefined(BlockWriteAccessToSite) || hasPropertyOverride)
+            {
+                builder.Append("    blockWriteAccessToSite: ");
+                if (hasPropertyOverride)
+                {
+                    builder.AppendLine($"{propertyOverride}");
+                }
+                else
+                {
+                    var boolValue = BlockWriteAccessToSite.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<StorageMigrationContent>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<StorageMigrationContent>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(StorageMigrationContent)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        StorageMigrationContent IPersistableModel<StorageMigrationContent>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<StorageMigrationContent>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeStorageMigrationContent(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(StorageMigrationContent)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<StorageMigrationContent>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

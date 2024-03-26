@@ -14,43 +14,83 @@ namespace Azure.ResourceManager.Storage.Models
     /// <summary> The storage account blob inventory policy rules. </summary>
     public partial class BlobInventoryPolicySchema
     {
-        /// <summary> Initializes a new instance of BlobInventoryPolicySchema. </summary>
-        /// <param name="enabled"> Policy is enabled if set to true. </param>
-        /// <param name="inventoryRuleType"> The valid value is Inventory. </param>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="BlobInventoryPolicySchema"/>. </summary>
+        /// <param name="isEnabled"> Policy is enabled if set to true. </param>
+        /// <param name="ruleType"> The valid value is Inventory. </param>
         /// <param name="rules"> The storage account blob inventory policy rules. The rule is applied when it is enabled. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="rules"/> is null. </exception>
-        public BlobInventoryPolicySchema(bool enabled, InventoryRuleType inventoryRuleType, IEnumerable<BlobInventoryPolicyRule> rules)
+        public BlobInventoryPolicySchema(bool isEnabled, BlobInventoryRuleType ruleType, IEnumerable<BlobInventoryPolicyRule> rules)
         {
-            if (rules == null)
-            {
-                throw new ArgumentNullException(nameof(rules));
-            }
+            Argument.AssertNotNull(rules, nameof(rules));
 
-            Enabled = enabled;
-            InventoryRuleType = inventoryRuleType;
+            IsEnabled = isEnabled;
+            RuleType = ruleType;
             Rules = rules.ToList();
         }
 
-        /// <summary> Initializes a new instance of BlobInventoryPolicySchema. </summary>
-        /// <param name="enabled"> Policy is enabled if set to true. </param>
-        /// <param name="destination"> Deprecated Property from API version 2021-04-01 onwards, the required destination container name must be specified at the rule level &apos;policy.rule.destination&apos;. </param>
-        /// <param name="inventoryRuleType"> The valid value is Inventory. </param>
+        /// <summary> Initializes a new instance of <see cref="BlobInventoryPolicySchema"/>. </summary>
+        /// <param name="isEnabled"> Policy is enabled if set to true. </param>
+        /// <param name="destination"> Deprecated Property from API version 2021-04-01 onwards, the required destination container name must be specified at the rule level 'policy.rule.destination'. </param>
+        /// <param name="ruleType"> The valid value is Inventory. </param>
         /// <param name="rules"> The storage account blob inventory policy rules. The rule is applied when it is enabled. </param>
-        internal BlobInventoryPolicySchema(bool enabled, string destination, InventoryRuleType inventoryRuleType, IList<BlobInventoryPolicyRule> rules)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal BlobInventoryPolicySchema(bool isEnabled, string destination, BlobInventoryRuleType ruleType, IList<BlobInventoryPolicyRule> rules, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Enabled = enabled;
+            IsEnabled = isEnabled;
             Destination = destination;
-            InventoryRuleType = inventoryRuleType;
+            RuleType = ruleType;
             Rules = rules;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="BlobInventoryPolicySchema"/> for deserialization. </summary>
+        internal BlobInventoryPolicySchema()
+        {
         }
 
         /// <summary> Policy is enabled if set to true. </summary>
-        public bool Enabled { get; set; }
-        /// <summary> Deprecated Property from API version 2021-04-01 onwards, the required destination container name must be specified at the rule level &apos;policy.rule.destination&apos;. </summary>
+        [WirePath("enabled")]
+        public bool IsEnabled { get; set; }
+        /// <summary> Deprecated Property from API version 2021-04-01 onwards, the required destination container name must be specified at the rule level 'policy.rule.destination'. </summary>
+        [WirePath("destination")]
         public string Destination { get; }
         /// <summary> The valid value is Inventory. </summary>
-        public InventoryRuleType InventoryRuleType { get; set; }
+        [WirePath("type")]
+        public BlobInventoryRuleType RuleType { get; set; }
         /// <summary> The storage account blob inventory policy rules. The rule is applied when it is enabled. </summary>
+        [WirePath("rules")]
         public IList<BlobInventoryPolicyRule> Rules { get; }
     }
 }

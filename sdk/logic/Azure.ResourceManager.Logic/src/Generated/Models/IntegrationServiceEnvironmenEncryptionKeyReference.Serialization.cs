@@ -5,63 +5,144 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Logic.Models
 {
-    public partial class IntegrationServiceEnvironmenEncryptionKeyReference : IUtf8JsonSerializable
+    public partial class IntegrationServiceEnvironmenEncryptionKeyReference : IUtf8JsonSerializable, IJsonModel<IntegrationServiceEnvironmenEncryptionKeyReference>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IntegrationServiceEnvironmenEncryptionKeyReference>)this).Write(writer, new ModelReaderWriterOptions("W"));
+
+        void IJsonModel<IntegrationServiceEnvironmenEncryptionKeyReference>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IntegrationServiceEnvironmenEncryptionKeyReference)} does not support writing '{format}' format.");
+            }
+
             writer.WriteStartObject();
             if (Optional.IsDefined(KeyVault))
             {
-                writer.WritePropertyName("keyVault");
-                writer.WriteObjectValue(KeyVault);
+                writer.WritePropertyName("keyVault"u8);
+                writer.WriteObjectValue<LogicResourceReference>(KeyVault, options);
             }
             if (Optional.IsDefined(KeyName))
             {
-                writer.WritePropertyName("keyName");
+                writer.WritePropertyName("keyName"u8);
                 writer.WriteStringValue(KeyName);
             }
             if (Optional.IsDefined(KeyVersion))
             {
-                writer.WritePropertyName("keyVersion");
+                writer.WritePropertyName("keyVersion"u8);
                 writer.WriteStringValue(KeyVersion);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
             }
             writer.WriteEndObject();
         }
 
-        internal static IntegrationServiceEnvironmenEncryptionKeyReference DeserializeIntegrationServiceEnvironmenEncryptionKeyReference(JsonElement element)
+        IntegrationServiceEnvironmenEncryptionKeyReference IJsonModel<IntegrationServiceEnvironmenEncryptionKeyReference>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ResourceReference> keyVault = default;
-            Optional<string> keyName = default;
-            Optional<string> keyVersion = default;
+            var format = options.Format == "W" ? ((IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IntegrationServiceEnvironmenEncryptionKeyReference)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIntegrationServiceEnvironmenEncryptionKeyReference(document.RootElement, options);
+        }
+
+        internal static IntegrationServiceEnvironmenEncryptionKeyReference DeserializeIntegrationServiceEnvironmenEncryptionKeyReference(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= new ModelReaderWriterOptions("W");
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            LogicResourceReference keyVault = default;
+            string keyName = default;
+            string keyVersion = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> additionalPropertiesDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("keyVault"))
+                if (property.NameEquals("keyVault"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    keyVault = ResourceReference.DeserializeResourceReference(property.Value);
+                    keyVault = LogicResourceReference.DeserializeLogicResourceReference(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("keyName"))
+                if (property.NameEquals("keyName"u8))
                 {
                     keyName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("keyVersion"))
+                if (property.NameEquals("keyVersion"u8))
                 {
                     keyVersion = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalPropertiesDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IntegrationServiceEnvironmenEncryptionKeyReference(keyVault.Value, keyName.Value, keyVersion.Value);
+            serializedAdditionalRawData = additionalPropertiesDictionary;
+            return new IntegrationServiceEnvironmenEncryptionKeyReference(keyVault, keyName, keyVersion, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options);
+                default:
+                    throw new FormatException($"The model {nameof(IntegrationServiceEnvironmenEncryptionKeyReference)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IntegrationServiceEnvironmenEncryptionKeyReference IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data);
+                        return DeserializeIntegrationServiceEnvironmenEncryptionKeyReference(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IntegrationServiceEnvironmenEncryptionKeyReference)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IntegrationServiceEnvironmenEncryptionKeyReference>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

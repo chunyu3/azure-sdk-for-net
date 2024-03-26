@@ -15,6 +15,10 @@ param (
     [switch] $SpellCheckPublicApiSurface
 )
 
+Write-Host "Service Directory $ServiceDirectory"
+Write-Host "Project Directory $ProjectDirectory"
+Write-Host "SDK Type $SDKType"
+
 $ErrorActionPreference = 'Stop'
 $Env:NODE_OPTIONS = "--max-old-space-size=8192"
 Set-StrictMode -Version 1
@@ -23,6 +27,9 @@ Set-StrictMode -Version 1
 
 [string[]] $errors = @()
 
+# All errors should be logged using this function, as it tracks the errors in
+# the $errors array, which is used in the finally block of the script to determine
+# the return code.
 function LogError([string]$message) {
     if ($env:TF_BUILD) {
         Write-Host ("##vso[task.logissue type=error]$message" -replace "`n","%0D%0A")
@@ -41,13 +48,18 @@ function Invoke-Block([scriptblock]$cmd) {
     if ((-not $?) -or ($lastexitcode -ne 0)) {
         if ($error -ne $null)
         {
-            Write-Warning $error[0]
+            LogError $error[0]
         }
         throw "Command failed to execute: $cmd"
     }
 }
 
 try {
+    Write-Host "Restore ./node_modules"
+    Invoke-Block {
+        & npm ci --prefix $RepoRoot
+    }
+
     if ($ProjectDirectory -and -not $ServiceDirectory)
     {
         if ($ProjectDirectory -match "sdk[\\/](?<projectdir>.*)[\\/]src")
@@ -80,9 +92,13 @@ try {
                         }
             }
 
+        $debugLogging = $env:SYSTEM_DEBUG -eq "true"
+        $logsFolder = $env:BUILD_ARTIFACTSTAGINGDIRECTORY
+        $diagnosticArguments = ($debugLogging -and $logsFolder) ? "/binarylogger:$logsFolder/generatecode.binlog" : ""
+
         Write-Host "Re-generating clients"
         Invoke-Block {
-            & dotnet msbuild $PSScriptRoot\..\service.proj /restore /t:GenerateCode /p:SDKType=$SDKType /p:ServiceDirectory=$ServiceDirectory
+            & dotnet msbuild $PSScriptRoot\..\service.proj /restore /t:GenerateCode /p:SDKType=$SDKType /p:ServiceDirectory=$ServiceDirectory $diagnosticArguments
         }
     }
 
@@ -103,17 +119,17 @@ try {
         | % {
             $readmePath = $_
             $readmeContent = Get-Content $readmePath
-            
+
             if ($readmeContent -Match "Install-Package")
             {
                 LogError "README files should use dotnet CLI for installation instructions. '$readmePath'"
             }
-            
+
             if ($readmeContent -Match "dotnet add .*--version")
             {
                 LogError "Specific versions should not be specified in the installation instructions in '$readmePath'. For beta versions, include the --prerelease flag."
             }
-            
+
             if ($readmeContent -Match "dotnet add")
             {
                 $changelogPath = Join-Path $(Split-Path -Parent $readmePath) "CHANGELOG.md"
@@ -171,7 +187,7 @@ try {
     You may need to rebase on the latest main, `
     run 'eng\scripts\Update-Snippets.ps1' if you modified sample snippets or other *.md files (https://github.com/Azure/azure-sdk-for-net/blob/main/CONTRIBUTING.md#updating-sample-snippets), `
     run 'eng\scripts\Export-API.ps1' if you changed public APIs (https://github.com/Azure/azure-sdk-for-net/blob/main/CONTRIBUTING.md#public-api-additions). `
-    run 'dotnet build /t:GenerateCode' to update the generated code.`
+    run 'dotnet build /t:GenerateCode' to update the generated code and samples.`
     `
 To reproduce this error locally, run 'eng\scripts\CodeChecks.ps1 -ServiceDirectory $ServiceDirectory'."
         }

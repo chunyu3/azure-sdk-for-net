@@ -7,26 +7,24 @@
 
 using System;
 using System.Collections.Generic;
+using Azure.Core.Expressions.DataFactory;
 
 namespace Azure.ResourceManager.DataFactory.Models
 {
     /// <summary> The Amazon Redshift table dataset. </summary>
-    public partial class AmazonRedshiftTableDataset : Dataset
+    public partial class AmazonRedshiftTableDataset : DataFactoryDatasetProperties
     {
-        /// <summary> Initializes a new instance of AmazonRedshiftTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRedshiftTableDataset"/>. </summary>
         /// <param name="linkedServiceName"> Linked service reference. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="linkedServiceName"/> is null. </exception>
-        public AmazonRedshiftTableDataset(LinkedServiceReference linkedServiceName) : base(linkedServiceName)
+        public AmazonRedshiftTableDataset(DataFactoryLinkedServiceReference linkedServiceName) : base(linkedServiceName)
         {
-            if (linkedServiceName == null)
-            {
-                throw new ArgumentNullException(nameof(linkedServiceName));
-            }
+            Argument.AssertNotNull(linkedServiceName, nameof(linkedServiceName));
 
             DatasetType = "AmazonRedshiftTable";
         }
 
-        /// <summary> Initializes a new instance of AmazonRedshiftTableDataset. </summary>
+        /// <summary> Initializes a new instance of <see cref="AmazonRedshiftTableDataset"/>. </summary>
         /// <param name="datasetType"> Type of dataset. </param>
         /// <param name="description"> Dataset description. </param>
         /// <param name="structure"> Columns that define the structure of the dataset. Type: array (or Expression with resultType array), itemType: DatasetDataElement. </param>
@@ -39,7 +37,7 @@ namespace Azure.ResourceManager.DataFactory.Models
         /// <param name="tableName"> This property will be retired. Please consider using schema + table properties instead. </param>
         /// <param name="table"> The Amazon Redshift table name. Type: string (or Expression with resultType string). </param>
         /// <param name="schemaTypePropertiesSchema"> The Amazon Redshift schema name. Type: string (or Expression with resultType string). </param>
-        internal AmazonRedshiftTableDataset(string datasetType, string description, BinaryData structure, BinaryData schema, LinkedServiceReference linkedServiceName, IDictionary<string, ParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, BinaryData tableName, BinaryData table, BinaryData schemaTypePropertiesSchema) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
+        internal AmazonRedshiftTableDataset(string datasetType, string description, DataFactoryElement<IList<DatasetDataElement>> structure, DataFactoryElement<IList<DatasetSchemaDataElement>> schema, DataFactoryLinkedServiceReference linkedServiceName, IDictionary<string, EntityParameterSpecification> parameters, IList<BinaryData> annotations, DatasetFolder folder, IDictionary<string, BinaryData> additionalProperties, DataFactoryElement<string> tableName, DataFactoryElement<string> table, DataFactoryElement<string> schemaTypePropertiesSchema) : base(datasetType, description, structure, schema, linkedServiceName, parameters, annotations, folder, additionalProperties)
         {
             TableName = tableName;
             Table = table;
@@ -47,11 +45,16 @@ namespace Azure.ResourceManager.DataFactory.Models
             DatasetType = datasetType ?? "AmazonRedshiftTable";
         }
 
+        /// <summary> Initializes a new instance of <see cref="AmazonRedshiftTableDataset"/> for deserialization. </summary>
+        internal AmazonRedshiftTableDataset()
+        {
+        }
+
         /// <summary> This property will be retired. Please consider using schema + table properties instead. </summary>
-        public BinaryData TableName { get; set; }
+        public DataFactoryElement<string> TableName { get; set; }
         /// <summary> The Amazon Redshift table name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData Table { get; set; }
+        public DataFactoryElement<string> Table { get; set; }
         /// <summary> The Amazon Redshift schema name. Type: string (or Expression with resultType string). </summary>
-        public BinaryData SchemaTypePropertiesSchema { get; set; }
+        public DataFactoryElement<string> SchemaTypePropertiesSchema { get; set; }
     }
 }

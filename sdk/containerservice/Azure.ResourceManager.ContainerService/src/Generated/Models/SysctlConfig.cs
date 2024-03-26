@@ -5,17 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ContainerService.Models
 {
     /// <summary> Sysctl settings for Linux agent nodes. </summary>
     public partial class SysctlConfig
     {
-        /// <summary> Initializes a new instance of SysctlConfig. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="SysctlConfig"/>. </summary>
         public SysctlConfig()
         {
         }
 
-        /// <summary> Initializes a new instance of SysctlConfig. </summary>
+        /// <summary> Initializes a new instance of <see cref="SysctlConfig"/>. </summary>
         /// <param name="netCoreSomaxconn"> Sysctl setting net.core.somaxconn. </param>
         /// <param name="netCoreNetdevMaxBacklog"> Sysctl setting net.core.netdev_max_backlog. </param>
         /// <param name="netCoreRmemDefault"> Sysctl setting net.core.rmem_default. </param>
@@ -28,7 +63,7 @@ namespace Azure.ResourceManager.ContainerService.Models
         /// <param name="netIPv4TcpFinTimeout"> Sysctl setting net.ipv4.tcp_fin_timeout. </param>
         /// <param name="netIPv4TcpKeepaliveTime"> Sysctl setting net.ipv4.tcp_keepalive_time. </param>
         /// <param name="netIPv4TcpKeepaliveProbes"> Sysctl setting net.ipv4.tcp_keepalive_probes. </param>
-        /// <param name="netIPv4TcpkeepaliveIntvl"> Sysctl setting net.ipv4.tcp_keepalive_intvl. </param>
+        /// <param name="netIPv4TcpKeepaliveIntvl"> Sysctl setting net.ipv4.tcp_keepalive_intvl. </param>
         /// <param name="netIPv4TcpTwReuse"> Sysctl setting net.ipv4.tcp_tw_reuse. </param>
         /// <param name="netIPv4IPLocalPortRange"> Sysctl setting net.ipv4.ip_local_port_range. </param>
         /// <param name="netIPv4NeighDefaultGcThresh1"> Sysctl setting net.ipv4.neigh.default.gc_thresh1. </param>
@@ -44,7 +79,8 @@ namespace Azure.ResourceManager.ContainerService.Models
         /// <param name="vmMaxMapCount"> Sysctl setting vm.max_map_count. </param>
         /// <param name="vmSwappiness"> Sysctl setting vm.swappiness. </param>
         /// <param name="vmVfsCachePressure"> Sysctl setting vm.vfs_cache_pressure. </param>
-        internal SysctlConfig(int? netCoreSomaxconn, int? netCoreNetdevMaxBacklog, int? netCoreRmemDefault, int? netCoreRmemMax, int? netCoreWmemDefault, int? netCoreWmemMax, int? netCoreOptmemMax, int? netIPv4TcpMaxSynBacklog, int? netIPv4TcpMaxTwBuckets, int? netIPv4TcpFinTimeout, int? netIPv4TcpKeepaliveTime, int? netIPv4TcpKeepaliveProbes, int? netIPv4TcpkeepaliveIntvl, bool? netIPv4TcpTwReuse, string netIPv4IPLocalPortRange, int? netIPv4NeighDefaultGcThresh1, int? netIPv4NeighDefaultGcThresh2, int? netIPv4NeighDefaultGcThresh3, int? netNetfilterNfConntrackMax, int? netNetfilterNfConntrackBuckets, int? fsInotifyMaxUserWatches, int? fsFileMax, int? fsAioMaxNr, int? fsNrOpen, int? kernelThreadsMax, int? vmMaxMapCount, int? vmSwappiness, int? vmVfsCachePressure)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal SysctlConfig(int? netCoreSomaxconn, int? netCoreNetdevMaxBacklog, int? netCoreRmemDefault, int? netCoreRmemMax, int? netCoreWmemDefault, int? netCoreWmemMax, int? netCoreOptmemMax, int? netIPv4TcpMaxSynBacklog, int? netIPv4TcpMaxTwBuckets, int? netIPv4TcpFinTimeout, int? netIPv4TcpKeepaliveTime, int? netIPv4TcpKeepaliveProbes, int? netIPv4TcpKeepaliveIntvl, bool? netIPv4TcpTwReuse, string netIPv4IPLocalPortRange, int? netIPv4NeighDefaultGcThresh1, int? netIPv4NeighDefaultGcThresh2, int? netIPv4NeighDefaultGcThresh3, int? netNetfilterNfConntrackMax, int? netNetfilterNfConntrackBuckets, int? fsInotifyMaxUserWatches, int? fsFileMax, int? fsAioMaxNr, int? fsNrOpen, int? kernelThreadsMax, int? vmMaxMapCount, int? vmSwappiness, int? vmVfsCachePressure, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             NetCoreSomaxconn = netCoreSomaxconn;
             NetCoreNetdevMaxBacklog = netCoreNetdevMaxBacklog;
@@ -58,7 +94,7 @@ namespace Azure.ResourceManager.ContainerService.Models
             NetIPv4TcpFinTimeout = netIPv4TcpFinTimeout;
             NetIPv4TcpKeepaliveTime = netIPv4TcpKeepaliveTime;
             NetIPv4TcpKeepaliveProbes = netIPv4TcpKeepaliveProbes;
-            NetIPv4TcpkeepaliveIntvl = netIPv4TcpkeepaliveIntvl;
+            NetIPv4TcpKeepaliveIntvl = netIPv4TcpKeepaliveIntvl;
             NetIPv4TcpTwReuse = netIPv4TcpTwReuse;
             NetIPv4IPLocalPortRange = netIPv4IPLocalPortRange;
             NetIPv4NeighDefaultGcThresh1 = netIPv4NeighDefaultGcThresh1;
@@ -74,6 +110,7 @@ namespace Azure.ResourceManager.ContainerService.Models
             VmMaxMapCount = vmMaxMapCount;
             VmSwappiness = vmSwappiness;
             VmVfsCachePressure = vmVfsCachePressure;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Sysctl setting net.core.somaxconn. </summary>
@@ -101,7 +138,7 @@ namespace Azure.ResourceManager.ContainerService.Models
         /// <summary> Sysctl setting net.ipv4.tcp_keepalive_probes. </summary>
         public int? NetIPv4TcpKeepaliveProbes { get; set; }
         /// <summary> Sysctl setting net.ipv4.tcp_keepalive_intvl. </summary>
-        public int? NetIPv4TcpkeepaliveIntvl { get; set; }
+        public int? NetIPv4TcpKeepaliveIntvl { get; set; }
         /// <summary> Sysctl setting net.ipv4.tcp_tw_reuse. </summary>
         public bool? NetIPv4TcpTwReuse { get; set; }
         /// <summary> Sysctl setting net.ipv4.ip_local_port_range. </summary>

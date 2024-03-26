@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.AI.MetricsAdvisor;
 using Azure.Core;
 
 namespace Azure.AI.MetricsAdvisor.Models
@@ -16,31 +15,31 @@ namespace Azure.AI.MetricsAdvisor.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("metricId");
+            writer.WritePropertyName("metricId"u8);
             writer.WriteStringValue(MetricId);
             if (Optional.IsDefined(DimensionFilter))
             {
-                writer.WritePropertyName("dimensionFilter");
-                writer.WriteObjectValue(DimensionFilter);
+                writer.WritePropertyName("dimensionFilter"u8);
+                writer.WriteObjectValue<FeedbackFilter>(DimensionFilter);
             }
             if (Optional.IsDefined(FeedbackType))
             {
-                writer.WritePropertyName("feedbackType");
+                writer.WritePropertyName("feedbackType"u8);
                 writer.WriteStringValue(FeedbackType.Value.ToString());
             }
             if (Optional.IsDefined(StartTime))
             {
-                writer.WritePropertyName("startTime");
+                writer.WritePropertyName("startTime"u8);
                 writer.WriteStringValue(StartTime.Value, "O");
             }
             if (Optional.IsDefined(EndTime))
             {
-                writer.WritePropertyName("endTime");
+                writer.WritePropertyName("endTime"u8);
                 writer.WriteStringValue(EndTime.Value, "O");
             }
             if (Optional.IsDefined(TimeMode))
             {
-                writer.WritePropertyName("timeMode");
+                writer.WritePropertyName("timeMode"u8);
                 writer.WriteStringValue(TimeMode.Value.ToSerialString());
             }
             writer.WriteEndObject();

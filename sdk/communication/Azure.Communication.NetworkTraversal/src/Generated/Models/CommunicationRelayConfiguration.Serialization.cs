@@ -19,13 +19,13 @@ namespace Azure.Communication.NetworkTraversal
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("expiresOn");
+            writer.WritePropertyName("expiresOn"u8);
             writer.WriteStringValue(ExpiresOn, "O");
-            writer.WritePropertyName("iceServers");
+            writer.WritePropertyName("iceServers"u8);
             writer.WriteStartArray();
             foreach (var item in IceServers)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue<CommunicationIceServer>(item);
             }
             writer.WriteEndArray();
             writer.WriteEndObject();
@@ -33,16 +33,20 @@ namespace Azure.Communication.NetworkTraversal
 
         internal static CommunicationRelayConfiguration DeserializeCommunicationRelayConfiguration(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             DateTimeOffset expiresOn = default;
             IList<CommunicationIceServer> iceServers = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("expiresOn"))
+                if (property.NameEquals("expiresOn"u8))
                 {
                     expiresOn = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("iceServers"))
+                if (property.NameEquals("iceServers"u8))
                 {
                     List<CommunicationIceServer> array = new List<CommunicationIceServer>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -60,7 +64,7 @@ namespace Azure.Communication.NetworkTraversal
         {
             public override void Write(Utf8JsonWriter writer, CommunicationRelayConfiguration model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<CommunicationRelayConfiguration>(model);
             }
             public override CommunicationRelayConfiguration Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

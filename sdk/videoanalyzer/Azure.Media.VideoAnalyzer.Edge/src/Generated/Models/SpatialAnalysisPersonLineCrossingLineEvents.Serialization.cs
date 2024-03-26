@@ -16,15 +16,15 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("line");
-            writer.WriteObjectValue(Line);
+            writer.WritePropertyName("line"u8);
+            writer.WriteObjectValue<NamedLineBase>(Line);
             if (Optional.IsCollectionDefined(Events))
             {
-                writer.WritePropertyName("events");
+                writer.WritePropertyName("events"u8);
                 writer.WriteStartArray();
                 foreach (var item in Events)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<SpatialAnalysisPersonLineCrossingEvent>(item);
                 }
                 writer.WriteEndArray();
             }
@@ -33,20 +33,23 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
 
         internal static SpatialAnalysisPersonLineCrossingLineEvents DeserializeSpatialAnalysisPersonLineCrossingLineEvents(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             NamedLineBase line = default;
-            Optional<IList<SpatialAnalysisPersonLineCrossingEvent>> events = default;
+            IList<SpatialAnalysisPersonLineCrossingEvent> events = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("line"))
+                if (property.NameEquals("line"u8))
                 {
                     line = NamedLineBase.DeserializeNamedLineBase(property.Value);
                     continue;
                 }
-                if (property.NameEquals("events"))
+                if (property.NameEquals("events"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<SpatialAnalysisPersonLineCrossingEvent> array = new List<SpatialAnalysisPersonLineCrossingEvent>();
@@ -58,7 +61,7 @@ namespace Azure.Media.VideoAnalyzer.Edge.Models
                     continue;
                 }
             }
-            return new SpatialAnalysisPersonLineCrossingLineEvents(line, Optional.ToList(events));
+            return new SpatialAnalysisPersonLineCrossingLineEvents(line, events ?? new ChangeTrackingList<SpatialAnalysisPersonLineCrossingEvent>());
         }
     }
 }

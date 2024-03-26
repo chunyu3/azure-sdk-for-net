@@ -6,30 +6,26 @@
 #nullable disable
 
 using System;
-using Azure.AI.TextAnalytics;
 
 namespace Azure.AI.TextAnalytics.Models
 {
     /// <summary> The ExtractiveSummarizationLROResult. </summary>
     internal partial class ExtractiveSummarizationLROResult : AnalyzeTextLROResult
     {
-        /// <summary> Initializes a new instance of ExtractiveSummarizationLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExtractiveSummarizationLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="results"></param>
         /// <exception cref="ArgumentNullException"> <paramref name="results"/> is null. </exception>
         public ExtractiveSummarizationLROResult(DateTimeOffset lastUpdateDateTime, TextAnalyticsOperationStatus status, ExtractiveSummarizationResult results) : base(lastUpdateDateTime, status)
         {
-            if (results == null)
-            {
-                throw new ArgumentNullException(nameof(results));
-            }
+            Argument.AssertNotNull(results, nameof(results));
 
             Results = results;
             Kind = AnalyzeTextLROResultsKind.ExtractiveSummarizationLROResults;
         }
 
-        /// <summary> Initializes a new instance of ExtractiveSummarizationLROResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExtractiveSummarizationLROResult"/>. </summary>
         /// <param name="lastUpdateDateTime"></param>
         /// <param name="status"></param>
         /// <param name="kind"> Enumeration of supported Text Analysis long-running operation task results. </param>

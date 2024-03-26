@@ -14,10 +14,12 @@ using NUnit.Framework;
 namespace Azure.Security.KeyVault.Secrets.Tests
 {
     [ClientTestFixture(
-        SecretClientOptions.ServiceVersion.V7_0,
-        SecretClientOptions.ServiceVersion.V7_1,
+        SecretClientOptions.ServiceVersion.V7_5,
+        SecretClientOptions.ServiceVersion.V7_4,
+        SecretClientOptions.ServiceVersion.V7_3,
         SecretClientOptions.ServiceVersion.V7_2,
-        SecretClientOptions.ServiceVersion.V7_3)]
+        SecretClientOptions.ServiceVersion.V7_1,
+        SecretClientOptions.ServiceVersion.V7_0)]
     public abstract class SecretsTestBase : RecordedTestBase<KeyVaultTestEnvironment>
     {
         protected TimeSpan PollingInterval => Recording.Mode == RecordedTestMode.Playback
@@ -265,15 +267,22 @@ namespace Azure.Security.KeyVault.Secrets.Tests
                 return new MockCredential();
             }
 
-            return new ClientSecretCredential(
-                tenantId ?? TestEnvironment.TenantId,
-                TestEnvironment.ClientId,
-                TestEnvironment.ClientSecret,
-                new ClientSecretCredentialOptions()
-                {
-                    AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
-                }
-            );
+            return string.IsNullOrEmpty(TestEnvironment.ClientSecret)
+                ? new AzurePowerShellCredential(
+                    new AzurePowerShellCredentialOptions()
+                    {
+                        AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
+                        AdditionallyAllowedTenants = { TestEnvironment.TenantId },
+                    })
+                : new ClientSecretCredential(
+                    tenantId ?? TestEnvironment.TenantId,
+                    TestEnvironment.ClientId,
+                    TestEnvironment.ClientSecret,
+                    new ClientSecretCredentialOptions()
+                    {
+                        AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
+                        AdditionallyAllowedTenants = { TestEnvironment.TenantId },
+                    });
         }
     }
 }

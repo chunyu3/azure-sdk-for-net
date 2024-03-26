@@ -6,10 +6,10 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.StreamAnalytics.Models;
@@ -65,7 +65,7 @@ namespace Azure.ResourceManager.StreamAnalytics
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue<StreamAnalyticsPrivateEndpointData>(data, new ModelReaderWriterOptions("W"));
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -78,7 +78,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="privateEndpointName"> The name of the private endpoint. </param>
         /// <param name="data"> The definition of the private endpoint that will be used to create a new cluster or replace the existing one. </param>
         /// <param name="ifMatch"> The ETag of the resource. Omit this value to always overwrite the current record set. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new resource to be created, but to prevent updating an existing record set. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new resource to be created, but to prevent updating an existing record set. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="clusterName"/>, <paramref name="privateEndpointName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="clusterName"/> or <paramref name="privateEndpointName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -114,7 +114,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="privateEndpointName"> The name of the private endpoint. </param>
         /// <param name="data"> The definition of the private endpoint that will be used to create a new cluster or replace the existing one. </param>
         /// <param name="ifMatch"> The ETag of the resource. Omit this value to always overwrite the current record set. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new resource to be created, but to prevent updating an existing record set. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new resource to be created, but to prevent updating an existing record set. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="clusterName"/>, <paramref name="privateEndpointName"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="clusterName"/> or <paramref name="privateEndpointName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -337,7 +337,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PrivateEndpointListResult>> ListByClusterAsync(string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public async Task<Response<StreamAnalyticsPrivateEndpointListResult>> ListByClusterAsync(string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -349,9 +349,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        PrivateEndpointListResult value = default;
+                        StreamAnalyticsPrivateEndpointListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PrivateEndpointListResult.DeserializePrivateEndpointListResult(document.RootElement);
+                        value = StreamAnalyticsPrivateEndpointListResult.DeserializeStreamAnalyticsPrivateEndpointListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -366,7 +366,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PrivateEndpointListResult> ListByCluster(string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public Response<StreamAnalyticsPrivateEndpointListResult> ListByCluster(string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
@@ -378,9 +378,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        PrivateEndpointListResult value = default;
+                        StreamAnalyticsPrivateEndpointListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PrivateEndpointListResult.DeserializePrivateEndpointListResult(document.RootElement);
+                        value = StreamAnalyticsPrivateEndpointListResult.DeserializeStreamAnalyticsPrivateEndpointListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -410,7 +410,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<PrivateEndpointListResult>> ListByClusterNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public async Task<Response<StreamAnalyticsPrivateEndpointListResult>> ListByClusterNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -423,9 +423,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        PrivateEndpointListResult value = default;
+                        StreamAnalyticsPrivateEndpointListResult value = default;
                         using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = PrivateEndpointListResult.DeserializePrivateEndpointListResult(document.RootElement);
+                        value = StreamAnalyticsPrivateEndpointListResult.DeserializeStreamAnalyticsPrivateEndpointListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -441,7 +441,7 @@ namespace Azure.ResourceManager.StreamAnalytics
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="clusterName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<PrivateEndpointListResult> ListByClusterNextPage(string nextLink, string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
+        public Response<StreamAnalyticsPrivateEndpointListResult> ListByClusterNextPage(string nextLink, string subscriptionId, string resourceGroupName, string clusterName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -454,9 +454,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 case 200:
                     {
-                        PrivateEndpointListResult value = default;
+                        StreamAnalyticsPrivateEndpointListResult value = default;
                         using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = PrivateEndpointListResult.DeserializePrivateEndpointListResult(document.RootElement);
+                        value = StreamAnalyticsPrivateEndpointListResult.DeserializeStreamAnalyticsPrivateEndpointListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

@@ -5,31 +5,66 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Logic.Models
 {
     /// <summary> The X12 agreement acknowledgement settings. </summary>
     public partial class X12AcknowledgementSettings
     {
-        /// <summary> Initializes a new instance of X12AcknowledgementSettings. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="X12AcknowledgementSettings"/>. </summary>
         /// <param name="needTechnicalAcknowledgement"> The value indicating whether technical acknowledgement is needed. </param>
-        /// <param name="batchTechnicalAcknowledgements"> The value indicating whether to batch the technical acknowledgements. </param>
+        /// <param name="batchTechnicalAcknowledgement"> The value indicating whether to batch the technical acknowledgements. </param>
         /// <param name="needFunctionalAcknowledgement"> The value indicating whether functional acknowledgement is needed. </param>
-        /// <param name="batchFunctionalAcknowledgements"> The value indicating whether to batch functional acknowledgements. </param>
+        /// <param name="batchFunctionalAcknowledgement"> The value indicating whether to batch functional acknowledgements. </param>
         /// <param name="needImplementationAcknowledgement"> The value indicating whether implementation acknowledgement is needed. </param>
-        /// <param name="batchImplementationAcknowledgements"> The value indicating whether to batch implementation acknowledgements. </param>
+        /// <param name="batchImplementationAcknowledgement"> The value indicating whether to batch implementation acknowledgements. </param>
         /// <param name="needLoopForValidMessages"> The value indicating whether a loop is needed for valid messages. </param>
         /// <param name="sendSynchronousAcknowledgement"> The value indicating whether to send synchronous acknowledgement. </param>
         /// <param name="acknowledgementControlNumberLowerBound"> The acknowledgement control number lower bound. </param>
         /// <param name="acknowledgementControlNumberUpperBound"> The acknowledgement control number upper bound. </param>
         /// <param name="rolloverAcknowledgementControlNumber"> The value indicating whether to rollover acknowledgement control number. </param>
-        public X12AcknowledgementSettings(bool needTechnicalAcknowledgement, bool batchTechnicalAcknowledgements, bool needFunctionalAcknowledgement, bool batchFunctionalAcknowledgements, bool needImplementationAcknowledgement, bool batchImplementationAcknowledgements, bool needLoopForValidMessages, bool sendSynchronousAcknowledgement, int acknowledgementControlNumberLowerBound, int acknowledgementControlNumberUpperBound, bool rolloverAcknowledgementControlNumber)
+        public X12AcknowledgementSettings(bool needTechnicalAcknowledgement, bool batchTechnicalAcknowledgement, bool needFunctionalAcknowledgement, bool batchFunctionalAcknowledgement, bool needImplementationAcknowledgement, bool batchImplementationAcknowledgement, bool needLoopForValidMessages, bool sendSynchronousAcknowledgement, int acknowledgementControlNumberLowerBound, int acknowledgementControlNumberUpperBound, bool rolloverAcknowledgementControlNumber)
         {
             NeedTechnicalAcknowledgement = needTechnicalAcknowledgement;
-            BatchTechnicalAcknowledgements = batchTechnicalAcknowledgements;
+            BatchTechnicalAcknowledgement = batchTechnicalAcknowledgement;
             NeedFunctionalAcknowledgement = needFunctionalAcknowledgement;
-            BatchFunctionalAcknowledgements = batchFunctionalAcknowledgements;
+            BatchFunctionalAcknowledgement = batchFunctionalAcknowledgement;
             NeedImplementationAcknowledgement = needImplementationAcknowledgement;
-            BatchImplementationAcknowledgements = batchImplementationAcknowledgements;
+            BatchImplementationAcknowledgement = batchImplementationAcknowledgement;
             NeedLoopForValidMessages = needLoopForValidMessages;
             SendSynchronousAcknowledgement = sendSynchronousAcknowledgement;
             AcknowledgementControlNumberLowerBound = acknowledgementControlNumberLowerBound;
@@ -37,15 +72,15 @@ namespace Azure.ResourceManager.Logic.Models
             RolloverAcknowledgementControlNumber = rolloverAcknowledgementControlNumber;
         }
 
-        /// <summary> Initializes a new instance of X12AcknowledgementSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="X12AcknowledgementSettings"/>. </summary>
         /// <param name="needTechnicalAcknowledgement"> The value indicating whether technical acknowledgement is needed. </param>
-        /// <param name="batchTechnicalAcknowledgements"> The value indicating whether to batch the technical acknowledgements. </param>
+        /// <param name="batchTechnicalAcknowledgement"> The value indicating whether to batch the technical acknowledgements. </param>
         /// <param name="needFunctionalAcknowledgement"> The value indicating whether functional acknowledgement is needed. </param>
         /// <param name="functionalAcknowledgementVersion"> The functional acknowledgement version. </param>
-        /// <param name="batchFunctionalAcknowledgements"> The value indicating whether to batch functional acknowledgements. </param>
+        /// <param name="batchFunctionalAcknowledgement"> The value indicating whether to batch functional acknowledgements. </param>
         /// <param name="needImplementationAcknowledgement"> The value indicating whether implementation acknowledgement is needed. </param>
         /// <param name="implementationAcknowledgementVersion"> The implementation acknowledgement version. </param>
-        /// <param name="batchImplementationAcknowledgements"> The value indicating whether to batch implementation acknowledgements. </param>
+        /// <param name="batchImplementationAcknowledgement"> The value indicating whether to batch implementation acknowledgements. </param>
         /// <param name="needLoopForValidMessages"> The value indicating whether a loop is needed for valid messages. </param>
         /// <param name="sendSynchronousAcknowledgement"> The value indicating whether to send synchronous acknowledgement. </param>
         /// <param name="acknowledgementControlNumberPrefix"> The acknowledgement control number prefix. </param>
@@ -53,16 +88,17 @@ namespace Azure.ResourceManager.Logic.Models
         /// <param name="acknowledgementControlNumberLowerBound"> The acknowledgement control number lower bound. </param>
         /// <param name="acknowledgementControlNumberUpperBound"> The acknowledgement control number upper bound. </param>
         /// <param name="rolloverAcknowledgementControlNumber"> The value indicating whether to rollover acknowledgement control number. </param>
-        internal X12AcknowledgementSettings(bool needTechnicalAcknowledgement, bool batchTechnicalAcknowledgements, bool needFunctionalAcknowledgement, string functionalAcknowledgementVersion, bool batchFunctionalAcknowledgements, bool needImplementationAcknowledgement, string implementationAcknowledgementVersion, bool batchImplementationAcknowledgements, bool needLoopForValidMessages, bool sendSynchronousAcknowledgement, string acknowledgementControlNumberPrefix, string acknowledgementControlNumberSuffix, int acknowledgementControlNumberLowerBound, int acknowledgementControlNumberUpperBound, bool rolloverAcknowledgementControlNumber)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal X12AcknowledgementSettings(bool needTechnicalAcknowledgement, bool batchTechnicalAcknowledgement, bool needFunctionalAcknowledgement, string functionalAcknowledgementVersion, bool batchFunctionalAcknowledgement, bool needImplementationAcknowledgement, string implementationAcknowledgementVersion, bool batchImplementationAcknowledgement, bool needLoopForValidMessages, bool sendSynchronousAcknowledgement, string acknowledgementControlNumberPrefix, string acknowledgementControlNumberSuffix, int acknowledgementControlNumberLowerBound, int acknowledgementControlNumberUpperBound, bool rolloverAcknowledgementControlNumber, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             NeedTechnicalAcknowledgement = needTechnicalAcknowledgement;
-            BatchTechnicalAcknowledgements = batchTechnicalAcknowledgements;
+            BatchTechnicalAcknowledgement = batchTechnicalAcknowledgement;
             NeedFunctionalAcknowledgement = needFunctionalAcknowledgement;
             FunctionalAcknowledgementVersion = functionalAcknowledgementVersion;
-            BatchFunctionalAcknowledgements = batchFunctionalAcknowledgements;
+            BatchFunctionalAcknowledgement = batchFunctionalAcknowledgement;
             NeedImplementationAcknowledgement = needImplementationAcknowledgement;
             ImplementationAcknowledgementVersion = implementationAcknowledgementVersion;
-            BatchImplementationAcknowledgements = batchImplementationAcknowledgements;
+            BatchImplementationAcknowledgement = batchImplementationAcknowledgement;
             NeedLoopForValidMessages = needLoopForValidMessages;
             SendSynchronousAcknowledgement = sendSynchronousAcknowledgement;
             AcknowledgementControlNumberPrefix = acknowledgementControlNumberPrefix;
@@ -70,24 +106,30 @@ namespace Azure.ResourceManager.Logic.Models
             AcknowledgementControlNumberLowerBound = acknowledgementControlNumberLowerBound;
             AcknowledgementControlNumberUpperBound = acknowledgementControlNumberUpperBound;
             RolloverAcknowledgementControlNumber = rolloverAcknowledgementControlNumber;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="X12AcknowledgementSettings"/> for deserialization. </summary>
+        internal X12AcknowledgementSettings()
+        {
         }
 
         /// <summary> The value indicating whether technical acknowledgement is needed. </summary>
         public bool NeedTechnicalAcknowledgement { get; set; }
         /// <summary> The value indicating whether to batch the technical acknowledgements. </summary>
-        public bool BatchTechnicalAcknowledgements { get; set; }
+        public bool BatchTechnicalAcknowledgement { get; set; }
         /// <summary> The value indicating whether functional acknowledgement is needed. </summary>
         public bool NeedFunctionalAcknowledgement { get; set; }
         /// <summary> The functional acknowledgement version. </summary>
         public string FunctionalAcknowledgementVersion { get; set; }
         /// <summary> The value indicating whether to batch functional acknowledgements. </summary>
-        public bool BatchFunctionalAcknowledgements { get; set; }
+        public bool BatchFunctionalAcknowledgement { get; set; }
         /// <summary> The value indicating whether implementation acknowledgement is needed. </summary>
         public bool NeedImplementationAcknowledgement { get; set; }
         /// <summary> The implementation acknowledgement version. </summary>
         public string ImplementationAcknowledgementVersion { get; set; }
         /// <summary> The value indicating whether to batch implementation acknowledgements. </summary>
-        public bool BatchImplementationAcknowledgements { get; set; }
+        public bool BatchImplementationAcknowledgement { get; set; }
         /// <summary> The value indicating whether a loop is needed for valid messages. </summary>
         public bool NeedLoopForValidMessages { get; set; }
         /// <summary> The value indicating whether to send synchronous acknowledgement. </summary>

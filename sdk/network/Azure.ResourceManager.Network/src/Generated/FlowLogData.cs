@@ -7,27 +7,30 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the FlowLog data model. </summary>
+    /// <summary>
+    /// A class representing the FlowLog data model.
+    /// A flow log resource.
+    /// </summary>
     public partial class FlowLogData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of FlowLogData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FlowLogData"/>. </summary>
         public FlowLogData()
         {
         }
 
-        /// <summary> Initializes a new instance of FlowLogData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FlowLogData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
-        /// <param name="eTag"> A unique read-only string that changes whenever the resource is updated. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="targetResourceId"> ID of network security group to which flow log will be applied. </param>
         /// <param name="targetResourceGuid"> Guid of network security group to which flow log will be applied. </param>
         /// <param name="storageId"> ID of the storage account which is used to store the flow log. </param>
@@ -36,9 +39,9 @@ namespace Azure.ResourceManager.Network
         /// <param name="format"> Parameters that define the flow log format. </param>
         /// <param name="flowAnalyticsConfiguration"> Parameters that define the configuration of traffic analytics. </param>
         /// <param name="provisioningState"> The provisioning state of the flow log. </param>
-        internal FlowLogData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? eTag, ResourceIdentifier targetResourceId, Guid? targetResourceGuid, ResourceIdentifier storageId, bool? enabled, RetentionPolicyParameters retentionPolicy, FlowLogFormat format, TrafficAnalyticsProperties flowAnalyticsConfiguration, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, location, tags)
+        internal FlowLogData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, ResourceIdentifier targetResourceId, Guid? targetResourceGuid, ResourceIdentifier storageId, bool? enabled, RetentionPolicyParameters retentionPolicy, FlowLogProperties format, TrafficAnalyticsProperties flowAnalyticsConfiguration, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
-            ETag = eTag;
+            ETag = etag;
             TargetResourceId = targetResourceId;
             TargetResourceGuid = targetResourceGuid;
             StorageId = storageId;
@@ -62,7 +65,7 @@ namespace Azure.ResourceManager.Network
         /// <summary> Parameters that define the retention policy for flow log. </summary>
         public RetentionPolicyParameters RetentionPolicy { get; set; }
         /// <summary> Parameters that define the flow log format. </summary>
-        public FlowLogFormat Format { get; set; }
+        public FlowLogProperties Format { get; set; }
         /// <summary> Parameters that define the configuration of traffic analytics. </summary>
         internal TrafficAnalyticsProperties FlowAnalyticsConfiguration { get; set; }
         /// <summary> Parameters that define the configuration of traffic analytics. </summary>

@@ -6,14 +6,13 @@
 #nullable disable
 
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.AI.TextAnalytics.Models
 {
     /// <summary> The TasksStateTasks. </summary>
     internal partial class AnalyzeTasks
     {
-        /// <summary> Initializes a new instance of AnalyzeTasks. </summary>
+        /// <summary> Initializes a new instance of <see cref="AnalyzeTasks"/>. </summary>
         /// <param name="completed"></param>
         /// <param name="failed"></param>
         /// <param name="inProgress"></param>
@@ -27,12 +26,15 @@ namespace Azure.AI.TextAnalytics.Models
             Items = new ChangeTrackingList<AnalyzeTextLROResult>();
         }
 
-        /// <summary> Initializes a new instance of AnalyzeTasks. </summary>
+        /// <summary> Initializes a new instance of <see cref="AnalyzeTasks"/>. </summary>
         /// <param name="completed"></param>
         /// <param name="failed"></param>
         /// <param name="inProgress"></param>
         /// <param name="total"></param>
-        /// <param name="items"></param>
+        /// <param name="items">
+        /// Please note <see cref="AnalyzeTextLROResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AbstractiveSummarizationLROResult"/>, <see cref="CustomEntityRecognitionLROResult"/>, <see cref="CustomMultiLabelClassificationLROResult"/>, <see cref="CustomSingleLabelClassificationLROResult"/>, <see cref="EntityLinkingLROResult"/>, <see cref="EntityRecognitionLROResult"/>, <see cref="ExtractiveSummarizationLROResult"/>, <see cref="HealthcareLROResult"/>, <see cref="KeyPhraseExtractionLROResult"/>, <see cref="PiiEntityRecognitionLROResult"/> and <see cref="SentimentLROResult"/>.
+        /// </param>
         internal AnalyzeTasks(int completed, int failed, int inProgress, int total, IReadOnlyList<AnalyzeTextLROResult> items)
         {
             Completed = completed;
@@ -50,7 +52,11 @@ namespace Azure.AI.TextAnalytics.Models
         public int InProgress { get; }
         /// <summary> Gets the total. </summary>
         public int Total { get; }
-        /// <summary> Gets the items. </summary>
+        /// <summary>
+        /// Gets the items
+        /// Please note <see cref="AnalyzeTextLROResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AbstractiveSummarizationLROResult"/>, <see cref="CustomEntityRecognitionLROResult"/>, <see cref="CustomMultiLabelClassificationLROResult"/>, <see cref="CustomSingleLabelClassificationLROResult"/>, <see cref="EntityLinkingLROResult"/>, <see cref="EntityRecognitionLROResult"/>, <see cref="ExtractiveSummarizationLROResult"/>, <see cref="HealthcareLROResult"/>, <see cref="KeyPhraseExtractionLROResult"/>, <see cref="PiiEntityRecognitionLROResult"/> and <see cref="SentimentLROResult"/>.
+        /// </summary>
         public IReadOnlyList<AnalyzeTextLROResult> Items { get; }
     }
 }

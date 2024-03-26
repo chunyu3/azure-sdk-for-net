@@ -20,60 +20,62 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             writer.WriteStartObject();
             if (Optional.IsDefined(EnableCopyActivityLog))
             {
-                writer.WritePropertyName("enableCopyActivityLog");
-                writer.WriteObjectValue(EnableCopyActivityLog);
+                writer.WritePropertyName("enableCopyActivityLog"u8);
+                writer.WriteObjectValue<object>(EnableCopyActivityLog);
             }
             if (Optional.IsDefined(CopyActivityLogSettings))
             {
-                writer.WritePropertyName("copyActivityLogSettings");
-                writer.WriteObjectValue(CopyActivityLogSettings);
+                writer.WritePropertyName("copyActivityLogSettings"u8);
+                writer.WriteObjectValue<CopyActivityLogSettings>(CopyActivityLogSettings);
             }
-            writer.WritePropertyName("logLocationSettings");
-            writer.WriteObjectValue(LogLocationSettings);
+            writer.WritePropertyName("logLocationSettings"u8);
+            writer.WriteObjectValue<LogLocationSettings>(LogLocationSettings);
             writer.WriteEndObject();
         }
 
         internal static LogSettings DeserializeLogSettings(JsonElement element)
         {
-            Optional<object> enableCopyActivityLog = default;
-            Optional<CopyActivityLogSettings> copyActivityLogSettings = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            object enableCopyActivityLog = default;
+            CopyActivityLogSettings copyActivityLogSettings = default;
             LogLocationSettings logLocationSettings = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("enableCopyActivityLog"))
+                if (property.NameEquals("enableCopyActivityLog"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableCopyActivityLog = property.Value.GetObject();
                     continue;
                 }
-                if (property.NameEquals("copyActivityLogSettings"))
+                if (property.NameEquals("copyActivityLogSettings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     copyActivityLogSettings = CopyActivityLogSettings.DeserializeCopyActivityLogSettings(property.Value);
                     continue;
                 }
-                if (property.NameEquals("logLocationSettings"))
+                if (property.NameEquals("logLocationSettings"u8))
                 {
                     logLocationSettings = LogLocationSettings.DeserializeLogLocationSettings(property.Value);
                     continue;
                 }
             }
-            return new LogSettings(enableCopyActivityLog.Value, copyActivityLogSettings.Value, logLocationSettings);
+            return new LogSettings(enableCopyActivityLog, copyActivityLogSettings, logLocationSettings);
         }
 
         internal partial class LogSettingsConverter : JsonConverter<LogSettings>
         {
             public override void Write(Utf8JsonWriter writer, LogSettings model, JsonSerializerOptions options)
             {
-                writer.WriteObjectValue(model);
+                writer.WriteObjectValue<LogSettings>(model);
             }
             public override LogSettings Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {

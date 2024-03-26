@@ -6,7 +6,6 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Communication.MediaComposition;
 using Azure.Core;
 
 namespace Azure.Communication.MediaComposition.Models
@@ -16,11 +15,11 @@ namespace Azure.Communication.MediaComposition.Models
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("zIndex");
+            writer.WritePropertyName("zIndex"u8);
             writer.WriteNumberValue(ZIndex);
             if (Optional.IsDefined(Visibility))
             {
-                writer.WritePropertyName("visibility");
+                writer.WritePropertyName("visibility"u8);
                 writer.WriteStringValue(Visibility.Value.ToString());
             }
             writer.WriteEndObject();
@@ -28,27 +27,30 @@ namespace Azure.Communication.MediaComposition.Models
 
         internal static LayoutLayer DeserializeLayoutLayer(JsonElement element)
         {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             int zIndex = default;
-            Optional<LayerVisibility> visibility = default;
+            LayerVisibility? visibility = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("zIndex"))
+                if (property.NameEquals("zIndex"u8))
                 {
                     zIndex = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("visibility"))
+                if (property.NameEquals("visibility"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     visibility = new LayerVisibility(property.Value.GetString());
                     continue;
                 }
             }
-            return new LayoutLayer(zIndex, Optional.ToNullable(visibility));
+            return new LayoutLayer(zIndex, visibility);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Azure.AI.TextAnalytics.Legacy
     /// <summary> The DocumentHealthcareEntities. </summary>
     internal partial class DocumentHealthcareEntities
     {
-        /// <summary> Initializes a new instance of DocumentHealthcareEntities. </summary>
+        /// <summary> Initializes a new instance of <see cref="DocumentHealthcareEntities"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="entities"> Healthcare entities. </param>
         /// <param name="relations"> Healthcare entity relations. </param>
@@ -22,22 +22,10 @@ namespace Azure.AI.TextAnalytics.Legacy
         /// <exception cref="ArgumentNullException"> <paramref name="id"/>, <paramref name="entities"/>, <paramref name="relations"/> or <paramref name="warnings"/> is null. </exception>
         internal DocumentHealthcareEntities(string id, IEnumerable<HealthcareEntity> entities, IEnumerable<HealthcareRelation> relations, IEnumerable<TextAnalyticsWarning> warnings)
         {
-            if (id == null)
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-            if (entities == null)
-            {
-                throw new ArgumentNullException(nameof(entities));
-            }
-            if (relations == null)
-            {
-                throw new ArgumentNullException(nameof(relations));
-            }
-            if (warnings == null)
-            {
-                throw new ArgumentNullException(nameof(warnings));
-            }
+            Argument.AssertNotNull(id, nameof(id));
+            Argument.AssertNotNull(entities, nameof(entities));
+            Argument.AssertNotNull(relations, nameof(relations));
+            Argument.AssertNotNull(warnings, nameof(warnings));
 
             Id = id;
             Entities = entities.ToList();
@@ -45,7 +33,7 @@ namespace Azure.AI.TextAnalytics.Legacy
             Warnings = warnings.ToList();
         }
 
-        /// <summary> Initializes a new instance of DocumentHealthcareEntities. </summary>
+        /// <summary> Initializes a new instance of <see cref="DocumentHealthcareEntities"/>. </summary>
         /// <param name="id"> Unique, non-empty document identifier. </param>
         /// <param name="entities"> Healthcare entities. </param>
         /// <param name="relations"> Healthcare entity relations. </param>

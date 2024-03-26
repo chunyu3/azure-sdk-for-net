@@ -14,16 +14,51 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Compute
 {
-    /// <summary> A class representing the Snapshot data model. </summary>
+    /// <summary>
+    /// A class representing the Snapshot data model.
+    /// Snapshot resource.
+    /// </summary>
     public partial class SnapshotData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of SnapshotData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="SnapshotData"/>. </summary>
         /// <param name="location"> The location. </param>
         public SnapshotData(AzureLocation location) : base(location)
         {
         }
 
-        /// <summary> Initializes a new instance of SnapshotData. </summary>
+        /// <summary> Initializes a new instance of <see cref="SnapshotData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -39,13 +74,14 @@ namespace Azure.ResourceManager.Compute
         /// <param name="purchasePlan"> Purchase plan information for the image from which the source disk for the snapshot was originally created. </param>
         /// <param name="supportedCapabilities"> List of supported capabilities for the image from which the source disk from the snapshot was originally created. </param>
         /// <param name="creationData"> Disk source information. CreationData information cannot be changed after the disk has been created. </param>
-        /// <param name="diskSizeGB"> If creationData.createOption is Empty, this field is mandatory and it indicates the size of the disk to create. If this field is present for updates or creation with other options, it indicates a resize. Resizes are only allowed if the disk is not attached to a running VM, and can only increase the disk&apos;s size. </param>
+        /// <param name="diskSizeGB"> If creationData.createOption is Empty, this field is mandatory and it indicates the size of the disk to create. If this field is present for updates or creation with other options, it indicates a resize. Resizes are only allowed if the disk is not attached to a running VM, and can only increase the disk's size. </param>
         /// <param name="diskSizeBytes"> The size of the disk in bytes. This field is read only. </param>
         /// <param name="diskState"> The state of the snapshot. </param>
         /// <param name="uniqueId"> Unique Guid identifying the resource. </param>
         /// <param name="encryptionSettingsGroup"> Encryption settings collection used be Azure Disk Encryption, can contain multiple encryption settings per disk or snapshot. </param>
         /// <param name="provisioningState"> The disk provisioning state. </param>
         /// <param name="incremental"> Whether a snapshot is incremental. Incremental snapshots on the same disk occupy less space than full snapshots and can be diffed. </param>
+        /// <param name="incrementalSnapshotFamilyId"> Incremental snapshots for a disk share an incremental snapshot family id. The Get Page Range Diff API can only be called on incremental snapshots with the same family id. </param>
         /// <param name="encryption"> Encryption property can be used to encrypt data at rest with customer managed keys or platform managed keys. </param>
         /// <param name="networkAccessPolicy"> Policy for accessing the disk via network. </param>
         /// <param name="diskAccessId"> ARM id of the DiskAccess resource for using private endpoints on disks. </param>
@@ -55,7 +91,8 @@ namespace Azure.ResourceManager.Compute
         /// <param name="completionPercent"> Percentage complete for the background copy when a resource is created via the CopyStart operation. </param>
         /// <param name="copyCompletionError"> Indicates the error details if the background copy of a resource created via the CopyStart operation fails. </param>
         /// <param name="dataAccessAuthMode"> Additional authentication requirements when exporting or uploading to a disk or snapshot. </param>
-        internal SnapshotData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, string managedBy, SnapshotSku sku, ExtendedLocation extendedLocation, DateTimeOffset? timeCreated, SupportedOperatingSystemType? osType, HyperVGeneration? hyperVGeneration, DiskPurchasePlan purchasePlan, SupportedCapabilities supportedCapabilities, DiskCreationData creationData, int? diskSizeGB, long? diskSizeBytes, DiskState? diskState, string uniqueId, EncryptionSettingsGroup encryptionSettingsGroup, string provisioningState, bool? incremental, DiskEncryption encryption, NetworkAccessPolicy? networkAccessPolicy, ResourceIdentifier diskAccessId, DiskSecurityProfile securityProfile, bool? supportsHibernation, PublicNetworkAccess? publicNetworkAccess, float? completionPercent, CopyCompletionError copyCompletionError, DataAccessAuthMode? dataAccessAuthMode) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal SnapshotData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, string managedBy, SnapshotSku sku, ExtendedLocation extendedLocation, DateTimeOffset? timeCreated, SupportedOperatingSystemType? osType, HyperVGeneration? hyperVGeneration, DiskPurchasePlan purchasePlan, SupportedCapabilities supportedCapabilities, DiskCreationData creationData, int? diskSizeGB, long? diskSizeBytes, DiskState? diskState, string uniqueId, EncryptionSettingsGroup encryptionSettingsGroup, string provisioningState, bool? incremental, string incrementalSnapshotFamilyId, DiskEncryption encryption, NetworkAccessPolicy? networkAccessPolicy, ResourceIdentifier diskAccessId, DiskSecurityProfile securityProfile, bool? supportsHibernation, DiskPublicNetworkAccess? publicNetworkAccess, float? completionPercent, CopyCompletionError copyCompletionError, DataAccessAuthMode? dataAccessAuthMode, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             ManagedBy = managedBy;
             Sku = sku;
@@ -73,6 +110,7 @@ namespace Azure.ResourceManager.Compute
             EncryptionSettingsGroup = encryptionSettingsGroup;
             ProvisioningState = provisioningState;
             Incremental = incremental;
+            IncrementalSnapshotFamilyId = incrementalSnapshotFamilyId;
             Encryption = encryption;
             NetworkAccessPolicy = networkAccessPolicy;
             DiskAccessId = diskAccessId;
@@ -82,6 +120,12 @@ namespace Azure.ResourceManager.Compute
             CompletionPercent = completionPercent;
             CopyCompletionError = copyCompletionError;
             DataAccessAuthMode = dataAccessAuthMode;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="SnapshotData"/> for deserialization. </summary>
+        internal SnapshotData()
+        {
         }
 
         /// <summary> Unused. Always Null. </summary>
@@ -102,7 +146,7 @@ namespace Azure.ResourceManager.Compute
         public SupportedCapabilities SupportedCapabilities { get; set; }
         /// <summary> Disk source information. CreationData information cannot be changed after the disk has been created. </summary>
         public DiskCreationData CreationData { get; set; }
-        /// <summary> If creationData.createOption is Empty, this field is mandatory and it indicates the size of the disk to create. If this field is present for updates or creation with other options, it indicates a resize. Resizes are only allowed if the disk is not attached to a running VM, and can only increase the disk&apos;s size. </summary>
+        /// <summary> If creationData.createOption is Empty, this field is mandatory and it indicates the size of the disk to create. If this field is present for updates or creation with other options, it indicates a resize. Resizes are only allowed if the disk is not attached to a running VM, and can only increase the disk's size. </summary>
         public int? DiskSizeGB { get; set; }
         /// <summary> The size of the disk in bytes. This field is read only. </summary>
         public long? DiskSizeBytes { get; }
@@ -116,6 +160,8 @@ namespace Azure.ResourceManager.Compute
         public string ProvisioningState { get; }
         /// <summary> Whether a snapshot is incremental. Incremental snapshots on the same disk occupy less space than full snapshots and can be diffed. </summary>
         public bool? Incremental { get; set; }
+        /// <summary> Incremental snapshots for a disk share an incremental snapshot family id. The Get Page Range Diff API can only be called on incremental snapshots with the same family id. </summary>
+        public string IncrementalSnapshotFamilyId { get; }
         /// <summary> Encryption property can be used to encrypt data at rest with customer managed keys or platform managed keys. </summary>
         public DiskEncryption Encryption { get; set; }
         /// <summary> Policy for accessing the disk via network. </summary>
@@ -127,7 +173,7 @@ namespace Azure.ResourceManager.Compute
         /// <summary> Indicates the OS on a snapshot supports hibernation. </summary>
         public bool? SupportsHibernation { get; set; }
         /// <summary> Policy for controlling export on the disk. </summary>
-        public PublicNetworkAccess? PublicNetworkAccess { get; set; }
+        public DiskPublicNetworkAccess? PublicNetworkAccess { get; set; }
         /// <summary> Percentage complete for the background copy when a resource is created via the CopyStart operation. </summary>
         public float? CompletionPercent { get; set; }
         /// <summary> Indicates the error details if the background copy of a resource created via the CopyStart operation fails. </summary>
