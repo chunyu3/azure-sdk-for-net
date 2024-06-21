@@ -2,24 +2,24 @@
 
 ## 1.0.0-preview.6 (2022-06-07)
 
-### Changed
+### Features Added
 - Added `contentType` to requests with multiple media types.
 
 ## 1.0.0-preview.5 (2021-08-10)
 
-### Changed
+### Other Changes
 - Updated to use service API version `2020-12-01`
 
 ## 1.0.0-preview.4 (2021-05-11)
-### Key Bug Fixes
+### Bugs Fixed
 - Updated dependency versions.
 
 ## 1.0.0-preview.3 (2021-02-10)
 
-### Added
+### Features Added
 - Improved samples and documentation.
 
-### Changed
+### Other Changes
 - `AccessControlClient` is now split into `RoleAssignmentsClient` and a `RoleDefinitionsClient` with a changed API surface.
 
 ## 1.0.0-preview.2 (2020-09-01)
